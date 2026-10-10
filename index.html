@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Logo-Quiz automatisch</title>
-
   <style>
     :root {
       --bg: #f4f7fb;
@@ -13,6 +12,7 @@
       --primary-dark: #003f82;
       --accent: #ffcc00;
       --text: #111827;
+      --muted: #6b7280;
       --border: #d1d5db;
       --success: #16a34a;
       --danger: #dc2626;
@@ -48,76 +48,17 @@
       padding: 0 16px 40px;
     }
 
-    h2 {
-      margin-top: 0;
-      color: var(--primary-dark);
-    }
-
-    button {
-      border: none;
-      border-radius: 999px;
-      padding: 15px 22px;
-      font-size: 1.05rem;
-      font-weight: 800;
-      cursor: pointer;
-      background: var(--primary);
-      color: white;
-      transition: 0.2s ease;
-    }
-
-    button:hover {
-      background: var(--primary-dark);
-      transform: translateY(-1px);
-    }
-
-    button:disabled {
-      opacity: 0.45;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    button.secondary {
-      background: #e5e7eb;
-      color: var(--text);
-    }
-
-    button.secondary:hover {
-      background: #d1d5db;
-    }
-
-    button.success {
-      background: var(--success);
-    }
-
-    button.success:hover {
-      background: #15803d;
-    }
-
-    button.danger {
-      background: var(--danger);
-    }
-
-    button.danger:hover {
-      background: #991b1b;
-    }
-
-    input[type="file"] {
-      display: none;
-    }
-
-    canvas {
-      max-width: 100%;
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-    }
-
     .card {
       background: var(--card);
       border-radius: var(--radius);
       padding: 24px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
       margin-bottom: 22px;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: var(--primary-dark);
     }
 
     .main-actions {
@@ -152,11 +93,63 @@
       padding: 14px;
     }
 
+    input[type="file"] {
+      display: none;
+    }
+
     .controls {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
       margin-top: 18px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 15px 22px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      background: var(--primary);
+      color: white;
+      transition: 0.2s ease;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    button.secondary {
+      background: #e5e7eb;
+      color: var(--text);
+    }
+
+    button.secondary:hover {
+      background: #d1d5db;
+    }
+
+    button.success {
+      background: var(--success);
+    }
+
+    button.success:hover {
+      background: #15803d;
+    }
+
+    button.danger {
+      background: var(--danger);
+    }
+
+    button.danger:hover {
+      background: #991b1b;
+    }
+
+    button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
     }
 
     .status {
@@ -181,17 +174,17 @@
     }
 
     .progress-outer {
-      display: none;
-      height: 20px;
       margin-top: 14px;
       background: #e5e7eb;
       border-radius: 999px;
       overflow: hidden;
+      height: 20px;
+      display: none;
     }
 
     .progress-inner {
-      width: 0%;
       height: 100%;
+      width: 0%;
       background: linear-gradient(90deg, var(--primary), var(--success));
       transition: width 0.25s ease;
     }
@@ -239,26 +232,31 @@
       display: none;
     }
 
-    /* Start-Pop-up */
+    canvas {
+      max-width: 100%;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
 
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      z-index: 9999;
+      background: rgba(15, 23, 42, 0.78);
       display: flex;
       align-items: center;
       justify-content: center;
+      z-index: 9999;
       padding: 20px;
-      background: rgba(15, 23, 42, 0.78);
     }
 
     .modal {
       width: min(720px, 100%);
-      padding: 28px;
       background: white;
       color: var(--text);
       border-radius: 26px;
-      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.38);
+      padding: 28px;
+      box-shadow: 0 25px 70px rgba(0,0,0,0.38);
     }
 
     .modal h2 {
@@ -277,32 +275,30 @@
     }
 
     .modal-ok {
-      width: 100%;
       margin-top: 18px;
-      padding: 18px;
+      width: 100%;
       font-size: 1.3rem;
+      padding: 18px;
     }
-
-    /* Quiz-Ansicht */
 
     .quiz-screen {
       display: none;
       width: 100vw;
       height: 100dvh;
       min-height: 100vh;
-      padding: 14px;
       background: #0f172a;
       color: white;
       overflow: hidden;
+      padding: 14px;
     }
 
     .quiz-inner {
-      display: grid;
-      grid-template-rows: auto minmax(145px, 28vh) 1fr auto;
-      gap: 12px;
       height: 100%;
       max-width: 1180px;
       margin: 0 auto;
+      display: grid;
+      grid-template-rows: auto minmax(145px, 28vh) 1fr auto;
+      gap: 12px;
     }
 
     .quiz-topbar {
@@ -313,33 +309,30 @@
     }
 
     .quiz-title {
-      justify-self: center;
       margin: 0;
       color: var(--accent);
       font-size: clamp(1.7rem, 4vw, 3.1rem);
       line-height: 1;
       text-align: center;
+      justify-self: center;
     }
 
     .quiz-progress {
       display: inline-block;
       margin-left: 14px;
-      padding: 7px 14px;
-      background: rgba(255, 255, 255, 0.12);
-      border: 2px solid rgba(255, 255, 255, 0.25);
+      background: rgba(255,255,255,0.12);
+      border: 2px solid rgba(255,255,255,0.25);
       border-radius: 999px;
-      color: white;
+      padding: 7px 14px;
       font-size: clamp(1rem, 2.6vw, 1.7rem);
       font-weight: 1000;
+      color: white;
       vertical-align: middle;
       white-space: nowrap;
     }
 
     .quiz-close-button {
       justify-self: end;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       padding: 13px 22px;
       border-radius: 999px;
       background: #dc2626;
@@ -347,6 +340,9 @@
       font-size: clamp(1rem, 2.3vw, 1.25rem);
       line-height: 1;
       font-weight: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       white-space: nowrap;
     }
 
@@ -355,42 +351,42 @@
     }
 
     .quiz-question {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 0;
-      padding: 10px;
       background: white;
       color: #111827;
       border-radius: 22px;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.25);
+      min-height: 0;
     }
 
     .quiz-question img {
-      display: block;
       max-width: 100%;
       max-height: 100%;
       object-fit: contain;
+      display: block;
     }
 
     .quiz-answers {
+      min-height: 0;
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       grid-template-rows: repeat(2, minmax(0, 1fr));
       gap: 14px;
-      min-height: 0;
     }
 
     .quiz-answer {
-      display: flex;
-      align-items: center;
-      gap: 12px;
       min-height: 0;
+      border-radius: 22px;
       padding: 12px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
       background: white;
       border: 7px solid transparent;
-      border-radius: 22px;
-      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.25);
       overflow: hidden;
     }
 
@@ -408,18 +404,18 @@
       background: #dc2626;
       color: white;
       border: 6px solid white;
-      box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 0 0 4px rgba(0,0,0,0.25);
     }
 
     .big-letter {
       flex: 0 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       width: clamp(54px, 8vw, 78px);
       height: clamp(54px, 8vw, 78px);
       border-radius: 50%;
       color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: clamp(2rem, 5vw, 2.8rem);
       font-weight: 1000;
     }
@@ -433,22 +429,22 @@
 
     .answer-image-wrap {
       flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 0;
       height: 100%;
-      padding: 4px;
+      min-width: 0;
       background: white;
       border-radius: 12px;
       overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px;
     }
 
     .answer-image-wrap img {
-      display: block;
       width: 100%;
       height: 100%;
       object-fit: contain;
+      display: block;
     }
 
     .quiz-controls {
@@ -508,13 +504,11 @@
   <div id="introModal" class="modal-backdrop">
     <div class="modal">
       <h2>So funktioniert das Logo-Quiz</h2>
-
       <p>
         Fotografiere eine oder mehrere ausgefüllte Fragenkarten.
         Die App erkennt die vier schwarzen Eckmarken automatisch, richtet das Foto gerade aus
         und erstellt daraus die Quizfrage.
       </p>
-
       <ul>
         <li>Die vier schwarzen Eckmarken müssen auf dem Foto sichtbar sein.</li>
         <li>Das Foto darf leicht schräg aufgenommen sein.</li>
@@ -522,7 +516,6 @@
         <li>Wenn eine Karte nicht erkannt wird, wird sie übersprungen und gemeldet.</li>
         <li>Das Quiz ist besonders für ein iPad im Querformat geeignet.</li>
       </ul>
-
       <button id="introOkButton" class="modal-ok">Okay</button>
     </div>
   </div>
@@ -545,8 +538,8 @@
             OpenCV.js wird geladen. Bitte einen Moment warten ...
           </div>
 
-          <div id="progressOuter" class="progress-outer">
-            <div id="progressInner" class="progress-inner"></div>
+          <div class="progress-outer" id="progressOuter">
+            <div class="progress-inner" id="progressInner"></div>
           </div>
 
           <div id="questionCounterBox" class="question-counter-box">
@@ -641,20 +634,24 @@
     let waitingFiles = [];
 
     window.Module = {
+      locateFile(path) {
+        if (path.endsWith(".wasm")) {
+          return "./" + path;
+        }
+        return path;
+      },
+
       onRuntimeInitialized() {
         cvReady = true;
-        setStatus("Bereit. Tippe auf „Foto aufnehmen“.");
-        updateButtonStates();
 
-        if (waitingFiles.length > 0) {
-          processFilesAutomatically(waitingFiles);
-          waitingFiles = [];
+        if (typeof onOpenCvReady === "function") {
+          onOpenCvReady();
         }
       }
     };
   </script>
 
-  <script async src="https://docs.opencv.org/4.x/opencv.js"></script>
+  <script async src="./opencv.js"></script>
 
   <script>
     const introModal = document.getElementById("introModal");
@@ -669,24 +666,18 @@
     const questionCount = document.getElementById("questionCount");
     const questionListSection = document.getElementById("questionListSection");
     const questionList = document.getElementById("questionList");
-
     const sourceCanvas = document.getElementById("sourceCanvas");
     const sourceCtx = sourceCanvas.getContext("2d");
-
     const rectifiedCanvas = document.getElementById("rectifiedCanvas");
     const rectifiedCtx = rectifiedCanvas.getContext("2d");
-
     const originalCanvas = document.getElementById("originalCanvas");
     const originalCtx = originalCanvas.getContext("2d");
-
     const normalizedCanvas = document.getElementById("normalizedCanvas");
-
     const questionPreview = document.getElementById("questionPreview");
     const correctPreview = document.getElementById("correctPreview");
     const wrong1Preview = document.getElementById("wrong1Preview");
     const wrong2Preview = document.getElementById("wrong2Preview");
     const wrong3Preview = document.getElementById("wrong3Preview");
-
     const editorView = document.getElementById("editorView");
     const quizView = document.getElementById("quizView");
     const quizProgress = document.getElementById("quizProgress");
@@ -695,12 +686,10 @@
     const quizAnswerB = document.getElementById("quizAnswerB");
     const quizAnswerC = document.getElementById("quizAnswerC");
     const quizAnswerD = document.getElementById("quizAnswerD");
-
     const answerBoxA = document.getElementById("answerBoxA");
     const answerBoxB = document.getElementById("answerBoxB");
     const answerBoxC = document.getElementById("answerBoxC");
     const answerBoxD = document.getElementById("answerBoxD");
-
     const revealButton = document.getElementById("revealButton");
     const backButton = document.getElementById("backButton");
     const prevQuestionButton = document.getElementById("prevQuestionButton");
@@ -746,6 +735,20 @@
 
     updateQuestionCollectionView();
 
+    if (cvReady) {
+      onOpenCvReady();
+    }
+
+    function onOpenCvReady() {
+      setStatus("Bereit. Tippe auf „Foto aufnehmen“.");
+      updateButtonStates();
+
+      if (waitingFiles.length > 0) {
+        processFilesAutomatically(waitingFiles);
+        waitingFiles = [];
+      }
+    }
+
     function setStatus(message) {
       statusBox.textContent = message;
     }
@@ -758,9 +761,8 @@
       }
 
       progressOuter.style.display = "block";
-
       const percent = Math.round((done / total) * 100);
-      progressInner.style.width = `${percent}%`;
+      progressInner.style.width = percent + "%";
     }
 
     function updateButtonStates() {
@@ -789,7 +791,7 @@
       failedList.textContent = "";
       updateButtonStates();
 
-      const failedFiles = [];
+      let failedFiles = [];
 
       setProgress(0, files.length);
 
@@ -800,7 +802,6 @@
 
         try {
           const image = await loadImageFromFile(file);
-
           loadedImage = image;
 
           prepareCanvasesForLoadedImage();
@@ -846,7 +847,7 @@
         failedList.textContent = "";
       } else {
         setStatus(`${files.length - failedFiles.length} von ${files.length} Foto(s) wurden verarbeitet.`);
-        failedList.innerHTML = `Nicht erkannt: ${failedFiles.map(name => escapeHtml(name)).join(", ")}`;
+        failedList.innerHTML = "Nicht erkannt: " + failedFiles.map(name => escapeHtml(name)).join(", ");
       }
     }
 
@@ -879,7 +880,6 @@
       originalCtx.drawImage(loadedImage, 0, 0);
 
       const maxWidth = 850;
-
       displayScale = Math.min(1, maxWidth / loadedImage.width);
 
       sourceCanvas.width = Math.round(loadedImage.width * displayScale);
@@ -901,14 +901,12 @@
       sourceCtx.lineWidth = 4;
       sourceCtx.strokeStyle = "#ffcc00";
       sourceCtx.fillStyle = "rgba(255, 204, 0, 0.18)";
-
       sourceCtx.beginPath();
       sourceCtx.moveTo(displayPoints[0].x, displayPoints[0].y);
       sourceCtx.lineTo(displayPoints[1].x, displayPoints[1].y);
       sourceCtx.lineTo(displayPoints[2].x, displayPoints[2].y);
       sourceCtx.lineTo(displayPoints[3].x, displayPoints[3].y);
       sourceCtx.closePath();
-
       sourceCtx.fill();
       sourceCtx.stroke();
     }
@@ -1005,21 +1003,10 @@
     function orderPoints(points) {
       const sorted = [...points];
 
-      const topLeft = sorted.reduce((best, p) => (
-        p.x + p.y < best.x + best.y ? p : best
-      ));
-
-      const bottomRight = sorted.reduce((best, p) => (
-        p.x + p.y > best.x + best.y ? p : best
-      ));
-
-      const topRight = sorted.reduce((best, p) => (
-        p.x - p.y > best.x - best.y ? p : best
-      ));
-
-      const bottomLeft = sorted.reduce((best, p) => (
-        p.x - p.y < best.x - best.y ? p : best
-      ));
+      const topLeft = sorted.reduce((best, p) => (p.x + p.y < best.x + best.y ? p : best));
+      const bottomRight = sorted.reduce((best, p) => (p.x + p.y > best.x + best.y ? p : best));
+      const topRight = sorted.reduce((best, p) => (p.x - p.y > best.x - best.y ? p : best));
+      const bottomLeft = sorted.reduce((best, p) => (p.x - p.y < best.x - best.y ? p : best));
 
       return [topLeft, topRight, bottomRight, bottomLeft];
     }
@@ -1036,7 +1023,6 @@
       try {
         normalizedCanvas.width = NORMALIZED_WIDTH;
         normalizedCanvas.height = NORMALIZED_HEIGHT;
-
         rectifiedCanvas.width = NORMALIZED_WIDTH;
         rectifiedCanvas.height = NORMALIZED_HEIGHT;
 
@@ -1097,7 +1083,7 @@
       rectifiedCtx.fillStyle = "#16a34a";
       rectifiedCtx.font = "bold 24px sans-serif";
 
-      Object.values(CROP_FIELDS).forEach(field => {
+      Object.entries(CROP_FIELDS).forEach(([name, field]) => {
         rectifiedCtx.strokeRect(field.x, field.y, field.w, field.h);
       });
     }
@@ -1114,10 +1100,11 @@
 
     function cropFieldToDataUrl(field) {
       const canvas = document.createElement("canvas");
-      const ctx = canvas.getContext("2d");
 
       canvas.width = field.w;
       canvas.height = field.h;
+
+      const ctx = canvas.getContext("2d");
 
       ctx.drawImage(
         normalizedCanvas,
@@ -1146,17 +1133,20 @@
       questionCount.textContent = questions.length;
       questionList.innerHTML = "";
 
-      questionListSection.style.display = questions.length === 0 ? "none" : "block";
+      if (questions.length === 0) {
+        questionListSection.style.display = "none";
+      } else {
+        questionListSection.style.display = "block";
+      }
 
       questions.forEach((item, index) => {
         const box = document.createElement("div");
-        const title = document.createElement("strong");
-        const img = document.createElement("img");
-
         box.className = "question-list-item";
 
+        const title = document.createElement("strong");
         title.textContent = `Frage ${index + 1}`;
 
+        const img = document.createElement("img");
         img.src = item.question;
         img.alt = `Vorschau Frage ${index + 1}`;
 
@@ -1175,7 +1165,6 @@
       }
 
       currentQuizIndex = 0;
-
       editorView.style.display = "none";
       quizView.style.display = "block";
 
@@ -1257,7 +1246,7 @@
 
       if (!correctLetter) return;
 
-      const box = document.getElementById(`answerBox${correctLetter}`);
+      const box = document.getElementById("answerBox" + correctLetter);
       box.classList.add("correct");
     }
 
@@ -1311,6 +1300,7 @@
       originalCtx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
 
       setStatus(cvReady ? "Alles gelöscht. Tippe auf „Foto aufnehmen“." : "OpenCV.js wird geladen ...");
+
       updateButtonStates();
     }
 
