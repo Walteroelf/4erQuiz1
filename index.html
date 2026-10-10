@@ -1,1605 +1,2133 @@
+---
+meta-CocoaVersion: "2575.7"
+
+## meta-Generator: Cocoa HTML Writer
+
 <!DOCTYPE html>
+
 <html lang="de">
+
 <head>
+
 <meta charset="UTF-8" />
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <title>Logo-Quiz automatisch</title>
 
 <style>
+
 :root {
-  --bg: #f4f7fb;
-  --card: #ffffff;
-  --primary: #005bbb;
-  --primary-dark: #003f82;
-  --accent: #ffcc00;
-  --text: #111827;
-  --muted: #6b7280;
-  --border: #d1d5db;
-  --success: #16a34a;
-  --danger: #dc2626;
-  --warning: #f59e0b;
-  --radius: 20px;
+
+--bg: #f4f7fb;
+
+--card: #ffffff;
+
+--primary: #005bbb;
+
+--primary-dark: #003f82;
+
+--accent: #ffcc00;
+
+--text: #111827;
+
+--muted: #6b7280;
+
+--border: #d1d5db;
+
+--success: #16a34a;
+
+--danger: #dc2626;
+
+--warning: #f59e0b;
+
+--radius: 20px;
+
 }
 
 * {
-  box-sizing: border-box;
+
+box-sizing: border-box;
+
 }
 
 body {
-  margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: var(--bg);
-  color: var(--text);
+
+margin: 0;
+
+font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+background: var(--bg);
+
+color: var(--text);
+
 }
 
 header {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
-  padding: 26px 20px;
-  text-align: center;
+
+background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+
+color: white;
+
+padding: 26px 20px;
+
+text-align: center;
+
 }
 
 header h1 {
-  margin: 0;
-  font-size: clamp(2.2rem, 6vw, 3.8rem);
+
+margin: 0;
+
+font-size: clamp(2.2rem, 6vw, 3.8rem);
+
 }
 
 .header-counter {
-  display: inline-block;
-  margin-left: 12px;
-  padding: 7px 14px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.18);
-  border: 2px solid rgba(255,255,255,0.35);
-  font-size: clamp(1rem, 2.5vw, 1.5rem);
-  vertical-align: middle;
-  white-space: nowrap;
+
+display: inline-block;
+
+margin-left: 12px;
+
+padding: 7px 14px;
+
+border-radius: 999px;
+
+background: rgba(255,255,255,0.18);
+
+border: 2px solid rgba(255,255,255,0.35);
+
+font-size: clamp(1rem, 2.5vw, 1.5rem);
+
+vertical-align: middle;
+
+white-space: nowrap;
+
 }
 
 main {
-  max-width: 980px;
-  margin: 24px auto;
-  padding: 0 16px 40px;
+
+max-width: 980px;
+
+margin: 24px auto;
+
+padding: 0 16px 40px;
+
 }
 
 .card {
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 24px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  margin-bottom: 22px;
+
+background: var(--card);
+
+border-radius: var(--radius);
+
+padding: 24px;
+
+box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+
+margin-bottom: 22px;
+
 }
 
 h2 {
-  margin-top: 0;
-  color: var(--primary-dark);
+
+margin-top: 0;
+
+color: var(--primary-dark);
+
 }
 
 .main-actions {
-  display: grid;
-  gap: 16px;
+
+display: grid;
+
+gap: 16px;
+
 }
 
 .photo-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 130px;
-  border-radius: 28px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
-  font-size: clamp(1.7rem, 5vw, 3rem);
-  font-weight: 1000;
-  text-align: center;
-  cursor: pointer;
-  box-shadow: 0 14px 32px rgba(0, 91, 187, 0.28);
-  transition: 0.2s ease;
-  user-select: none;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+min-height: 130px;
+
+border-radius: 28px;
+
+background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+
+color: white;
+
+font-size: clamp(1.7rem, 5vw, 3rem);
+
+font-weight: 1000;
+
+text-align: center;
+
+cursor: pointer;
+
+box-shadow: 0 14px 32px rgba(0, 91, 187, 0.28);
+
+transition: 0.2s ease;
+
+user-select: none;
+
 }
 
 .photo-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 18px 36px rgba(0, 91, 187, 0.36);
-}
 
-.photo-button span {
-  display: block;
-  padding: 14px;
+transform: translateY(-2px);
+
+box-shadow: 0 18px 36px rgba(0, 91, 187, 0.36);
+
 }
 
 input[type="file"] {
-  display: none;
+
+display: none;
+
 }
 
 .controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 18px;
+
+display: grid;
+
+grid-template-columns: 1fr 1fr;
+
+gap: 12px;
+
+margin-top: 18px;
+
 }
 
 button {
-  border: none;
-  border-radius: 999px;
-  padding: 15px 22px;
-  font-size: 1.05rem;
-  font-weight: 800;
-  cursor: pointer;
-  background: var(--primary);
-  color: white;
-  transition: 0.2s ease;
+
+border: none;
+
+border-radius: 999px;
+
+padding: 15px 22px;
+
+font-size: 1.05rem;
+
+font-weight: 800;
+
+cursor: pointer;
+
+background: var(--primary);
+
+color: white;
+
+transition: 0.2s ease;
+
 }
 
 button:hover {
-  background: var(--primary-dark);
-  transform: translateY(-1px);
+
+background: var(--primary-dark);
+
+transform: translateY(-1px);
+
 }
 
 button.secondary {
-  background: #e5e7eb;
-  color: var(--text);
+
+background: #e5e7eb;
+
+color: var(--text);
 }
 
 button.secondary:hover {
-  background: #d1d5db;
+
+background: #d1d5db;
+
 }
 
 button.success {
-  background: var(--success);
+
+background: var(--success);
+
 }
 
 button.success:hover {
-  background: #15803d;
+
+background: #15803d;
+
 }
 
 button.danger {
-  background: var(--danger);
+
+background: var(--danger);
+
 }
 
 button.danger:hover {
-  background: #991b1b;
+
+background: #991b1b;
+
 }
 
 button.warning {
-  background: var(--warning);
-  color: #111827;
+
+background: var(--warning);
+
+color: #111827;
+
 }
 
 button.warning:hover {
-  background: #d97706;
+
+background: #d97706;
+
 }
 
 button.small {
-  padding: 9px 13px;
-  font-size: 0.88rem;
+
+padding: 9px 13px;
+
+font-size: 0.88rem;
+
 }
 
 button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none;
+
+opacity: 0.45;
+
+cursor: not-allowed;
+
+transform: none;
+
 }
 
 .status {
-  margin-top: 18px;
-  padding: 14px 16px;
-  background: #eff6ff;
-  border-left: 6px solid var(--primary);
-  border-radius: 12px;
-  line-height: 1.4;
-  font-weight: 650;
+
+margin-top: 18px;
+
+padding: 14px 16px;
+
+background: #eff6ff;
+
+border-left: 6px solid var(--primary);
+
+border-radius: 12px;
+
+line-height: 1.4;
+
+font-weight: 650;
+
 }
 
 .status.warning-status {
-  background: #fffbeb;
-  border-left-color: var(--warning);
+
+background: #fffbeb;
+
+border-left-color: var(--warning);
+
 }
 
 .question-counter-box {
-  margin-top: 14px;
-  padding: 18px;
-  background: #ecfdf5;
-  border-left: 6px solid var(--success);
-  border-radius: 14px;
-  font-weight: 1000;
-  font-size: 1.35rem;
-  text-align: center;
+
+margin-top: 14px;
+
+padding: 18px;
+
+background: #ecfdf5;
+
+border-left: 6px solid var(--success);
+
+border-radius: 14px;
+
+font-weight: 1000;
+
+font-size: 1.35rem;
+
+text-align: center;
+
 }
 
 .progress-outer {
-  margin-top: 14px;
-  background: #e5e7eb;
-  border-radius: 999px;
-  overflow: hidden;
-  height: 20px;
-  display: none;
+
+margin-top: 14px;
+
+background: #e5e7eb;
+
+border-radius: 999px;
+
+overflow: hidden;
+
+height: 20px;
+
+display: none;
+
 }
 
 .progress-inner {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--primary), var(--success));
-  transition: width 0.25s ease;
+
+height: 100%;
+
+width: 0%;
+
+background: linear-gradient(90deg, var(--primary), var(--success));
+
+transition: width 0.25s ease;
+
 }
 
 .failed-list {
-  margin-top: 12px;
-  color: var(--danger);
-  font-weight: 700;
-  line-height: 1.45;
+
+margin-top: 12px;
+
+color: var(--danger);
+
+font-weight: 700;
+
+line-height: 1.45;
+
 }
 
 .preview-section {
-  display: none;
+
+display: none;
+
 }
 
 .large-preview-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-top: 14px;
+
+display: grid;
+
+grid-template-columns: 1fr 1fr;
+
+gap: 14px;
+
+margin-top: 14px;
+
 }
 
 .large-preview-grid .preview-question {
-  grid-column: 1 / -1;
+
+grid-column: 1 / -1;
+
 }
 
 .preview-tile {
-  border: 2px solid var(--border);
-  border-radius: 16px;
-  padding: 10px;
-  background: #fafafa;
+
+border: 2px solid var(--border);
+
+border-radius: 16px;
+
+padding: 10px;
+
+background: #fafafa;
+
 }
 
 .preview-tile strong {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--primary-dark);
+
+display: block;
+
+margin-bottom: 8px;
+
+color: var(--primary-dark);
+
 }
 
 .preview-tile img {
-  width: 100%;
-  max-height: 190px;
-  object-fit: contain;
-  display: block;
-  background: white;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
+
+width: 100%;
+
+max-height: 190px;
+
+object-fit: contain;
+
+display: block;
+
+background: white;
+
+border-radius: 10px;
+
+border: 1px solid #e5e7eb;
+
 }
 
 .question-list-section {
-  display: none;
-}
 
-.question-list-section p {
-  color: var(--muted);
-  font-weight: 650;
+display: none;
+
 }
 
 .question-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 14px;
-  margin-top: 14px;
+
+display: grid;
+
+grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+
+gap: 14px;
+
+margin-top: 14px;
+
 }
 
 .question-list-item {
-  border: 2px solid var(--border);
-  border-radius: 16px;
-  padding: 12px;
-  background: #fafafa;
-  display: grid;
-  gap: 10px;
+
+border: 2px solid var(--border);
+
+border-radius: 16px;
+
+padding: 12px;
+
+background: #fafafa;
+
+display: grid;
+
+gap: 10px;
+
 }
 
 .question-list-item strong {
-  color: var(--primary-dark);
+
+color: var(--primary-dark);
+
 }
 
 .question-list-item img {
-  width: 100%;
-  height: 105px;
-  object-fit: contain;
-  background: white;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  cursor: pointer;
+
+width: 100%;
+
+height: 105px;
+
+object-fit: contain;
+
+background: white;
+
+border-radius: 10px;
+
+border: 1px solid #e5e7eb;
+
+cursor: pointer;
 }
 
 .question-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
+
+display: grid;
+
+grid-template-columns: 1fr 1fr;
+
+gap: 8px;
+
 }
 
 .question-buttons .full {
-  grid-column: 1 / -1;
+
+grid-column: 1 / -1;
+
 }
 
 .hidden-work-area {
-  display: none;
+
+display: none;
+
 }
 
 canvas {
-  max-width: 100%;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 14px;
+
+max-width: 100%;
+
+background: white;
+
+border: 1px solid var(--border);
+
+border-radius: 14px;
+
 }
 
 .modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.78);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  padding: 20px;
+
+position: fixed;
+
+inset: 0;
+
+background: rgba(15, 23, 42, 0.78);
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+z-index: 9999;
+
+padding: 20px;
+
 }
 
 .modal {
-  width: min(820px, 100%);
-  max-height: 92vh;
-  overflow: auto;
-  background: white;
-  color: var(--text);
-  border-radius: 26px;
-  padding: 28px;
-  box-shadow: 0 25px 70px rgba(0,0,0,0.38);
+
+width: min(820px, 100%);
+
+max-height: 92vh;
+
+overflow: auto;
+
+background: white;
+
+color: var(--text);
+
+border-radius: 26px;
+
+padding: 28px;
+
+box-shadow: 0 25px 70px rgba(0,0,0,0.38);
+
 }
 
 .modal h2 {
-  margin-top: 0;
-  font-size: clamp(1.6rem, 4vw, 2.3rem);
+
+margin-top: 0;
+
+font-size: clamp(1.6rem, 4vw, 2.3rem);
+
 }
 
 .modal p,
+
 .modal li {
-  line-height: 1.5;
-  font-size: 1.05rem;
+
+line-height: 1.5;
+
+font-size: 1.05rem;
+
 }
 
 .modal ul {
-  padding-left: 1.4rem;
+
+padding-left: 1.4rem;
+
 }
 
 .modal-ok {
-  margin-top: 18px;
-  width: 100%;
-  font-size: 1.3rem;
-  padding: 18px;
+
+margin-top: 18px;
+
+width: 100%;
+
+font-size: 1.3rem;
+
+padding: 18px;
+
 }
 
 .preview-modal {
-  display: none;
+
+display: none;
+
 }
 
 .quiz-screen {
-  display: none;
-  width: 100vw;
-  height: 100dvh;
-  min-height: 100vh;
-  background: #0f172a;
-  color: white;
-  overflow: hidden;
-  padding: 14px;
+
+display: none;
+
+width: 100vw;
+
+height: 100dvh;
+
+min-height: 100vh;
+
+background: #0f172a;
+
+color: white;
+
+overflow: hidden;
+
+padding: 14px;
+
 }
 
 .quiz-inner {
-  height: 100%;
-  max-width: 1180px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-rows: auto minmax(145px, 28vh) 1fr auto;
-  gap: 12px;
+
+height: 100%;
+
+max-width: 1180px;
+
+margin: 0 auto;
+
+display: grid;
+
+grid-template-rows: auto minmax(145px, 28vh) 1fr auto;
+
+gap: 12px;
+
 }
 
 .quiz-topbar {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 12px;
+
+display: grid;
+
+grid-template-columns: 1fr auto;
+
+align-items: center;
+
+gap: 12px;
+
 }
 
 .quiz-title {
-  margin: 0;
-  color: var(--accent);
-  font-size: clamp(1.7rem, 4vw, 3.1rem);
-  line-height: 1;
-  text-align: center;
-  justify-self: center;
+
+margin: 0;
+
+color: var(--accent);
+
+font-size: clamp(1.7rem, 4vw, 3.1rem);
+
+line-height: 1;
+
+text-align: center;
+
+justify-self: center;
+
 }
 
 .quiz-progress {
-  display: inline-block;
-  margin-left: 14px;
-  background: rgba(255,255,255,0.12);
-  border: 2px solid rgba(255,255,255,0.25);
-  border-radius: 999px;
-  padding: 7px 14px;
-  font-size: clamp(1rem, 2.6vw, 1.7rem);
-  font-weight: 1000;
-  color: white;
-  vertical-align: middle;
-  white-space: nowrap;
+
+display: inline-block;
+
+margin-left: 14px;
+
+background: rgba(255,255,255,0.12);
+
+border: 2px solid rgba(255,255,255,0.25);
+
+border-radius: 999px;
+
+padding: 7px 14px;
+
+font-size: clamp(1rem, 2.6vw, 1.7rem);
+
+font-weight: 1000;
+
+color: white;
+
+vertical-align: middle;
+
+white-space: nowrap;
+
 }
 
 .quiz-close-button {
-  justify-self: end;
-  padding: 13px 22px;
-  border-radius: 999px;
-  background: #dc2626;
-  color: white;
-  font-size: clamp(1rem, 2.3vw, 1.25rem);
-  line-height: 1;
-  font-weight: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
+
+justify-self: end;
+
+padding: 13px 22px;
+
+border-radius: 999px;
+
+background: #dc2626;
+
+color: white;
+
+font-size: clamp(1rem, 2.3vw, 1.25rem);
+
+line-height: 1;
+
+font-weight: 1000;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+white-space: nowrap;
+
 }
 
 .quiz-close-button:hover {
-  background: #991b1b;
+
+background: #991b1b;
+
 }
 
 .quiz-question {
-  background: white;
-  color: #111827;
-  border-radius: 22px;
-  padding: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 28px rgba(0,0,0,0.25);
-  min-height: 0;
+
+background: white;
+
+color: #111827;
+
+border-radius: 22px;
+
+padding: 10px;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+box-shadow: 0 10px 28px rgba(0,0,0,0.25);
+
+min-height: 0;
+
 }
 
 .quiz-question img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  display: block;
+
+max-width: 100%;
+
+max-height: 100%;
+
+object-fit: contain;
+display: block;
+
 }
 
 .quiz-answers {
-  min-height: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-rows: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+
+min-height: 0;
+
+display: grid;
+
+grid-template-columns: repeat(2, minmax(0, 1fr));
+
+grid-template-rows: repeat(2, minmax(0, 1fr));
+
+gap: 14px;
+
 }
 
 .quiz-answer {
-  min-height: 0;
-  border-radius: 22px;
-  padding: 12px;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  background: white;
-  border: 7px solid transparent;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.25);
-  overflow: hidden;
-}
 
-.quiz-answer.correct {
-  background: #16a34a;
-  border-color: #16a34a;
-  box-shadow: 0 0 0 8px rgba(22, 163, 74, 0.35);
+min-height: 0;
+
+border-radius: 22px;
+
+padding: 12px;
+
+display: flex;
+
+gap: 12px;
+
+align-items: center;
+
+background: white;
+
+border: 7px solid transparent;
+
+box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+
+overflow: hidden;
+
+}
+  .quiz-answer.correct {
+
+background: #16a34a;
+
+border-color: #16a34a;
+
+box-shadow: 0 0 0 8px rgba(22, 163, 74, 0.35);
+
 }
 
 .quiz-answer.correct .answer-image-wrap {
-  background: white;
+
+background: white;
+
 }
 
 .quiz-answer.correct .big-letter {
-  background: #dc2626;
-  color: white;
-  border: 6px solid white;
-  box-shadow: 0 0 0 4px rgba(0,0,0,0.25);
+
+background: #dc2626;
+
+color: white;
+
+border: 6px solid white;
+
+box-shadow: 0 0 0 4px rgba(0,0,0,0.25);
+
 }
 
 .big-letter {
-  flex: 0 0 auto;
-  width: clamp(54px, 8vw, 78px);
-  height: clamp(54px, 8vw, 78px);
-  border-radius: 50%;
-  background: #dc2626;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: clamp(2rem, 5vw, 2.8rem);
-  font-weight: 1000;
+
+flex: 0 0 auto;
+
+width: clamp(54px, 8vw, 78px);
+
+height: clamp(54px, 8vw, 78px);
+
+border-radius: 50%;
+
+background: #dc2626;
+
+color: white;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+font-size: clamp(2rem, 5vw, 2.8rem);
+
+font-weight: 1000;
+
 }
 
 .answer-image-wrap {
-  flex: 1;
-  height: 100%;
-  min-width: 0;
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
+
+flex: 1;
+
+height: 100%;
+
+min-width: 0;
+
+background: white;
+
+border-radius: 12px;
+
+overflow: hidden;
+
+display: flex;
+
+align-items: center;
+
+justify-content: center;
+
+padding: 4px;
+
 }
 
 .answer-image-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
+
+width: 100%;
+
+height: 100%;
+
+object-fit: contain;
+
+display: block;
+
 }
 
 .quiz-controls {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
+
+display: flex;
+
+justify-content: center;
+
+gap: 10px;
+
+flex-wrap: wrap;
+
 }
 
 .quiz-controls button {
-  padding: 11px 18px;
-  font-size: 0.95rem;
+
+padding: 11px 18px;
+
+font-size: 0.95rem;
+
 }
 
 @media (max-width: 700px) {
-  .controls,
-  .large-preview-grid {
-    grid-template-columns: 1fr;
-  }
 
-  .large-preview-grid .preview-question {
-    grid-column: auto;
-  }
+.controls,
+
+.large-preview-grid {
+
+grid-template-columns: 1fr;
+
+}
+
+.large-preview-grid .preview-question {
+
+grid-column: auto;
+
+}
+
 }
 
 @media (orientation: portrait) {
-  .quiz-screen {
-    overflow: auto;
-  }
 
-  .quiz-inner {
-    height: auto;
-    min-height: 100dvh;
-    grid-template-rows: auto auto auto auto;
-  }
+.quiz-screen {
 
-  .quiz-answers {
-    grid-template-columns: 1fr;
-    grid-template-rows: none;
-  }
+overflow: auto;
 
-  .quiz-answer {
-    min-height: 140px;
-  }
-
-  .quiz-question {
-    min-height: 170px;
-  }
-
-  .quiz-topbar {
-    grid-template-columns: 1fr;
-  }
-
-  .quiz-close-button {
-    justify-self: center;
-  }
 }
+
+.quiz-inner {
+
+height: auto;
+
+min-height: 100dvh;
+
+grid-template-rows: auto auto auto auto;
+
+}
+
+.quiz-answers {
+
+grid-template-columns: 1fr;
+
+grid-template-rows: none;
+
+}
+
+.quiz-answer {
+
+min-height: 140px;
+
+}
+
+.quiz-question {
+
+min-height: 170px;
+
+}
+
+.quiz-topbar {
+
+grid-template-columns: 1fr;
+
+}
+
+.quiz-close-button {
+
+justify-self: center;
+
+}
+
+}
+
 </style>
+
 </head>
 
 <body>
 
 <div id="introModal" class="modal-backdrop">
-  <div class="modal">
-    <h2>So funktioniert das Logo-Quiz</h2>
-    <p>
-      Fotografiere eine oder mehrere ausgefüllte Fragenkarten.
-      Die App erkennt die vier schwarzen Eckmarken automatisch, richtet das Foto gerade aus
-      und erstellt daraus die Quizfrage.
-    </p>
-    <ul>
-      <li>Die vier schwarzen Eckmarken müssen auf dem Foto sichtbar sein.</li>
-      <li>Das Foto darf leicht schräg aufgenommen sein.</li>
-      <li>Bei dunklen Fotos versucht die App die Erkennung automatisch zu verbessern.</li>
-      <li>Wenn eine Karte nicht erkannt wird, nennt die App einen wahrscheinlichen Grund.</li>
-      <li>Das Quiz ist besonders für ein iPad im Querformat geeignet.</li>
-    </ul>
-    <button id="introOkButton" class="modal-ok">Okay</button>
-  </div>
+
+<div class="modal">
+
+<h2>So funktioniert das Logo-Quiz</h2>
+
+<p>
+
+Fotografiere eine oder mehrere ausgefüllte Fragenkarten.
+
+Die App erkennt die vier schwarzen Eckmarken automatisch, richtet das Foto gerade aus
+
+und erstellt daraus die Quizfrage.
+
+</p>
+
+<ul>
+
+<li>Die vier schwarzen Eckmarken müssen auf dem Foto sichtbar sein.</li>
+<li>Das Foto darf leicht schräg aufgenommen sein.</li>
+
+<li>Bei dunklen Fotos versucht die App die Erkennung automatisch zu verbessern.</li>
+
+<li>Wenn eine Karte nicht erkannt wird, nennt die App einen wahrscheinlichen Grund.</li>
+
+<li>Das Quiz ist besonders für ein iPad im Querformat geeignet.</li>
+
+</ul>
+
+<button id="introOkButton" class="modal-ok">Okay</button>
+
+</div>
+
 </div>
 
 <div id="previewModal" class="modal-backdrop preview-modal">
-  <div class="modal">
-    <h2 id="previewModalTitle">Vorschau</h2>
 
-    <div class="large-preview-grid">
-      <div class="preview-tile preview-question">
-        <strong>Frage</strong>
-        <img id="modalQuestionImage" alt="Frage Vorschau" />
-      </div>
+<div class="modal">
 
-      <div class="preview-tile">
-        <strong>Richtige Antwort</strong>
-        <img id="modalCorrectImage" alt="Richtige Antwort Vorschau" />
-      </div>
+<h2 id="previewModalTitle">Vorschau</h2>
 
-      <div class="preview-tile">
-        <strong>Falsche Antwort 1</strong>
-        <img id="modalWrong1Image" alt="Falsche Antwort 1 Vorschau" />
-      </div>
+<div class="large-preview-grid">
 
-      <div class="preview-tile">
-        <strong>Falsche Antwort 2</strong>
-        <img id="modalWrong2Image" alt="Falsche Antwort 2 Vorschau" />
-      </div>
+<div class="preview-tile preview-question">
 
-      <div class="preview-tile">
-        <strong>Falsche Antwort 3</strong>
-        <img id="modalWrong3Image" alt="Falsche Antwort 3 Vorschau" />
-      </div>
-    </div>
+<strong>Frage</strong>
 
-    <button id="closePreviewModalButton" class="modal-ok">Vorschau schließen</button>
-  </div>
+<img id="modalQuestionImage" alt="Frage Vorschau" />
+
+</div>
+
+<div class="preview-tile">
+
+<strong>Richtige Antwort</strong>
+
+<img id="modalCorrectImage" alt="Richtige Antwort Vorschau" />
+
+</div>
+
+<div class="preview-tile">
+
+<strong>Falsche Antwort 1</strong>
+
+<img id="modalWrong1Image" alt="Falsche Antwort 1 Vorschau" />
+
+</div>
+
+<div class="preview-tile">
+
+<strong>Falsche Antwort 2</strong>
+
+<img id="modalWrong2Image" alt="Falsche Antwort 2 Vorschau" />
+
+</div>
+
+<div class="preview-tile">
+
+<strong>Falsche Antwort 3</strong>
+
+<img id="modalWrong3Image" alt="Falsche Antwort 3 Vorschau" />
+
+</div>
+
+</div>
+
+<button id="closePreviewModalButton" class="modal-ok">Vorschau schließen</button>
+
+</div>
+
 </div>
 
 <div id="editorView">
-  <header>
-    <h1>
-      Logo-Quiz
-      <span class="header-counter"><span id="headerQuestionCount">0</span> Fragen</span>
-    </h1>
-  </header>
 
-  <main>
-    <section class="card">
-      <div class="main-actions">
-        <label for="imageInput" class="photo-button">
-          <span>📷 Foto aufnehmen</span>
-        </label>
+<header>
 
-        <input id="imageInput" type="file" accept="image/*" capture="environment" multiple />
+<h1>
 
-        <div id="statusBox" class="status">
-          OpenCV.js wird geladen. Bitte einen Moment warten ...
-        </div>
+Logo-Quiz
 
-        <div class="progress-outer" id="progressOuter">
-          <div class="progress-inner" id="progressInner"></div>
-        </div>
+<span class="header-counter"><span id="headerQuestionCount">0</span> Fragen</span>
 
-        <div id="questionCounterBox" class="question-counter-box">
-          Gesammelte Fragen: <span id="questionCount">0</span>
-        </div>
+</h1>
 
-        <div id="failedList" class="failed-list"></div>
+</header>
 
-        <div class="controls">
-          <button id="startQuizButton" class="success" disabled>Quiz starten</button>
-          <button id="clearAllButton" class="danger">Alles löschen</button>
-        </div>
-      </div>
-    </section>
+<main>
 
-    <section id="latestPreviewSection" class="card preview-section">
-      <h2>Vergrößerte Vorschau der zuletzt erkannten Frage</h2>
+<section class="card">
 
-      <div class="large-preview-grid">
-        <div class="preview-tile preview-question">
-          <strong>Frage</strong>
-          <img id="latestQuestionPreview" alt="Letzte Frage Vorschau" />
-        </div>
+<div class="main-actions">
 
-        <div class="preview-tile">
-          <strong>Richtige Antwort</strong>
-          <img id="latestCorrectPreview" alt="Letzte richtige Antwort Vorschau" />
-        </div>
+<label for="imageInput" class="photo-button">
 
-        <div class="preview-tile">
-          <strong>Falsche Antwort 1</strong>
-          <img id="latestWrong1Preview" alt="Letzte falsche Antwort 1 Vorschau" />
-        </div>
+<span>📷 Foto aufnehmen</span>
 
-        <div class="preview-tile">
-          <strong>Falsche Antwort 2</strong>
-          <img id="latestWrong2Preview" alt="Letzte falsche Antwort 2 Vorschau" />
-        </div>
+</label>
 
-        <div class="preview-tile">
-          <strong>Falsche Antwort 3</strong>
-          <img id="latestWrong3Preview" alt="Letzte falsche Antwort 3 Vorschau" />
-        </div>
-      </div>
-    </section>
+<input id="imageInput" type="file" accept="image/*" capture="environment" multiple />
 
-    <section id="questionListSection" class="card question-list-section">
-      <h2>Fragensammlung</h2>
-      <p>
-        Du kannst Fragen einzeln löschen, nach vorne oder nach hinten verschieben und per Klick vergrößert ansehen.
-      </p>
-      <div id="questionList" class="question-list"></div>
-    </section>
-  </main>
+<div id="statusBox" class="status">
+
+OpenCV.js wird geladen. Bitte einen Moment warten ...
+
+</div>
+
+<div class="progress-outer" id="progressOuter">
+
+<div class="progress-inner" id="progressInner"></div>
+
+</div>
+
+<div id="questionCounterBox" class="question-counter-box">
+
+Gesammelte Fragen: <span id="questionCount">0</span>
+
+</div>
+
+<div id="failedList" class="failed-list"></div>
+
+<div class="controls">
+
+<button id="startQuizButton" class="success" disabled>Quiz starten</button>
+
+<button id="clearAllButton" class="danger">Alles löschen</button>
+
+</div>
+
+</div>
+
+</section>
+
+<section id="latestPreviewSection" class="card preview-section">
+
+<h2>Vergrößerte Vorschau der zuletzt erkannten Frage</h2>
+
+<div class="large-preview-grid">
+
+<div class="preview-tile preview-question">
+<strong>Frage</strong>
+
+<img id="latestQuestionPreview" alt="Letzte Frage Vorschau" />
+
+</div>
+
+<div class="preview-tile">
+
+<strong>Richtige Antwort</strong>
+
+<img id="latestCorrectPreview" alt="Letzte richtige Antwort Vorschau" />
+
+</div>
+
+<div class="preview-tile">
+
+<strong>Falsche Antwort 1</strong>
+
+<img id="latestWrong1Preview" alt="Letzte falsche Antwort 1 Vorschau" />
+
+</div>
+
+<div class="preview-tile">
+
+<strong>Falsche Antwort 2</strong>
+
+<img id="latestWrong2Preview" alt="Letzte falsche Antwort 2 Vorschau" />
+
+</div>
+
+<div class="preview-tile">
+
+<strong>Falsche Antwort 3</strong>
+
+<img id="latestWrong3Preview" alt="Letzte falsche Antwort 3 Vorschau" />
+
+</div>
+
+</div>
+
+</section>
+
+<section id="questionListSection" class="card question-list-section">
+
+<h2>Fragensammlung</h2>
+
+<p>
+
+Du kannst Fragen einzeln löschen, nach vorne oder nach hinten verschieben und per Klick vergrößert ansehen.
+
+</p>
+
+<div id="questionList" class="question-list"></div>
+
+</section>
+
+</main>
+
 </div>
 
 <div id="quizView" class="quiz-screen">
-  <div class="quiz-inner">
-    <div class="quiz-topbar">
-      <h1 class="quiz-title">
-        Logo-Quiz <span id="quizProgress" class="quiz-progress">1 / 1</span>
-      </h1>
 
-      <button id="backButton" class="quiz-close-button" aria-label="Quiz abbrechen">
-        Abbruch
-      </button>
-    </div>
+<div class="quiz-inner">
 
-    <div class="quiz-question">
-      <img id="quizQuestionImage" alt="Quizfrage" />
-    </div>
+<div class="quiz-topbar">
 
-    <div class="quiz-answers">
-      <div id="answerBoxA" class="quiz-answer">
-        <div class="big-letter">A</div>
-        <div class="answer-image-wrap">
-          <img id="quizAnswerA" alt="Antwort A" />
-        </div>
-      </div>
+<h1 class="quiz-title">
 
-      <div id="answerBoxB" class="quiz-answer">
-        <div class="big-letter">B</div>
-        <div class="answer-image-wrap">
-          <img id="quizAnswerB" alt="Antwort B" />
-        </div>
-      </div>
+Logo-Quiz <span id="quizProgress" class="quiz-progress">1 / 1</span>
 
-      <div id="answerBoxC" class="quiz-answer">
-        <div class="big-letter">C</div>
-        <div class="answer-image-wrap">
-          <img id="quizAnswerC" alt="Antwort C" />
-        </div>
-      </div>
+</h1>
 
-      <div id="answerBoxD" class="quiz-answer">
-        <div class="big-letter">D</div>
-        <div class="answer-image-wrap">
-          <img id="quizAnswerD" alt="Antwort D" />
-        </div>
-      </div>
-    </div>
+<button id="backButton" class="quiz-close-button" aria-label="Quiz abbrechen">
 
-    <div class="quiz-controls">
-      <button id="prevQuestionButton" class="secondary">vorherige Frage</button>
-      <button id="revealButton">Richtige Antwort zeigen</button>
-      <button id="nextQuestionButton">Nächste Frage</button>
-    </div>
-  </div>
+Abbruch
+
+</button>
+
+</div>
+
+<div class="quiz-question">
+
+<img id="quizQuestionImage" alt="Quizfrage" />
+
+</div>
+
+<div class="quiz-answers">
+
+<div id="answerBoxA" class="quiz-answer">
+
+<div class="big-letter">A</div>
+
+<div class="answer-image-wrap">
+
+<img id="quizAnswerA" alt="Antwort A" />
+
+</div>
+
+</div>
+
+<div id="answerBoxB" class="quiz-answer">
+
+<div class="big-letter">B</div>
+
+<div class="answer-image-wrap">
+
+<img id="quizAnswerB" alt="Antwort B" />
+
+</div>
+
+</div>
+
+<div id="answerBoxC" class="quiz-answer">
+
+<div class="big-letter">C</div>
+
+<div class="answer-image-wrap">
+
+<img id="quizAnswerC" alt="Antwort C" />
+
+</div>
+
+</div>
+
+<div id="answerBoxD" class="quiz-answer">
+
+<div class="big-letter">D</div>
+
+<div class="answer-image-wrap">
+
+<img id="quizAnswerD" alt="Antwort D" />
+
+</div>
+
+</div>
+
+</div>
+
+<div class="quiz-controls">
+
+<button id="prevQuestionButton" class="secondary">vorherige Frage</button>
+
+<button id="revealButton">Richtige Antwort zeigen</button>
+
+<button id="nextQuestionButton">Nächste Frage</button>
+
+</div>
+
+</div>
+
 </div>
 
 <div class="hidden-work-area">
-  <canvas id="sourceCanvas"></canvas>
-  <canvas id="rectifiedCanvas"></canvas>
-  <canvas id="originalCanvas"></canvas>
-  <canvas id="normalizedCanvas"></canvas>
 
-  <img id="questionPreview" alt="Ausschnitt der Frage" />
-  <img id="correctPreview" alt="Ausschnitt der richtigen Antwort" />
-  <img id="wrong1Preview" alt="Ausschnitt der falschen Antwort 1" />
-  <img id="wrong2Preview" alt="Ausschnitt der falschen Antwort 2" />
-  <img id="wrong3Preview" alt="Ausschnitt der falschen Antwort 3" />
+<canvas id="sourceCanvas"></canvas>
+
+<canvas id="rectifiedCanvas"></canvas>
+
+<canvas id="originalCanvas"></canvas>
+<canvas id="normalizedCanvas"></canvas>
+
+<img id="questionPreview" alt="Ausschnitt der Frage" />
+
+<img id="correctPreview" alt="Ausschnitt der richtigen Antwort" />
+
+<img id="wrong1Preview" alt="Ausschnitt der falschen Antwort 1" />
+
+<img id="wrong2Preview" alt="Ausschnitt der falschen Antwort 2" />
+
+<img id="wrong3Preview" alt="Ausschnitt der falschen Antwort 3" />
+
 </div>
 
 <script>
+
 let cvReady = false;
+
 let waitingFiles = [];
 
 window.Module = {
-  onRuntimeInitialized() {
-    cvReady = true;
-    setStatus("Bereit. Tippe auf „Foto aufnehmen“.");
-    updateButtonStates();
 
-    if (waitingFiles.length > 0) {
-      processFilesAutomatically(waitingFiles);
-      waitingFiles = [];
-    }
-  }
+onRuntimeInitialized() {
+
+cvReady = true;
+
+setStatus("Bereit. Tippe auf „Foto aufnehmen“.");
+
+updateButtonStates();
+
+if (waitingFiles.length > 0) {
+
+processFilesAutomatically(waitingFiles);
+
+waitingFiles = [];
+
+}
+
+}
+
 };
+
 </script>
 
 <script async src="https://docs.opencv.org/4.x/opencv.js"></script>
 
 <script>
+
 const introModal = document.getElementById("introModal");
+
 const introOkButton = document.getElementById("introOkButton");
 
 const previewModal = document.getElementById("previewModal");
+
 const closePreviewModalButton = document.getElementById("closePreviewModalButton");
+
 const previewModalTitle = document.getElementById("previewModalTitle");
+
 const modalQuestionImage = document.getElementById("modalQuestionImage");
+
 const modalCorrectImage = document.getElementById("modalCorrectImage");
+
 const modalWrong1Image = document.getElementById("modalWrong1Image");
+
 const modalWrong2Image = document.getElementById("modalWrong2Image");
+
 const modalWrong3Image = document.getElementById("modalWrong3Image");
 
 const imageInput = document.getElementById("imageInput");
+
 const startQuizButton = document.getElementById("startQuizButton");
+
 const clearAllButton = document.getElementById("clearAllButton");
+
 const statusBox = document.getElementById("statusBox");
+
 const progressOuter = document.getElementById("progressOuter");
+
 const progressInner = document.getElementById("progressInner");
+
 const failedList = document.getElementById("failedList");
+
 const questionCount = document.getElementById("questionCount");
+
 const headerQuestionCount = document.getElementById("headerQuestionCount");
+
 const questionListSection = document.getElementById("questionListSection");
+
 const questionList = document.getElementById("questionList");
 
 const latestPreviewSection = document.getElementById("latestPreviewSection");
+
 const latestQuestionPreview = document.getElementById("latestQuestionPreview");
+
 const latestCorrectPreview = document.getElementById("latestCorrectPreview");
 const latestWrong1Preview = document.getElementById("latestWrong1Preview");
+
 const latestWrong2Preview = document.getElementById("latestWrong2Preview");
+
 const latestWrong3Preview = document.getElementById("latestWrong3Preview");
 
 const sourceCanvas = document.getElementById("sourceCanvas");
+
 const sourceCtx = sourceCanvas.getContext("2d");
+
 const rectifiedCanvas = document.getElementById("rectifiedCanvas");
+
 const rectifiedCtx = rectifiedCanvas.getContext("2d");
+
 const originalCanvas = document.getElementById("originalCanvas");
+
 const originalCtx = originalCanvas.getContext("2d");
+
 const normalizedCanvas = document.getElementById("normalizedCanvas");
 
 const questionPreview = document.getElementById("questionPreview");
+
 const correctPreview = document.getElementById("correctPreview");
+
 const wrong1Preview = document.getElementById("wrong1Preview");
+
 const wrong2Preview = document.getElementById("wrong2Preview");
+
 const wrong3Preview = document.getElementById("wrong3Preview");
 
 const editorView = document.getElementById("editorView");
+
 const quizView = document.getElementById("quizView");
+
 const quizProgress = document.getElementById("quizProgress");
+
 const quizQuestionImage = document.getElementById("quizQuestionImage");
+
 const quizAnswerA = document.getElementById("quizAnswerA");
+
 const quizAnswerB = document.getElementById("quizAnswerB");
+
 const quizAnswerC = document.getElementById("quizAnswerC");
+
 const quizAnswerD = document.getElementById("quizAnswerD");
+
 const answerBoxA = document.getElementById("answerBoxA");
+
 const answerBoxB = document.getElementById("answerBoxB");
+
 const answerBoxC = document.getElementById("answerBoxC");
+
 const answerBoxD = document.getElementById("answerBoxD");
+
 const revealButton = document.getElementById("revealButton");
+
 const backButton = document.getElementById("backButton");
+
 const prevQuestionButton = document.getElementById("prevQuestionButton");
+
 const nextQuestionButton = document.getElementById("nextQuestionButton");
 
 let loadedImage = null;
+
 let displayScale = 1;
+
 let markerPoints = null;
+
 let lastDetectionMessage = "";
+
 let questions = [];
+
 let currentQuizIndex = 0;
+
 let correctLetter = null;
+
 let isProcessing = false;
 
 const NORMALIZED_WIDTH = 1021;
+
 const NORMALIZED_HEIGHT = 724;
 
 const TARGET_MARKERS = {
-  topLeft: { x: 141, y: 76 },
-  topRight: { x: 908, y: 76 },
-  bottomRight: { x: 908, y: 668 },
-  bottomLeft: { x: 141, y: 668 }
+
+topLeft: { x: 141, y: 76 },
+
+topRight:    { x: 908, y: 76 },
+
+bottomRight: { x: 908, y: 668 },
+
+bottomLeft:  { x: 141, y: 668 }
+
 };
 
 const CROP_FIELDS = {
-  question: { x: 112, y: 110, w: 824, h: 154 },
-  correct: { x: 111, y: 293, w: 402, h: 153 },
-  wrong1: { x: 531, y: 293, w: 402, h: 153 },
-  wrong2: { x: 111, y: 481, w: 402, h: 153 },
-  wrong3: { x: 531, y: 481, w: 402, h: 153 }
-};
 
-introOkButton.addEventListener("click", () => {
-  introModal.style.display = "none";
+question: { x: 112, y: 110, w: 824, h: 154 },
+
+correct:  { x: 111, y: 293, w: 402, h: 153 },
+
+wrong1: { x: 531, y: 293, w: 402, h: 153 },
+
+wrong2: { x: 111, y: 481, w: 402, h: 153 },
+
+wrong3: { x: 531, y: 481, w: 402, h: 153 }
+
+};
+  introOkButton.addEventListener("click", () => {
+
+introModal.style.display = "none";
+
 });
 
 closePreviewModalButton.addEventListener("click", () => {
-  previewModal.style.display = "none";
+
+previewModal.style.display = "none";
+
 });
 
 previewModal.addEventListener("click", event => {
-  if (event.target === previewModal) {
-    previewModal.style.display = "none";
-  }
+
+if (event.target === previewModal) {
+
+previewModal.style.display = "none";
+
+}
+
 });
 
 imageInput.addEventListener("change", handleFileSelection);
+
 startQuizButton.addEventListener("click", startQuiz);
+
 clearAllButton.addEventListener("click", clearEverything);
+
 revealButton.addEventListener("click", revealCorrectAnswer);
+
 backButton.addEventListener("click", confirmAbortQuiz);
+
 prevQuestionButton.addEventListener("click", showPreviousQuestion);
+
 nextQuestionButton.addEventListener("click", showNextQuestionOrFinish);
 
 updateQuestionCollectionView();
 
 function setStatus(message, type = "normal") {
-  statusBox.textContent = message;
-  statusBox.classList.toggle("warning-status", type === "warning");
+
+statusBox.textContent = message;
+
+statusBox.classList.toggle("warning-status", type === "warning");
+
 }
 
 function setProgress(done, total) {
-  if (total <= 0) {
-    progressOuter.style.display = "none";
-    progressInner.style.width = "0%";
-    return;
-  }
 
-  progressOuter.style.display = "block";
-  const percent = Math.round((done / total) * 100);
-  progressInner.style.width = percent + "%";
+if (total <= 0) {
+
+progressOuter.style.display = "none";
+
+progressInner.style.width = "0%";
+
+return;
+
+}
+
+progressOuter.style.display = "block";
+
+const percent = Math.round((done / total) * 100);
+
+progressInner.style.width = percent + "%";
+
 }
 
 function updateButtonStates() {
-  const hasQuestions = questions.length > 0;
-  startQuizButton.disabled = !hasQuestions || isProcessing;
+
+const hasQuestions = questions.length > 0;
+
+startQuizButton.disabled = !hasQuestions || isProcessing;
+
 }
 
 function handleFileSelection(event) {
-  const files = Array.from(event.target.files || []);
-  if (files.length === 0) return;
 
-  if (!cvReady) {
-    waitingFiles = files;
-    setStatus("Die Bildverarbeitung lädt noch. Das Foto wird danach automatisch verarbeitet.");
-    return;
-  }
+const files = Array.from(event.target.files || []);
 
-  processFilesAutomatically(files);
+if (files.length === 0) return;
+
+if (!cvReady) {
+
+waitingFiles = files;
+
+setStatus("Die Bildverarbeitung lädt noch. Das Foto wird danach automatisch verarbeitet.");
+
+return;
+
+}
+
+processFilesAutomatically(files);
+
 }
 
 async function processFilesAutomatically(files) {
-  if (isProcessing) return;
 
-  isProcessing = true;
-  failedList.textContent = "";
-  updateButtonStates();
+if (isProcessing) return;
 
-  const failedFiles = [];
+isProcessing = true;
 
-  setProgress(0, files.length);
+failedList.textContent = "";
 
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
+updateButtonStates();
 
-    setStatus(`Verarbeite Foto ${i + 1} von ${files.length}: ${file.name}`);
+const failedFiles = [];
 
-    try {
-      const image = await loadImageFromFile(file);
+setProgress(0, files.length);
 
-      loadedImage = image;
+for (let i = 0; i < files.length; i++) {
 
-      prepareCanvasesForLoadedImage();
-      drawSourcePreviewImageOnly();
+const file = files[i];
 
-      const detected = autoDetectMarkers();
+setStatus(`Verarbeite Foto ${i + 1} von ${files.length}: ${file.name}`);
 
-      if (!detected) {
-        failedFiles.push({
-          name: file.name,
-          reason: lastDetectionMessage || "Die Karte konnte nicht sicher erkannt werden."
-        });
+try {
 
-        setProgress(i + 1, files.length);
-        continue;
-      }
+const image = await loadImageFromFile(file);
 
-      drawSourcePreviewWithMarkers();
+loadedImage = image;
 
-      const crops = rectifyAndCreateCrops();
+prepareCanvasesForLoadedImage();
 
-      if (!crops || !crops.question) {
-        failedFiles.push({
-          name: file.name,
-          reason: "Die Eckmarken wurden erkannt, aber die Felder konnten nicht sauber ausgeschnitten werden."
-        });
+drawSourcePreviewImageOnly();
 
-        setProgress(i + 1, files.length);
-        continue;
-      }
+const detected = autoDetectMarkers();
 
-      questions.push(crops);
-      showLatestCrops(crops);
-      updateQuestionCollectionView();
+if (!detected) {
 
-      setProgress(i + 1, files.length);
-    } catch (error) {
-      console.error(error);
+failedFiles.push({
 
-      failedFiles.push({
-        name: file.name,
-        reason: "Das Bild konnte nicht verarbeitet werden."
-      });
+name: file.name,
 
-      setProgress(i + 1, files.length);
-    }
+reason: lastDetectionMessage || "Die Karte konnte nicht sicher erkannt werden."
 
-    await wait(80);
-  }
+});
 
-  imageInput.value = "";
-  isProcessing = false;
-  updateButtonStates();
+setProgress(i + 1, files.length);
 
-  if (failedFiles.length === 0) {
-    setStatus(`${files.length} Foto(s) wurden erfolgreich verarbeitet.`);
-    failedList.textContent = "";
-  } else {
-    setStatus(
-      `${files.length - failedFiles.length} von ${files.length} Foto(s) wurden verarbeitet. Einige Karten wurden nicht erkannt.`,
-      "warning"
-    );
+continue;
 
-    failedList.innerHTML =
-      "<strong>Nicht erkannt:</strong><br>" +
-      failedFiles.map(item =>
-        `• ${escapeHtml(item.name)}: ${escapeHtml(item.reason)}`
-      ).join("<br>") +
-      "<br><br><strong>Tipp:</strong> Fotografiere die Karte heller, näher und so, dass alle vier schwarzen Eckmarken vollständig sichtbar sind.";
-  }
+}
+
+drawSourcePreviewWithMarkers();
+
+const crops = rectifyAndCreateCrops();
+
+if (!crops || !crops.question) {
+
+failedFiles.push({
+
+name: file.name,
+
+reason: "Die Eckmarken wurden erkannt, aber die Felder konnten nicht sauber ausgeschnitten werden."
+
+});
+
+setProgress(i + 1, files.length);
+
+continue;
+
+}
+
+questions.push(crops);
+
+showLatestCrops(crops);
+
+updateQuestionCollectionView();
+
+setProgress(i + 1, files.length);
+
+} catch (error) {
+
+console.error(error);
+
+failedFiles.push({
+
+name: file.name,
+
+reason: "Das Bild konnte nicht verarbeitet werden."
+
+});
+
+setProgress(i + 1, files.length);
+
+}
+
+await wait(80);
+
+}
+
+imageInput.value = "";
+
+isProcessing = false;
+
+updateButtonStates();
+
+if (failedFiles.length === 0) {
+
+setStatus(`${files.length} Foto(s) wurden erfolgreich verarbeitet.`);
+
+failedList.textContent = "";
+
+} else {
+
+setStatus(`${files.length - failedFiles.length} von ${files.length} Foto(s) wurden verarbeitet. Einige Karten wurden nicht erkannt.`, "warning");
+
+failedList.innerHTML =
+
+"<strong>Nicht erkannt:</strong><br>" +
+
+failedFiles.map(item =>
+
+`• ${escapeHtml(item.name)}: ${escapeHtml(item.reason)}`
+
+).join("<br>") +
+
+"<br><br><strong>Tipp:</strong> Fotografiere die Karte heller, näher und so, dass alle vier schwarzen Eckmarken vollständig sichtbar sind.";
+
+}
+
 }
 
 function wait(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+
+return new Promise(resolve => setTimeout(resolve, ms));
+
 }
 
 function loadImageFromFile(file) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
 
-    img.onload = function () {
-      URL.revokeObjectURL(img.src);
-      resolve(img);
-    };
+return new Promise((resolve, reject) => {
 
-    img.onerror = function () {
-      reject(new Error("Bild konnte nicht geladen werden."));
-    };
+const img = new Image();
 
-    img.src = URL.createObjectURL(file);
-  });
+img.onload = function () {
+
+URL.revokeObjectURL(img.src);
+
+resolve(img);
+
+};
+
+img.onerror = function () {
+
+reject(new Error("Bild konnte nicht geladen werden."));
+
+};
+
+img.src = URL.createObjectURL(file);
+
+});
+
 }
 
 function prepareCanvasesForLoadedImage() {
-  originalCanvas.width = loadedImage.width;
-  originalCanvas.height = loadedImage.height;
 
-  originalCtx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
-  originalCtx.drawImage(loadedImage, 0, 0);
+originalCanvas.width = loadedImage.width;
 
-  const maxWidth = 1000;
-  displayScale = Math.min(1, maxWidth / loadedImage.width);
+originalCanvas.height = loadedImage.height;
 
-  sourceCanvas.width = Math.round(loadedImage.width * displayScale);
-  sourceCanvas.height = Math.round(loadedImage.height * displayScale);
+originalCtx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
+
+originalCtx.drawImage(loadedImage, 0, 0);
+
+const maxWidth = 1000;
+
+displayScale = Math.min(1, maxWidth / loadedImage.width);
+
+sourceCanvas.width = Math.round(loadedImage.width * displayScale);
+
+sourceCanvas.height = Math.round(loadedImage.height * displayScale);
+
 }
 
 function drawSourcePreviewImageOnly() {
-  sourceCtx.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
-  sourceCtx.drawImage(loadedImage, 0, 0, sourceCanvas.width, sourceCanvas.height);
+
+sourceCtx.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
+
+sourceCtx.drawImage(loadedImage, 0, 0, sourceCanvas.width, sourceCanvas.height);
+
 }
 
 function drawSourcePreviewWithMarkers() {
-  drawSourcePreviewImageOnly();
 
-  if (!markerPoints) return;
+drawSourcePreviewImageOnly();
 
-  const displayPoints = markerPoints.map(toDisplayPoint);
+if (!markerPoints) return;
 
-  sourceCtx.lineWidth = 4;
-  sourceCtx.strokeStyle = "#ffcc00";
-  sourceCtx.fillStyle = "rgba(255, 204, 0, 0.18)";
+const displayPoints = markerPoints.map(toDisplayPoint);
 
-  sourceCtx.beginPath();
-  sourceCtx.moveTo(displayPoints[0].x, displayPoints[0].y);
-  sourceCtx.lineTo(displayPoints[1].x, displayPoints[1].y);
-  sourceCtx.lineTo(displayPoints[2].x, displayPoints[2].y);
-  sourceCtx.lineTo(displayPoints[3].x, displayPoints[3].y);
-  sourceCtx.closePath();
-  sourceCtx.fill();
-  sourceCtx.stroke();
+sourceCtx.lineWidth = 4;
+
+sourceCtx.strokeStyle = "#ffcc00";
+
+sourceCtx.fillStyle = "rgba(255, 204, 0, 0.18)";
+
+sourceCtx.beginPath();
+
+sourceCtx.moveTo(displayPoints[0].x, displayPoints[0].y);
+
+sourceCtx.lineTo(displayPoints[1].x, displayPoints[1].y);
+
+sourceCtx.lineTo(displayPoints[2].x, displayPoints[2].y);
+
+sourceCtx.lineTo(displayPoints[3].x, displayPoints[3].y);
+
+sourceCtx.closePath();
+
+sourceCtx.fill();
+
+sourceCtx.stroke();
+
 }
 
 function toDisplayPoint(point) {
-  return {
-    x: point.x * displayScale,
-    y: point.y * displayScale
-  };
+
+return {
+
+x: point.x * displayScale,
+
+y: point.y * displayScale
+
+};
+
 }
 
 function autoDetectMarkers() {
-  if (!cvReady || !loadedImage) {
-    lastDetectionMessage = "OpenCV oder das Bild ist noch nicht bereit.";
-    return false;
-  }
 
-  let src = null;
-  let gray = null;
-  let equalized = null;
-  let blurred = null;
-  let binaryOtsu = null;
-  let binaryAdaptive = null;
-  let binaryEqualized = null;
+if (!cvReady || !loadedImage) return false;
 
-  try {
-    src = cv.imread(sourceCanvas);
-    gray = new cv.Mat();
-    equalized = new cv.Mat();
-    blurred = new cv.Mat();
-    binaryOtsu = new cv.Mat();
-    binaryAdaptive = new cv.Mat();
-    binaryEqualized = new cv.Mat();
+markerPoints = null;
 
-    cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-    cv.GaussianBlur(gray, blurred, new cv.Size(5, 5), 0);
-    cv.equalizeHist(gray, equalized);
+lastDetectionMessage = "";
 
-    cv.threshold(blurred, binaryOtsu, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU);
+let src = null;
 
-    cv.adaptiveThreshold(
-      blurred,
-      binaryAdaptive,
-      255,
-      cv.ADAPTIVE_THRESH_GAUSSIAN_C,
-      cv.THRESH_BINARY_INV,
-      41,
-      8
-    );
+let gray = null;
 
-    cv.threshold(equalized, binaryEqualized, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU);
+let equalized = null;
 
-    let candidates = [];
+let blurred = null;
 
-    candidates = candidates
-      .concat(findMarkerCandidates(binaryOtsu))
-      .concat(findMarkerCandidates(binaryAdaptive))
-      .concat(findMarkerCandidates(binaryEqualized));
+const binaries = [];
 
-    candidates = mergeNearbyCandidates(candidates);
+try {
 
-    if (candidates.length < 4) {
-      markerPoints = null;
-      lastDetectionMessage = `Es wurden nur ${candidates.length} mögliche Eckmarke(n) gefunden. Sichtbar sein müssen alle vier schwarzen Eckmarken.`;
-      return false;
-    }
+src = cv.imread(sourceCanvas);
 
-    const bestFour = chooseBestFourMarkers(candidates);
+gray = new cv.Mat();
 
-    if (!bestFour) {
-      markerPoints = null;
-      lastDetectionMessage = "Es wurden mögliche schwarze Formen gefunden, aber sie passen nicht zu den vier Eckmarken der Karte.";
-      return false;
-    }
+equalized = new cv.Mat();
 
-    const orderedDisplayPoints = orderPoints(bestFour);
+blurred = new cv.Mat();
 
-    markerPoints = orderedDisplayPoints.map(point => ({
-      x: point.x / displayScale,
-      y: point.y / displayScale
-    }));
+cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
 
-    lastDetectionMessage = "";
-    return true;
-  } catch (error) {
-    console.error(error);
-    markerPoints = null;
-    lastDetectionMessage = "Bei der automatischen Erkennung ist ein Fehler aufgetreten.";
-    return false;
-  } finally {
-    if (src) src.delete();
-    if (gray) gray.delete();
-    if (equalized) equalized.delete();
-    if (blurred) blurred.delete();
-    if (binaryOtsu) binaryOtsu.delete();
-    if (binaryAdaptive) binaryAdaptive.delete();
-    if (binaryEqualized) binaryEqualized.delete();
-  }
+cv.equalizeHist(gray, equalized);
+
+cv.GaussianBlur(equalized, blurred, new cv.Size(3, 3), 0);
+
+const brightness = getAverageBrightness(gray);
+
+const otsu = new cv.Mat();
+
+cv.threshold(blurred, otsu, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU);
+
+binaries.push(otsu);
+
+const adaptive = new cv.Mat();
+
+cv.adaptiveThreshold(
+
+blurred,
+
+adaptive,
+
+255,
+
+cv.ADAPTIVE_THRESH_GAUSSIAN_C,
+
+cv.THRESH_BINARY_INV,
+
+31,
+
+8
+
+);
+
+binaries.push(adaptive);
+
+const thresholdDark = new cv.Mat();
+
+cv.threshold(blurred, thresholdDark, 85, 255, cv.THRESH_BINARY_INV);
+
+binaries.push(thresholdDark);
+
+const thresholdMedium = new cv.Mat();
+
+cv.threshold(blurred, thresholdMedium, 130, 255, cv.THRESH_BINARY_INV);
+
+binaries.push(thresholdMedium);
+
+const allCandidates = [];
+
+binaries.forEach(binary => {
+
+const contours = new cv.MatVector();
+
+const hierarchy = new cv.Mat();
+
+try {
+
+cv.findContours(binary, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
+
+const imageArea = sourceCanvas.width * sourceCanvas.height;
+
+const minArea = imageArea * 0.00025;
+
+const maxArea = imageArea * 0.035;
+
+for (let i = 0; i < contours.size(); i++) {
+
+const contour = contours.get(i);
+
+const rect = cv.boundingRect(contour);
+
+const area = cv.contourArea(contour);
+
+const ratio = rect.width / Math.max(1, rect.height);
+
+const rectArea = Math.max(1, rect.width * rect.height);
+
+const fillRatio = area / rectArea;
+
+const isSquareLike =
+
+ratio > 0.55 &&
+
+ratio < 1.75 &&
+
+area > minArea &&
+
+area < maxArea &&
+
+fillRatio > 0.35 &&
+
+rect.width > 8 &&
+
+rect.height > 8;
+
+if (isSquareLike) {
+
+allCandidates.push({
+
+x: rect.x + rect.width / 2,
+
+y: rect.y + rect.height / 2,
+
+width: rect.width,
+
+height: rect.height,
+
+area
+
+});
+
 }
 
-function findMarkerCandidates(binaryMat) {
-  const contours = new cv.MatVector();
-  const hierarchy = new cv.Mat();
-  const candidates = [];
+contour.delete();
 
-  try {
-    cv.findContours(binaryMat, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
-
-    const imageArea = sourceCanvas.width * sourceCanvas.height;
-    const minArea = imageArea * 0.00025;
-    const maxArea = imageArea * 0.035;
-
-    for (let i = 0; i < contours.size(); i++) {
-      const contour = contours.get(i);
-      const rect = cv.boundingRect(contour);
-      const area = cv.contourArea(contour);
-      const ratio = rect.width / rect.height;
-      const rectArea = rect.width * rect.height;
-      const fillRatio = rectArea > 0 ? area / rectArea : 0;
-
-      const isSquareLike =
-        ratio > 0.55 &&
-        ratio < 1.65 &&
-        area > minArea &&
-        area < maxArea &&
-        fillRatio > 0.35 &&
-        rect.width > 8 &&
-        rect.height > 8;
-
-      if (isSquareLike) {
-        candidates.push({
-          x: rect.x + rect.width / 2,
-          y: rect.y + rect.height / 2,
-          width: rect.width,
-          height: rect.height,
-          area
-        });
-      }
-
-      contour.delete();
-    }
-  } finally {
-    contours.delete();
-    hierarchy.delete();
-  }
-
-  return candidates;
 }
 
-function mergeNearbyCandidates(candidates) {
-  const sorted = [...candidates].sort((a, b) => b.area - a.area);
-  const merged = [];
-  const minDistance = Math.max(sourceCanvas.width, sourceCanvas.height) * 0.025;
+} finally {
 
-  sorted.forEach(candidate => {
-    const tooClose = merged.some(existing => {
-      const dx = existing.x - candidate.x;
-      const dy = existing.y - candidate.y;
-      return Math.sqrt(dx * dx + dy * dy) < minDistance;
-    });
+contours.delete();
 
-    if (!tooClose) {
-      merged.push(candidate);
-    }
-  });
+hierarchy.delete();
 
-  return merged.slice(0, 18);
 }
 
-function chooseBestFourMarkers(candidates) {
-  let best = null;
-  let bestScore = -Infinity;
+});
 
-  for (let a = 0; a < candidates.length - 3; a++) {
-    for (let b = a + 1; b < candidates.length - 2; b++) {
-      for (let c = b + 1; c < candidates.length - 1; c++) {
-        for (let d = c + 1; d < candidates.length; d++) {
-          const group = [candidates[a], candidates[b], candidates[c], candidates[d]];
-          const ordered = orderPoints(group);
+const candidates = removeDuplicateCandidates(allCandidates);
 
-          if (!isPlausibleMarkerQuadrilateral(ordered)) continue;
+if (candidates.length < 4) {
 
-          const quadArea = polygonArea(ordered);
-          const markerArea = group.reduce((sum, item) => sum + item.area, 0);
-          const score = quadArea + markerArea * 8;
+if (brightness < 65) {
 
-          if (score > bestScore) {
-            bestScore = score;
-            best = group;
-          }
-        }
-      }
-    }
-  }
+lastDetectionMessage = "Das Foto ist wahrscheinlich zu dunkel. Bitte heller fotografieren oder mehr Abstand zu Schatten halten.";
 
-  return best;
+} else if (brightness > 220) {
+
+lastDetectionMessage = "Das Foto ist wahrscheinlich zu hell oder überbelichtet. Bitte mit weniger Spiegelung fotografieren.";
+
+} else {
+
+lastDetectionMessage = "Nicht alle vier schwarzen Eckmarken wurden erkannt. Bitte die ganze Karte mit allen vier Eckmarken fotografieren.";
+
 }
 
-function isPlausibleMarkerQuadrilateral(points) {
-  const imageArea = sourceCanvas.width * sourceCanvas.height;
-  const area = polygonArea(points);
+return false;
 
-  if (area < imageArea * 0.08) return false;
-
-  const topWidth = distance(points[0], points[1]);
-  const bottomWidth = distance(points[3], points[2]);
-  const leftHeight = distance(points[0], points[3]);
-  const rightHeight = distance(points[1], points[2]);
-
-  const minSide = Math.min(topWidth, bottomWidth, leftHeight, rightHeight);
-
-  if (minSide < Math.min(sourceCanvas.width, sourceCanvas.height) * 0.15) return false;
-
-  const widthRatio = topWidth / bottomWidth;
-  const heightRatio = leftHeight / rightHeight;
-
-  if (widthRatio < 0.45 || widthRatio > 2.2) return false;
-  if (heightRatio < 0.45 || heightRatio > 2.2) return false;
-
-  return true;
 }
 
-function distance(a, b) {
-  const dx = a.x - b.x;
-  const dy = a.y - b.y;
-  return Math.sqrt(dx * dx + dy * dy);
+const bestPoints = chooseExtremeMarkerPoints(candidates);
+
+if (!bestPoints || bestPoints.length !== 4) {
+
+lastDetectionMessage = "Es wurden schwarze Formen gefunden, aber die vier Eckmarken konnten nicht eindeutig zugeordnet werden.";
+
+return false;
+
 }
 
-function polygonArea(points) {
-  let area = 0;
+if (!isPlausibleMarkerLayout(bestPoints)) {
 
-  for (let i = 0; i < points.length; i++) {
-    const j = (i + 1) % points.length;
-    area += points[i].x * points[j].y;
-    area -= points[j].x * points[i].y;
-  }
+lastDetectionMessage = "Die Eckmarken wurden gefunden, liegen aber nicht plausibel. Bitte Karte weniger schräg und vollständig fotografieren.";
 
-  return Math.abs(area / 2);
+return false;
+
 }
 
-function orderPoints(points) {
-  const sorted = [...points];
+markerPoints = bestPoints.map(point => ({
 
-  const topLeft = sorted.reduce((best, p) => (p.x + p.y < best.x + best.y ? p : best));
-  const bottomRight = sorted.reduce((best, p) => (p.x + p.y > best.x + best.y ? p : best));
-  const topRight = sorted.reduce((best, p) => (p.x - p.y > best.x - best.y ? p : best));
-  const bottomLeft = sorted.reduce((best, p) => (p.x - p.y < best.x - best.y ? p : best));
+x: point.x / displayScale,
 
-  return [topLeft, topRight, bottomRight, bottomLeft];
+y: point.y / displayScale
+
+}));
+
+return true;
+
+} catch (error) {
+
+console.error(error);
+
+lastDetectionMessage = "Bei der automatischen Erkennung ist ein Fehler aufgetreten.";
+
+markerPoints = null;
+
+return false;
+
+} finally {
+
+if (src) src.delete();
+
+if (gray) gray.delete();
+
+if (equalized) equalized.delete();
+
+if (blurred) blurred.delete();
+
+binaries.forEach(mat => mat.delete());
+
 }
 
-function rectifyAndCreateCrops() {
-  if (!cvReady || !loadedImage || !markerPoints) return null;
-
-  let src = null;
-  let dst = null;
-  let sourceTri = null;
-  let targetTri = null;
-  let matrix = null;
-
-  try {
-    normalizedCanvas.width = NORMALIZED_WIDTH;
-    normalizedCanvas.height = NORMALIZED_HEIGHT;
-    rectifiedCanvas.width = NORMALIZED_WIDTH;
-    rectifiedCanvas.height = NORMALIZED_HEIGHT;
-
-    src = cv.imread(originalCanvas);
-    dst = new cv.Mat();
-
-    sourceTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
-      markerPoints[0].x, markerPoints[0].y,
-      markerPoints[1].x, markerPoints[1].y,
-      markerPoints[2].x, markerPoints[2].y,
-      markerPoints[3].x, markerPoints[3].y
-    ]);
-
-    targetTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
-      TARGET_MARKERS.topLeft.x, TARGET_MARKERS.topLeft.y,
-      TARGET_MARKERS.topRight.x, TARGET_MARKERS.topRight.y,
-      TARGET_MARKERS.bottomRight.x, TARGET_MARKERS.bottomRight.y,
-      TARGET_MARKERS.bottomLeft.x, TARGET_MARKERS.bottomLeft.y
-    ]);
-
-    matrix = cv.getPerspectiveTransform(sourceTri, targetTri);
-
-    const size = new cv.Size(NORMALIZED_WIDTH, NORMALIZED_HEIGHT);
-
-    cv.warpPerspective(
-      src,
-      dst,
-      matrix,
-      size,
-      cv.INTER_LINEAR,
-      cv.BORDER_CONSTANT,
-      new cv.Scalar(255, 255, 255, 255)
-    );
-
-    cv.imshow(normalizedCanvas, dst);
-    cv.imshow(rectifiedCanvas, dst);
-
-    const crops = createCropsFromNormalizedCanvas();
-
-    drawCropOverlays();
-
-    return crops;
-  } catch (error) {
-    console.error(error);
-    return null;
-  } finally {
-    if (src) src.delete();
-    if (dst) dst.delete();
-    if (sourceTri) sourceTri.delete();
-    if (targetTri) targetTri.delete();
-    if (matrix) matrix.delete();
-  }
 }
 
-function drawCropOverlays() {
-  rectifiedCtx.lineWidth = 5;
-  rectifiedCtx.strokeStyle = "#16a34a";
-  rectifiedCtx.fillStyle = "#16a34a";
-  rectifiedCtx.font = "bold 24px sans-serif";
+function getAverageBrightness(grayMat) {
 
-  Object.entries(CROP_FIELDS).forEach(([name, field]) => {
-    rectifiedCtx.strokeRect(field.x, field.y, field.w, field.h);
-  });
+const mean = cv.mean(grayMat);
+
+return mean[0];
+
 }
 
-function createCropsFromNormalizedCanvas() {
-  return {
-    question: cropFieldToDataUrl(CROP_FIELDS.question),
-    correct: cropFieldToDataUrl(CROP_FIELDS.correct),
-    wrong1: cropFieldToDataUrl(CROP_FIELDS.wrong1),
-    wrong2: cropFieldToDataUrl(CROP_FIELDS.wrong2),
-    wrong3: cropFieldToDataUrl(CROP_FIELDS.wrong3)
-  };
+function removeDuplicateCandidates(candidates) {
+
+const sorted = [...candidates].sort((a, b) => b.area - a.area);
+
+const result = [];
+
+const minDistance = Math.min(sourceCanvas.width, sourceCanvas.height) * 0.035;
+
+sorted.forEach(candidate => {
+
+const tooClose = result.some(existing => {
+
+const dx = existing.x - candidate.x;
+
+const dy = existing.y - candidate.y;
+
+return Math.sqrt(dx * dx + dy * dy) < minDistance;
+
+});
+
+if (!tooClose) {
+
+result.push(candidate);
+
 }
 
-function cropFieldToDataUrl(field) {
-  const canvas = document.createElement("canvas");
+});
 
-  canvas.width = field.w;
-  canvas.height = field.h;
+return result;
 
-  const ctx = canvas.getContext("2d");
-
-  ctx.drawImage(
-    normalizedCanvas,
-    field.x,
-    field.y,
-    field.w,
-    field.h,
-    0,
-    0,
-    field.w,
-    field.h
-  );
-
-  return canvas.toDataURL("image/png");
 }
-
-function showLatestCrops(crops) {
-  questionPreview.src = crops.question;
-  correctPreview.src = crops.correct;
-  wrong1Preview.src = crops.wrong1;
-  wrong2Preview.src = crops.wrong2;
-  wrong3Preview.src = crops.wrong3;
-
-  latestQuestionPreview.src = crops.question;
-  latestCorrectPreview.src = crops.correct;
-  latestWrong1Preview.src = crops.wrong1;
-  latestWrong2Preview.src = crops.wrong2;
-  latestWrong3Preview.src = crops.wrong3;
-
-  latestPreviewSection.style.display = "block";
-}
-
-function updateQuestionCollectionView() {
-  questionCount.textContent = questions.length;
-  headerQuestionCount.textContent = questions.length;
-
-  questionList.innerHTML = "";
-
-  if (questions.length === 0) {
-    questionListSection.style.display = "none";
-  } else {
-    questionListSection.style.display = "block";
-  }
-
-  questions.forEach((item, index) => {
-    const box = document.createElement("div");
-    box.className = "question-list-item";
-
-    const title = document.createElement("strong");
-    title.textContent = `Frage ${index + 1}`;
-
-    const img = document.createElement("img");
-    img.src = item.question;
-    img.alt = `Vorschau Frage ${index + 1}`;
-    img.addEventListener("click", () => showPreviewModal(index));
-
-    const buttonGrid = document.createElement("div");
-    buttonGrid.className = "question-buttons";
-
-    const moveUpButton = document.createElement("button");
-    moveUpButton.className = "small secondary";
-    moveUpButton.textContent = "← nach vorne";
-    moveUpButton.disabled = index === 0;
-    moveUpButton.addEventListener("click", () => moveQuestion(index, -1));
-
-    const moveDownButton = document.createElement("button");
-    moveDownButton.className = "small secondary";
-    moveDownButton.textContent = "nach hinten →";
-    moveDownButton.disabled = index === questions.length - 1;
-    moveDownButton.addEventListener("click", () => moveQuestion(index, 1));
-
-    const deleteButton = document.createElement("button");
-    deleteButton.className = "small danger full";
-    deleteButton.textContent = "Frage löschen";
-    deleteButton.addEventListener("click", () => deleteQuestion(index));
-
-    buttonGrid.appendChild(moveUpButton);
-    buttonGrid.appendChild(moveDownButton);
-    buttonGrid.appendChild(deleteButton);
-
-    box.appendChild(title);
-    box.appendChild(img);
-    box.appendChild(buttonGrid);
-
-    questionList.appendChild(box);
-  });
-
-  updateButtonStates();
-}
-
-function showPreviewModal(index) {
-  const item = questions[index];
-  if (!item) return;
-
-  previewModalTitle.textContent = `Vorschau: Frage ${index + 1}`;
-  modalQuestionImage.src = item.question;
-  modalCorrectImage.src = item.correct;
-  modalWrong1Image.src = item.wrong1;
-  modalWrong2Image.src = item.wrong2;
-  modalWrong3Image.src = item.wrong3;
-
-  previewModal.style.display = "flex";
-}
-
-function deleteQuestion(index) {
-  const confirmed = confirm(`Möchtest du Frage ${index + 1} wirklich löschen?`);
-  if (!confirmed) return;
-
-  questions.splice(index, 1);
-
-  if (currentQuizIndex >= questions.length) {
-    currentQuizIndex = Math.max(0, questions.length - 1);
-  }
-
-  updateQuestionCollectionView();
-
-  if (questions.length === 0) {
-    latestPreviewSection.style.display = "none";
-  }
-
-  setStatus("Frage gelöscht.");
-}
-
-function moveQuestion(index, direction) {
-  const newIndex = index + direction;
-
-  if (newIndex < 0 || newIndex >= questions.length) return;
-
-  const item = questions.splice(index, 1)[0];
-  questions.splice(newIndex, 0, item);
-
-  updateQuestionCollectionView();
-  setStatus(`Frage wurde ${direction < 0 ? "nach vorne" : "nach hinten"} verschoben.`);
-}
-
-function startQuiz() {
+  function startQuiz() {
   if (questions.length === 0) {
     alert("Bitte füge zuerst mindestens eine Frage hinzu.");
     return;
   }
 
   currentQuizIndex = 0;
-
   editorView.style.display = "none";
   quizView.style.display = "block";
 
@@ -1657,28 +2185,6 @@ function showQuizQuestion(index) {
   }
 }
 
-function showPreviousQuestion() {
-  if (currentQuizIndex <= 0) return;
-
-  currentQuizIndex--;
-  showQuizQuestion(currentQuizIndex);
-}
-
-function showNextQuestionOrFinish() {
-  if (currentQuizIndex >= questions.length - 1) {
-    finishQuiz();
-    return;
-  }
-
-  currentQuizIndex++;
-  showQuizQuestion(currentQuizIndex);
-}
-
-function finishQuiz() {
-  backToEditor(false);
-  setStatus("Quiz beendet. Du kannst weitere Fotos aufnehmen oder das Quiz erneut starten.");
-}
-
 function shuffleArray(array) {
   const copy = [...array];
 
@@ -1695,93 +2201,20 @@ function revealCorrectAnswer() {
 
   if (!correctLetter) return;
 
-  const box = document.getElementById("answerBox" + correctLetter);
-  box.classList.add("correct");
+  const answerBoxes = {
+    A: answerBoxA,
+    B: answerBoxB,
+    C: answerBoxC,
+    D: answerBoxD
+  };
+
+  answerBoxes[correctLetter].classList.add("correct-answer");
 }
 
 function removeCorrectHighlight() {
-  [answerBoxA, answerBoxB, answerBoxC, answerBoxD].forEach(box => {
-    box.classList.remove("correct");
-  });
+  answerBoxA.classList.remove("correct-answer");
+  answerBoxB.classList.remove("correct-answer");
+  answerBoxC.classList.remove("correct-answer");
+  answerBoxD.classList.remove("correct-answer");
 }
-
-function confirmAbortQuiz() {
-  const confirmed = confirm("Möchtest du das Quiz wirklich abbrechen und zur Übersicht zurückkehren?");
-  if (!confirmed) return;
-
-  backToEditor(true);
-}
-
-function backToEditor(wasAborted = false) {
-  quizView.style.display = "none";
-  editorView.style.display = "block";
-
-  removeCorrectHighlight();
-
-  if (document.fullscreenElement) {
-    document.exitFullscreen().catch(() => {});
-  }
-
-  if (wasAborted) {
-    setStatus("Quiz abgebrochen. Du bist zurück in der Übersicht.");
-  }
-}
-
-function clearEverything() {
-  const confirmed = confirm("Möchtest du wirklich alle Fotos und alle gesammelten Fragen löschen?");
-  if (!confirmed) return;
-
-  questions = [];
-  currentQuizIndex = 0;
-  correctLetter = null;
-  loadedImage = null;
-  markerPoints = null;
-  lastDetectionMessage = "";
-  isProcessing = false;
-  waitingFiles = [];
-
-  imageInput.value = "";
-
-  questionPreview.removeAttribute("src");
-  correctPreview.removeAttribute("src");
-  wrong1Preview.removeAttribute("src");
-  wrong2Preview.removeAttribute("src");
-  wrong3Preview.removeAttribute("src");
-
-  latestQuestionPreview.removeAttribute("src");
-  latestCorrectPreview.removeAttribute("src");
-  latestWrong1Preview.removeAttribute("src");
-  latestWrong2Preview.removeAttribute("src");
-  latestWrong3Preview.removeAttribute("src");
-
-  latestPreviewSection.style.display = "none";
-  questionListSection.style.display = "none";
-  questionList.innerHTML = "";
-
-  questionCount.textContent = "0";
-  headerQuestionCount.textContent = "0";
-  failedList.textContent = "";
-
-  setProgress(0, 0);
-
-  sourceCtx.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
-  rectifiedCtx.clearRect(0, 0, rectifiedCanvas.width, rectifiedCanvas.height);
-  originalCtx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
-
-  setStatus(cvReady ? "Alles gelöscht. Tippe auf „Foto aufnehmen“." : "OpenCV.js wird geladen ...");
-
-  updateButtonStates();
-}
-
-function escapeHtml(text) {
-  return String(text)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-</script>
-
-</body>
-</html>
+  
