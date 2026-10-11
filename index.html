@@ -7,59 +7,102 @@
 
 <style>
 :root {
-  --bg: #f4f7fb;
-  --card: #ffffff;
-  --primary: #005bbb;
-  --primary-dark: #003f82;
-  --accent: #ffcc00;
-  --text: #111827;
-  --muted: #6b7280;
-  --border: #d1d5db;
-  --success: #16a34a;
-  --danger: #dc2626;
-  --radius: 20px;
+  --cream: #fff1c7;
+  --sun: #f6c85f;
+  --orange: #e77b3c;
+  --red: #b6422b;
+  --brown: #3f2415;
+  --dark-brown: #27150c;
+  --green: #6f8f3d;
+  --danger: #b7352a;
+  --shadow: #2a160d;
+  --radius: 28px;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: var(--bg);
-  color: var(--text);
+  min-height: 100%;
+}
+
+body {
+  font-family: "Trebuchet MS", "Arial Rounded MT Bold", system-ui, sans-serif;
+  color: var(--brown);
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255,255,255,0.22) 0 8%, transparent 9%),
+    radial-gradient(circle at 82% 12%, rgba(255,255,255,0.18) 0 7%, transparent 8%),
+    radial-gradient(circle at 72% 78%, rgba(255,255,255,0.16) 0 9%, transparent 10%),
+    repeating-linear-gradient(
+      45deg,
+      rgba(63,36,21,0.08) 0 14px,
+      transparent 14px 34px
+    ),
+    linear-gradient(135deg, #f6c85f 0%, #e77b3c 48%, #b6422b 100%);
+  background-attachment: fixed;
+}
+
+button,
+.photo-button {
+  -webkit-tap-highlight-color: transparent;
 }
 
 header {
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
-  padding: 26px 20px;
+  padding: 30px 18px 26px;
   text-align: center;
+  color: var(--cream);
+  background:
+    repeating-radial-gradient(
+      circle at center,
+      rgba(255,241,199,0.14) 0 10px,
+      transparent 10px 24px
+    ),
+    linear-gradient(135deg, var(--brown), var(--red), var(--orange));
+  border-bottom: 8px solid var(--dark-brown);
+  box-shadow: 0 10px 0 rgba(42,22,13,0.35);
 }
 
 header h1 {
   margin: 0;
-  font-size: clamp(2.2rem, 6vw, 3.8rem);
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  line-height: 0.95;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-shadow: 5px 5px 0 var(--shadow);
 }
 
 main {
-  max-width: 900px;
-  margin: 24px auto;
-  padding: 0 16px 40px;
+  max-width: 940px;
+  margin: 28px auto;
+  padding: 0 16px 44px;
+}
+
+.card,
+.modal,
+.quiz-question,
+.quiz-answer,
+.question-list-item {
+  background: var(--cream);
+  border: 5px solid var(--dark-brown);
+  border-radius: var(--radius);
+  box-shadow: 10px 10px 0 var(--shadow);
 }
 
 .card {
-  background: var(--card);
-  border-radius: var(--radius);
   padding: 24px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  margin-bottom: 22px;
+  margin-bottom: 24px;
 }
 
 h2 {
-  margin-top: 0;
-  color: var(--primary-dark);
+  margin: 0 0 16px;
+  color: var(--red);
+  font-size: clamp(1.6rem, 4vw, 2.3rem);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 0 var(--sun);
 }
 
 .main-actions {
@@ -68,29 +111,33 @@ h2 {
 }
 
 .photo-button {
+  min-height: 140px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 130px;
-  border-radius: 28px;
-  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-  color: white;
-  font-size: clamp(1.7rem, 5vw, 3rem);
+  border: 5px solid var(--dark-brown);
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.25), transparent 22%),
+    linear-gradient(135deg, #f08a3c, var(--red));
+  color: var(--cream);
+  font-size: clamp(1.8rem, 6vw, 3.4rem);
   font-weight: 1000;
   text-align: center;
   cursor: pointer;
-  box-shadow: 0 14px 32px rgba(0, 91, 187, 0.28);
-  transition: 0.2s ease;
+  box-shadow: 9px 9px 0 var(--shadow);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: 0.15s ease;
   user-select: none;
 }
 
 .photo-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 18px 36px rgba(0, 91, 187, 0.36);
+  transform: translate(-2px, -2px);
+  box-shadow: 12px 12px 0 var(--shadow);
 }
 
 .photo-button span {
-  display: block;
   padding: 14px;
 }
 
@@ -100,100 +147,103 @@ input[type="file"] {
 
 .controls {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 12px;
-  margin-top: 18px;
+  margin-top: 8px;
+}
+
+.start-quiz-button {
+  width: 100%;
+  min-height: 64px;
+  font-size: 1.25rem;
+}
+
+.bottom-delete-section {
+  display: none;
+}
+
+.bottom-delete-section button {
+  width: 100%;
+  min-height: 64px;
+  font-size: 1.18rem;
 }
 
 button {
-  border: none;
+  border: 4px solid var(--dark-brown);
   border-radius: 999px;
   padding: 15px 22px;
   font-size: 1.05rem;
-  font-weight: 800;
+  font-weight: 1000;
   cursor: pointer;
-  background: var(--primary);
-  color: white;
-  transition: 0.2s ease;
+  background: linear-gradient(135deg, var(--orange), var(--red));
+  color: var(--cream);
+  box-shadow: 6px 6px 0 var(--shadow);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: 0.15s ease;
 }
 
 button:hover {
-  background: var(--primary-dark);
-  transform: translateY(-1px);
-}
-
-button.secondary {
-  background: #e5e7eb;
-  color: var(--text);
-}
-
-button.secondary:hover {
-  background: #d1d5db;
-}
-
-button.success {
-  background: var(--success);
-}
-
-button.success:hover {
-  background: #15803d;
-}
-
-button.danger {
-  background: var(--danger);
-}
-
-button.danger:hover {
-  background: #991b1b;
+  transform: translate(-1px, -1px);
+  box-shadow: 8px 8px 0 var(--shadow);
 }
 
 button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
   transform: none;
+  box-shadow: 4px 4px 0 var(--shadow);
 }
 
-.status {
-  margin-top: 18px;
-  padding: 14px 16px;
-  background: #eff6ff;
-  border-left: 6px solid var(--primary);
-  border-radius: 12px;
-  line-height: 1.4;
-  font-weight: 650;
+button.secondary {
+  background: linear-gradient(135deg, #ffe083, var(--sun));
+  color: var(--brown);
+}
+
+button.success {
+  background: linear-gradient(135deg, #91aa4f, var(--green));
+}
+
+button.danger,
+.quiz-close-button {
+  background: linear-gradient(135deg, #d94a31, var(--danger));
 }
 
 .question-counter-box {
-  margin-top: 14px;
   padding: 18px;
-  background: #ecfdf5;
-  border-left: 6px solid var(--success);
-  border-radius: 14px;
-  font-weight: 1000;
-  font-size: 1.35rem;
+  background: #dfe8a5;
+  border: 4px solid var(--dark-brown);
+  border-left: 12px solid var(--green);
+  border-radius: 20px;
   text-align: center;
+  font-size: 1.35rem;
+  font-weight: 1000;
+  box-shadow: 5px 5px 0 rgba(42,22,13,0.35);
 }
 
 .progress-outer {
-  margin-top: 14px;
-  background: #e5e7eb;
-  border-radius: 999px;
-  overflow: hidden;
-  height: 20px;
   display: none;
+  height: 24px;
+  overflow: hidden;
+  background: var(--brown);
+  border: 4px solid var(--dark-brown);
+  border-radius: 999px;
 }
 
 .progress-inner {
   height: 100%;
   width: 0%;
-  background: linear-gradient(90deg, var(--primary), var(--success));
+  background: repeating-linear-gradient(
+    45deg,
+    var(--sun) 0 14px,
+    var(--orange) 14px 28px
+  );
   transition: width 0.25s ease;
 }
 
 .failed-list {
-  margin-top: 12px;
   color: var(--danger);
-  font-weight: 700;
+  font-weight: 900;
 }
 
 .question-list-section {
@@ -202,22 +252,21 @@ button:disabled {
 
 .question-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 16px;
   margin-top: 14px;
 }
 
 .question-list-item {
-  border: 2px solid var(--border);
-  border-radius: 14px;
-  padding: 10px;
-  background: #fafafa;
+  padding: 12px;
+  border-radius: 18px;
 }
 
 .question-list-item strong {
   display: block;
   margin-bottom: 8px;
-  color: var(--primary-dark);
+  color: var(--red);
+  text-transform: uppercase;
 }
 
 .question-list-item img {
@@ -225,29 +274,25 @@ button:disabled {
   height: 90px;
   object-fit: contain;
   background: white;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  border: 3px solid var(--dark-brown);
+  border-radius: 10px;
 }
 
-.question-list-actions {
+.question-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
   margin-top: 10px;
 }
 
-.question-list-actions button {
-  padding: 9px 10px;
-  font-size: 0.9rem;
+.question-actions button {
+  padding: 9px 8px;
+  font-size: 0.78rem;
+  box-shadow: 4px 4px 0 var(--shadow);
 }
 
-.question-list-actions .delete-question-button {
+.question-actions .delete-question-button {
   grid-column: 1 / -1;
-  background: var(--danger);
-}
-
-.question-list-actions .delete-question-button:hover {
-  background: #991b1b;
 }
 
 .hidden-work-area {
@@ -256,42 +301,32 @@ button:disabled {
 
 canvas {
   max-width: 100%;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: 14px;
 }
 
 /* Start-Pop-up */
-
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.78);
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
   padding: 20px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(246,200,95,0.45), transparent 30%),
+    rgba(39,21,12,0.86);
 }
 
 .modal {
-  width: min(720px, 100%);
-  background: white;
-  color: var(--text);
-  border-radius: 26px;
+  width: min(760px, 100%);
   padding: 28px;
-  box-shadow: 0 25px 70px rgba(0,0,0,0.38);
-}
-
-.modal h2 {
-  margin-top: 0;
-  font-size: clamp(1.6rem, 4vw, 2.3rem);
 }
 
 .modal p,
 .modal li {
-  line-height: 1.5;
   font-size: 1.05rem;
+  line-height: 1.5;
+  font-weight: 700;
 }
 
 .modal ul {
@@ -299,93 +334,93 @@ canvas {
 }
 
 .modal-ok {
-  margin-top: 18px;
   width: 100%;
-  font-size: 1.3rem;
+  margin-top: 18px;
+  font-size: 1.25rem;
   padding: 18px;
 }
 
 /* Quiz-Ansicht */
-
 .quiz-screen {
   display: none;
   width: 100vw;
-  height: 100dvh;
-  min-height: 100vh;
-  background: #0f172a;
-  color: white;
+
+  /*
+    Absichtlich etwas niedriger als die volle Browserhöhe:
+    So bleiben auf dem iPad ohne Vollbild die unteren Quiz-Buttons besser erreichbar.
+  */
+  height: min(100dvh, calc(100vh - 58px));
+  min-height: 560px;
+
   overflow: hidden;
-  padding: 14px;
+  padding: 10px 14px 12px;
+  color: var(--cream);
+  background:
+    radial-gradient(circle at 15% 20%, rgba(246,200,95,0.28) 0 8%, transparent 9%),
+    radial-gradient(circle at 86% 80%, rgba(255,241,199,0.16) 0 10%, transparent 11%),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255,241,199,0.09) 0 14px,
+      transparent 14px 34px
+    ),
+    linear-gradient(135deg, var(--brown), var(--red) 55%, var(--orange));
 }
 
 .quiz-inner {
   height: 100%;
-  max-width: 1180px;
+  max-width: 1200px;
   margin: 0 auto;
   display: grid;
-  grid-template-rows: auto minmax(145px, 28vh) 1fr auto;
-  gap: 12px;
+  grid-template-rows: auto minmax(120px, 24vh) minmax(230px, 1fr) auto;
+  gap: 9px;
 }
 
 .quiz-topbar {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .quiz-title {
+  justify-self: center;
   margin: 0;
-  color: var(--accent);
-  font-size: clamp(1.7rem, 4vw, 3.1rem);
+  color: var(--sun);
+  font-size: clamp(1.6rem, 4.3vw, 3rem);
   line-height: 1;
   text-align: center;
-  justify-self: center;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 4px 4px 0 var(--shadow);
 }
 
 .quiz-progress {
   display: inline-block;
-  margin-left: 14px;
-  background: rgba(255,255,255,0.12);
-  border: 2px solid rgba(255,255,255,0.25);
+  margin-left: 12px;
+  padding: 6px 12px;
+  border: 4px solid var(--cream);
   border-radius: 999px;
-  padding: 7px 14px;
-  font-size: clamp(1rem, 2.6vw, 1.7rem);
-  font-weight: 1000;
-  color: white;
+  background: var(--red);
+  color: var(--cream);
+  font-size: clamp(0.95rem, 2.2vw, 1.35rem);
   vertical-align: middle;
   white-space: nowrap;
+  box-shadow: 4px 4px 0 var(--shadow);
 }
 
 .quiz-close-button {
   justify-self: end;
-  padding: 13px 22px;
-  border-radius: 999px;
-  background: #dc2626;
-  color: white;
-  font-size: clamp(1rem, 2.3vw, 1.25rem);
-  line-height: 1;
-  font-weight: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  padding: 11px 20px;
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
   white-space: nowrap;
 }
 
-.quiz-close-button:hover {
-  background: #991b1b;
-}
-
 .quiz-question {
-  background: white;
-  color: #111827;
-  border-radius: 22px;
-  padding: 10px;
+  min-height: 0;
+  padding: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 10px 28px rgba(0,0,0,0.25);
-  min-height: 0;
 }
 
 .quiz-question img {
@@ -400,70 +435,56 @@ canvas {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   grid-template-rows: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 10px;
 }
 
 .quiz-answer {
   min-height: 0;
-  border-radius: 22px;
-  padding: 12px;
+  padding: 9px;
   display: flex;
-  gap: 12px;
   align-items: center;
-  background: white;
-  border: 7px solid transparent;
-  box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+  gap: 10px;
   overflow: hidden;
 }
 
 .quiz-answer.correct {
-  background: #16a34a;
-  border-color: #16a34a;
-  box-shadow: 0 0 0 8px rgba(22, 163, 74, 0.35);
-}
-
-.quiz-answer.correct .answer-image-wrap {
-  background: white;
-}
-
-.quiz-answer.correct .big-letter {
-  background: #dc2626;
-  color: white;
-  border: 6px solid white;
-  box-shadow: 0 0 0 4px rgba(0,0,0,0.25);
+  background: var(--green);
+  border-color: var(--dark-brown);
+  box-shadow: 10px 10px 0 var(--shadow), 0 0 0 8px var(--sun);
 }
 
 .big-letter {
   flex: 0 0 auto;
-  width: clamp(54px, 8vw, 78px);
-  height: clamp(54px, 8vw, 78px);
+  width: clamp(48px, 7vw, 74px);
+  height: clamp(48px, 7vw, 74px);
+  border: 4px solid var(--dark-brown);
   border-radius: 50%;
-  color: white;
+  background: var(--red);
+  color: var(--cream);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: clamp(2rem, 5vw, 2.8rem);
+  font-size: clamp(1.8rem, 4.5vw, 2.7rem);
   font-weight: 1000;
+  box-shadow: 5px 5px 0 var(--shadow);
 }
 
-.letter-a,
-.letter-b,
-.letter-c,
-.letter-d {
-  background: #dc2626;
+.quiz-answer.correct .big-letter {
+  background: var(--sun);
+  color: var(--brown);
 }
 
 .answer-image-wrap {
   flex: 1;
   height: 100%;
   min-width: 0;
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
+  overflow: hidden;
+  background: white;
+  border: 3px solid var(--dark-brown);
+  border-radius: 14px;
 }
 
 .answer-image-wrap img {
@@ -474,31 +495,45 @@ canvas {
 }
 
 .quiz-controls {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
   justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 9px;
 }
 
 .quiz-controls button {
-  padding: 11px 18px;
-  font-size: 0.95rem;
+  padding: 10px 16px;
+  font-size: 0.9rem;
 }
 
 @media (max-width: 700px) {
   .controls {
     grid-template-columns: 1fr;
   }
+
+  .quiz-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .question-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .question-actions .delete-question-button {
+    grid-column: auto;
+  }
 }
 
 @media (orientation: portrait) {
   .quiz-screen {
+    height: auto;
+    min-height: calc(100dvh - 58px);
     overflow: auto;
   }
 
   .quiz-inner {
     height: auto;
-    min-height: 100dvh;
+    min-height: calc(100dvh - 76px);
     grid-template-rows: auto auto auto auto;
   }
 
@@ -508,11 +543,11 @@ canvas {
   }
 
   .quiz-answer {
-    min-height: 140px;
+    min-height: 126px;
   }
 
   .quiz-question {
-    min-height: 170px;
+    min-height: 150px;
   }
 
   .quiz-topbar {
@@ -527,25 +562,22 @@ canvas {
 </head>
 
 <body>
-
 <div id="introModal" class="modal-backdrop">
   <div class="modal">
     <h2>So funktioniert das 4er-Quiz</h2>
-
     <p>
       Fotografiere eine oder mehrere ausgefüllte Fragenkarten.
       Die App erkennt die vier schwarzen Eckmarken automatisch, richtet das Foto gerade aus
       und erstellt daraus die Quizfrage.
     </p>
-
     <ul>
       <li>Die vier schwarzen Eckmarken müssen auf dem Foto sichtbar sein.</li>
       <li>Das Foto darf leicht schräg aufgenommen sein.</li>
       <li>Die App nutzt möglichst genau die schwarzen Rahmen der Textfelder.</li>
       <li>Wenn eine Karte nicht erkannt wird, wird sie übersprungen und gemeldet.</li>
+      <li>In der Fragensammlung kannst du einzelne Aufnahmen löschen oder verschieben.</li>
       <li>Das Quiz ist besonders für ein iPad im Querformat geeignet.</li>
     </ul>
-
     <button id="introOkButton" class="modal-ok">Okay</button>
   </div>
 </div>
@@ -564,10 +596,6 @@ canvas {
 
         <input id="imageInput" type="file" accept="image/*" capture="environment" multiple />
 
-        <div id="statusBox" class="status">
-          OpenCV.js wird geladen. Bitte einen Moment warten ...
-        </div>
-
         <div class="progress-outer" id="progressOuter">
           <div class="progress-inner" id="progressInner"></div>
         </div>
@@ -579,8 +607,7 @@ canvas {
         <div id="failedList" class="failed-list"></div>
 
         <div class="controls">
-          <button id="startQuizButton" class="success" disabled>Quiz starten</button>
-          <button id="clearAllButton" class="danger">Alles löschen</button>
+          <button id="startQuizButton" class="success start-quiz-button" disabled>Quiz starten</button>
         </div>
       </div>
     </section>
@@ -588,6 +615,10 @@ canvas {
     <section id="questionListSection" class="card question-list-section">
       <h2>Fragensammlung</h2>
       <div id="questionList" class="question-list"></div>
+    </section>
+
+    <section id="bottomDeleteSection" class="card bottom-delete-section">
+      <button id="clearAllButton" class="danger">Alles löschen</button>
     </section>
   </main>
 </div>
@@ -600,7 +631,7 @@ canvas {
       </h1>
 
       <button id="backButton" class="quiz-close-button" aria-label="Quiz abbrechen">
-        Abbruch
+        Abbrechen
       </button>
     </div>
 
@@ -610,28 +641,28 @@ canvas {
 
     <div class="quiz-answers">
       <div id="answerBoxA" class="quiz-answer">
-        <div class="big-letter letter-a">A</div>
+        <div class="big-letter">A</div>
         <div class="answer-image-wrap">
           <img id="quizAnswerA" alt="Antwort A" />
         </div>
       </div>
 
       <div id="answerBoxB" class="quiz-answer">
-        <div class="big-letter letter-b">B</div>
+        <div class="big-letter">B</div>
         <div class="answer-image-wrap">
           <img id="quizAnswerB" alt="Antwort B" />
         </div>
       </div>
 
       <div id="answerBoxC" class="quiz-answer">
-        <div class="big-letter letter-c">C</div>
+        <div class="big-letter">C</div>
         <div class="answer-image-wrap">
           <img id="quizAnswerC" alt="Antwort C" />
         </div>
       </div>
 
       <div id="answerBoxD" class="quiz-answer">
-        <div class="big-letter letter-d">D</div>
+        <div class="big-letter">D</div>
         <div class="answer-image-wrap">
           <img id="quizAnswerD" alt="Antwort D" />
         </div>
@@ -639,7 +670,7 @@ canvas {
     </div>
 
     <div class="quiz-controls">
-      <button id="prevQuestionButton" class="secondary">vorherige Frage</button>
+      <button id="prevQuestionButton" class="secondary">Vorherige Frage</button>
       <button id="revealButton">Richtige Antwort zeigen</button>
       <button id="nextQuestionButton">Nächste Frage</button>
     </div>
@@ -666,7 +697,6 @@ let waitingFiles = [];
 window.Module = {
   onRuntimeInitialized() {
     cvReady = true;
-    setStatus("Bereit. Tippe auf „Foto aufnehmen“.");
     updateButtonStates();
 
     if (waitingFiles.length > 0) {
@@ -682,16 +712,13 @@ window.Module = {
 <script>
 const introModal = document.getElementById("introModal");
 const introOkButton = document.getElementById("introOkButton");
-
 const imageInput = document.getElementById("imageInput");
 const startQuizButton = document.getElementById("startQuizButton");
 const clearAllButton = document.getElementById("clearAllButton");
-
-const statusBox = document.getElementById("statusBox");
+const bottomDeleteSection = document.getElementById("bottomDeleteSection");
 const progressOuter = document.getElementById("progressOuter");
 const progressInner = document.getElementById("progressInner");
 const failedList = document.getElementById("failedList");
-
 const questionCount = document.getElementById("questionCount");
 const questionListSection = document.getElementById("questionListSection");
 const questionList = document.getElementById("questionList");
@@ -715,27 +742,22 @@ const wrong3Preview = document.getElementById("wrong3Preview");
 
 const editorView = document.getElementById("editorView");
 const quizView = document.getElementById("quizView");
-
 const quizProgress = document.getElementById("quizProgress");
 const quizQuestionImage = document.getElementById("quizQuestionImage");
-
 const quizAnswerA = document.getElementById("quizAnswerA");
 const quizAnswerB = document.getElementById("quizAnswerB");
 const quizAnswerC = document.getElementById("quizAnswerC");
 const quizAnswerD = document.getElementById("quizAnswerD");
-
 const answerBoxA = document.getElementById("answerBoxA");
 const answerBoxB = document.getElementById("answerBoxB");
 const answerBoxC = document.getElementById("answerBoxC");
 const answerBoxD = document.getElementById("answerBoxD");
-
 const revealButton = document.getElementById("revealButton");
 const backButton = document.getElementById("backButton");
 const prevQuestionButton = document.getElementById("prevQuestionButton");
 const nextQuestionButton = document.getElementById("nextQuestionButton");
 
 let loadedImage = null;
-let displayScale = 1;
 let markerPoints = null;
 let questions = [];
 let currentQuizIndex = 0;
@@ -768,15 +790,11 @@ imageInput.addEventListener("change", handleFileSelection);
 startQuizButton.addEventListener("click", startQuiz);
 clearAllButton.addEventListener("click", clearEverything);
 revealButton.addEventListener("click", revealCorrectAnswer);
-backButton.addEventListener("click", backToEditor);
+backButton.addEventListener("click", confirmBackToEditor);
 prevQuestionButton.addEventListener("click", showPreviousQuestion);
 nextQuestionButton.addEventListener("click", showNextQuestion);
 
 updateQuestionCollectionView();
-
-function setStatus(message) {
-  statusBox.textContent = message;
-}
 
 function setProgress(done, total) {
   if (total <= 0) {
@@ -786,7 +804,6 @@ function setProgress(done, total) {
   }
 
   progressOuter.style.display = "block";
-
   const percent = Math.round((done / total) * 100);
   progressInner.style.width = percent + "%";
 }
@@ -794,15 +811,21 @@ function setProgress(done, total) {
 function updateButtonStates() {
   const hasQuestions = questions.length > 0;
   startQuizButton.disabled = !hasQuestions || isProcessing;
+
+  if (hasQuestions) {
+    bottomDeleteSection.style.display = "block";
+  } else {
+    bottomDeleteSection.style.display = "none";
+  }
 }
 
 function handleFileSelection(event) {
   const files = Array.from(event.target.files || []);
+
   if (files.length === 0) return;
 
   if (!cvReady) {
     waitingFiles = files;
-    setStatus("Die Bildverarbeitung lädt noch. Das Foto wird danach automatisch verarbeitet.");
     return;
   }
 
@@ -816,82 +839,67 @@ async function processFilesAutomatically(files) {
   failedList.textContent = "";
   updateButtonStates();
 
-  let failedFiles = [];
+  const failedFiles = [];
   setProgress(0, files.length);
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
 
-    setStatus(`Verarbeite Foto ${i + 1} von ${files.length} ...`);
-
     try {
       const image = await loadImageFromFile(file);
-
       loadedImage = image;
 
       prepareCanvasesForLoadedImage();
-      drawSourcePreviewImageOnly();
+      drawSourceImage();
 
       const detected = autoDetectMarkers();
 
       if (!detected) {
-        failedFiles.push(file.name);
-        setProgress(i + 1, files.length);
-        continue;
+        failedFiles.push(file.name || `Foto ${i + 1}`);
+      } else {
+        const crops = rectifyAndCrop();
+
+        questions.push({
+          ...crops,
+          createdAt: Date.now()
+        });
+
+        showLatestCrops(crops);
+        updateQuestionCollectionView();
       }
-
-      drawSourcePreviewWithMarkers();
-
-      const crops = rectifyAndCreateCrops();
-
-      if (!crops || !crops.question) {
-        failedFiles.push(file.name);
-        setProgress(i + 1, files.length);
-        continue;
-      }
-
-      questions.push(crops);
-
-      showLatestCrops(crops);
-      updateQuestionCollectionView();
-
-      setProgress(i + 1, files.length);
     } catch (error) {
       console.error(error);
-      failedFiles.push(file.name);
-      setProgress(i + 1, files.length);
+      failedFiles.push(file.name || `Foto ${i + 1}`);
     }
 
-    await wait(80);
+    setProgress(i + 1, files.length);
   }
-
-  imageInput.value = "";
-  isProcessing = false;
-  updateButtonStates();
 
   if (failedFiles.length === 0) {
-    setStatus(`${files.length} Foto(s) wurden erfolgreich verarbeitet.`);
     failedList.textContent = "";
   } else {
-    setStatus(`${files.length - failedFiles.length} von ${files.length} Foto(s) wurden verarbeitet.`);
-    failedList.innerHTML = "Nicht erkannt: " + failedFiles.map(name => escapeHtml(name)).join(", ");
+    failedList.textContent = `Nicht erkannt: ${failedFiles.join(", ")}`;
   }
-}
 
-function wait(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  isProcessing = false;
+  imageInput.value = "";
+  updateButtonStates();
+
+  setTimeout(() => {
+    setProgress(0, 0);
+  }, 900);
 }
 
 function loadImageFromFile(file) {
   return new Promise((resolve, reject) => {
     const img = new Image();
 
-    img.onload = function () {
+    img.onload = () => {
       URL.revokeObjectURL(img.src);
       resolve(img);
     };
 
-    img.onerror = function () {
+    img.onerror = () => {
       reject(new Error("Bild konnte nicht geladen werden."));
     };
 
@@ -900,50 +908,28 @@ function loadImageFromFile(file) {
 }
 
 function prepareCanvasesForLoadedImage() {
+  const maxSide = 1800;
+  const scale = Math.min(1, maxSide / Math.max(loadedImage.width, loadedImage.height));
+
+  sourceCanvas.width = Math.round(loadedImage.width * scale);
+  sourceCanvas.height = Math.round(loadedImage.height * scale);
+
   originalCanvas.width = loadedImage.width;
   originalCanvas.height = loadedImage.height;
 
-  originalCtx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
-  originalCtx.drawImage(loadedImage, 0, 0);
+  rectifiedCanvas.width = NORMALIZED_WIDTH;
+  rectifiedCanvas.height = NORMALIZED_HEIGHT;
 
-  const maxWidth = 850;
-  displayScale = Math.min(1, maxWidth / loadedImage.width);
-
-  sourceCanvas.width = Math.round(loadedImage.width * displayScale);
-  sourceCanvas.height = Math.round(loadedImage.height * displayScale);
+  normalizedCanvas.width = NORMALIZED_WIDTH;
+  normalizedCanvas.height = NORMALIZED_HEIGHT;
 }
 
-function drawSourcePreviewImageOnly() {
+function drawSourceImage() {
   sourceCtx.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
   sourceCtx.drawImage(loadedImage, 0, 0, sourceCanvas.width, sourceCanvas.height);
-}
 
-function drawSourcePreviewWithMarkers() {
-  drawSourcePreviewImageOnly();
-
-  if (!markerPoints) return;
-
-  const displayPoints = markerPoints.map(toDisplayPoint);
-
-  sourceCtx.lineWidth = 4;
-  sourceCtx.strokeStyle = "#ffcc00";
-  sourceCtx.fillStyle = "rgba(255, 204, 0, 0.18)";
-
-  sourceCtx.beginPath();
-  sourceCtx.moveTo(displayPoints[0].x, displayPoints[0].y);
-  sourceCtx.lineTo(displayPoints[1].x, displayPoints[1].y);
-  sourceCtx.lineTo(displayPoints[2].x, displayPoints[2].y);
-  sourceCtx.lineTo(displayPoints[3].x, displayPoints[3].y);
-  sourceCtx.closePath();
-  sourceCtx.fill();
-  sourceCtx.stroke();
-}
-
-function toDisplayPoint(point) {
-  return {
-    x: point.x * displayScale,
-    y: point.y * displayScale
-  };
+  originalCtx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
+  originalCtx.drawImage(loadedImage, 0, 0, originalCanvas.width, originalCanvas.height);
 }
 
 function autoDetectMarkers() {
@@ -973,6 +959,7 @@ function autoDetectMarkers() {
       const contour = contours.get(i);
       const rect = cv.boundingRect(contour);
       const area = cv.contourArea(contour);
+
       const ratio = rect.width / rect.height;
       const rectArea = rect.width * rect.height;
       const fillRatio = area / rectArea;
@@ -1006,14 +993,8 @@ function autoDetectMarkers() {
     }
 
     candidates.sort((a, b) => b.area - a.area);
-
     const bestFour = candidates.slice(0, 4);
-    const orderedDisplayPoints = orderPoints(bestFour);
-
-    markerPoints = orderedDisplayPoints.map(point => ({
-      x: point.x / displayScale,
-      y: point.y / displayScale
-    }));
+    markerPoints = orderPoints(bestFour);
 
     return true;
   } catch (error) {
@@ -1030,114 +1011,83 @@ function autoDetectMarkers() {
 }
 
 function orderPoints(points) {
-  const sorted = [...points];
-
-  const topLeft = sorted.reduce((best, p) => (p.x + p.y < best.x + best.y ? p : best));
-  const bottomRight = sorted.reduce((best, p) => (p.x + p.y > best.x + best.y ? p : best));
-  const topRight = sorted.reduce((best, p) => (p.x - p.y > best.x - best.y ? p : best));
-  const bottomLeft = sorted.reduce((best, p) => (p.x - p.y < best.x - best.y ? p : best));
+  const topLeft = points.reduce((best, p) => (p.x + p.y < best.x + best.y ? p : best));
+  const bottomRight = points.reduce((best, p) => (p.x + p.y > best.x + best.y ? p : best));
+  const topRight = points.reduce((best, p) => (p.x - p.y > best.x - best.y ? p : best));
+  const bottomLeft = points.reduce((best, p) => (p.x - p.y < best.x - best.y ? p : best));
 
   return [topLeft, topRight, bottomRight, bottomLeft];
 }
 
-function rectifyAndCreateCrops() {
-  if (!cvReady || !loadedImage || !markerPoints) return null;
+function rectifyAndCrop() {
+  if (!markerPoints) {
+    throw new Error("Keine Eckmarken gefunden.");
+  }
 
   let src = null;
   let dst = null;
-  let sourceTri = null;
-  let targetTri = null;
+  let srcTri = null;
+  let dstTri = null;
   let matrix = null;
 
   try {
-    normalizedCanvas.width = NORMALIZED_WIDTH;
-    normalizedCanvas.height = NORMALIZED_HEIGHT;
-
-    rectifiedCanvas.width = NORMALIZED_WIDTH;
-    rectifiedCanvas.height = NORMALIZED_HEIGHT;
-
-    src = cv.imread(originalCanvas);
+    src = cv.imread(sourceCanvas);
     dst = new cv.Mat();
 
-    sourceTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
+    srcTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
       markerPoints[0].x, markerPoints[0].y,
       markerPoints[1].x, markerPoints[1].y,
       markerPoints[2].x, markerPoints[2].y,
       markerPoints[3].x, markerPoints[3].y
     ]);
 
-    targetTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
+    dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
       TARGET_MARKERS.topLeft.x, TARGET_MARKERS.topLeft.y,
       TARGET_MARKERS.topRight.x, TARGET_MARKERS.topRight.y,
       TARGET_MARKERS.bottomRight.x, TARGET_MARKERS.bottomRight.y,
       TARGET_MARKERS.bottomLeft.x, TARGET_MARKERS.bottomLeft.y
     ]);
 
-    matrix = cv.getPerspectiveTransform(sourceTri, targetTri);
-
-    const size = new cv.Size(NORMALIZED_WIDTH, NORMALIZED_HEIGHT);
+    matrix = cv.getPerspectiveTransform(srcTri, dstTri);
+    const dsize = new cv.Size(NORMALIZED_WIDTH, NORMALIZED_HEIGHT);
 
     cv.warpPerspective(
       src,
       dst,
       matrix,
-      size,
+      dsize,
       cv.INTER_LINEAR,
       cv.BORDER_CONSTANT,
-      new cv.Scalar(255, 255, 255, 255)
+      new cv.Scalar()
     );
 
-    cv.imshow(normalizedCanvas, dst);
     cv.imshow(rectifiedCanvas, dst);
 
-    const crops = createCropsFromNormalizedCanvas();
-
-    drawCropOverlays();
-
-    return crops;
-  } catch (error) {
-    console.error(error);
-    return null;
+    return {
+      question: cropField(CROP_FIELDS.question),
+      correct: cropField(CROP_FIELDS.correct),
+      wrong1: cropField(CROP_FIELDS.wrong1),
+      wrong2: cropField(CROP_FIELDS.wrong2),
+      wrong3: cropField(CROP_FIELDS.wrong3)
+    };
   } finally {
     if (src) src.delete();
     if (dst) dst.delete();
-    if (sourceTri) sourceTri.delete();
-    if (targetTri) targetTri.delete();
+    if (srcTri) srcTri.delete();
+    if (dstTri) dstTri.delete();
     if (matrix) matrix.delete();
   }
 }
 
-function drawCropOverlays() {
-  rectifiedCtx.lineWidth = 5;
-  rectifiedCtx.strokeStyle = "#16a34a";
-  rectifiedCtx.fillStyle = "#16a34a";
-  rectifiedCtx.font = "bold 24px sans-serif";
-
-  Object.entries(CROP_FIELDS).forEach(([name, field]) => {
-    rectifiedCtx.strokeRect(field.x, field.y, field.w, field.h);
-  });
-}
-
-function createCropsFromNormalizedCanvas() {
-  return {
-    question: cropFieldToDataUrl(CROP_FIELDS.question),
-    correct: cropFieldToDataUrl(CROP_FIELDS.correct),
-    wrong1: cropFieldToDataUrl(CROP_FIELDS.wrong1),
-    wrong2: cropFieldToDataUrl(CROP_FIELDS.wrong2),
-    wrong3: cropFieldToDataUrl(CROP_FIELDS.wrong3)
-  };
-}
-
-function cropFieldToDataUrl(field) {
+function cropField(field) {
   const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
 
   canvas.width = field.w;
   canvas.height = field.h;
 
-  const ctx = canvas.getContext("2d");
-
   ctx.drawImage(
-    normalizedCanvas,
+    rectifiedCanvas,
     field.x,
     field.y,
     field.w,
@@ -1181,33 +1131,27 @@ function updateQuestionCollectionView() {
     img.alt = `Vorschau Frage ${index + 1}`;
 
     const actions = document.createElement("div");
-    actions.className = "question-list-actions";
+    actions.className = "question-actions";
 
     const moveUpButton = document.createElement("button");
     moveUpButton.type = "button";
     moveUpButton.className = "secondary";
-    moveUpButton.textContent = "↑ hoch";
+    moveUpButton.textContent = "↑ Hoch";
     moveUpButton.disabled = index === 0;
-    moveUpButton.addEventListener("click", () => {
-      moveQuestion(index, index - 1);
-    });
+    moveUpButton.addEventListener("click", () => moveQuestion(index, -1));
 
     const moveDownButton = document.createElement("button");
     moveDownButton.type = "button";
     moveDownButton.className = "secondary";
-    moveDownButton.textContent = "↓ runter";
+    moveDownButton.textContent = "↓ Runter";
     moveDownButton.disabled = index === questions.length - 1;
-    moveDownButton.addEventListener("click", () => {
-      moveQuestion(index, index + 1);
-    });
+    moveDownButton.addEventListener("click", () => moveQuestion(index, 1));
 
     const deleteButton = document.createElement("button");
     deleteButton.type = "button";
-    deleteButton.className = "delete-question-button";
-    deleteButton.textContent = "Frage löschen";
-    deleteButton.addEventListener("click", () => {
-      deleteQuestion(index);
-    });
+    deleteButton.className = "danger delete-question-button";
+    deleteButton.textContent = "Löschen";
+    deleteButton.addEventListener("click", () => deleteQuestion(index));
 
     actions.appendChild(moveUpButton);
     actions.appendChild(moveDownButton);
@@ -1223,15 +1167,16 @@ function updateQuestionCollectionView() {
   updateButtonStates();
 }
 
-function moveQuestion(fromIndex, toIndex) {
-  if (toIndex < 0 || toIndex >= questions.length) return;
+function moveQuestion(index, direction) {
+  const newIndex = index + direction;
 
-  const movedQuestion = questions.splice(fromIndex, 1)[0];
-  questions.splice(toIndex, 0, movedQuestion);
+  if (newIndex < 0 || newIndex >= questions.length) return;
+
+  const movedQuestion = questions[index];
+  questions.splice(index, 1);
+  questions.splice(newIndex, 0, movedQuestion);
 
   updateQuestionCollectionView();
-
-  setStatus(`Frage ${fromIndex + 1} wurde verschoben.`);
 }
 
 function deleteQuestion(index) {
@@ -1245,19 +1190,6 @@ function deleteQuestion(index) {
     currentQuizIndex = Math.max(0, questions.length - 1);
   }
 
-  if (questions.length === 0) {
-    questionPreview.removeAttribute("src");
-    correctPreview.removeAttribute("src");
-    wrong1Preview.removeAttribute("src");
-    wrong2Preview.removeAttribute("src");
-    wrong3Preview.removeAttribute("src");
-
-    setStatus("Die Frage wurde gelöscht. Es sind keine Fragen mehr in der Sammlung.");
-  } else {
-    showLatestCrops(questions[questions.length - 1]);
-    setStatus(`Frage ${index + 1} wurde gelöscht.`);
-  }
-
   updateQuestionCollectionView();
 }
 
@@ -1268,15 +1200,15 @@ function startQuiz() {
   }
 
   currentQuizIndex = 0;
-
   editorView.style.display = "none";
   quizView.style.display = "block";
 
   showQuizQuestion(currentQuizIndex);
 
-  if (document.documentElement.requestFullscreen) {
-    document.documentElement.requestFullscreen().catch(() => {});
-  }
+  /*
+    Kein automatischer Vollbildmodus:
+    So bleibt die normale iPad-Browseransicht erhalten und die Quiz-Höhe ist besser kontrollierbar.
+  */
 }
 
 function showQuizQuestion(index) {
@@ -1359,10 +1291,17 @@ function removeCorrectHighlight() {
   });
 }
 
+function confirmBackToEditor() {
+  const reallyAbort = confirm("Möchtest du das Quiz wirklich abbrechen?");
+
+  if (!reallyAbort) return;
+
+  backToEditor();
+}
+
 function backToEditor() {
   quizView.style.display = "none";
   editorView.style.display = "block";
-
   removeCorrectHighlight();
 
   if (document.fullscreenElement) {
@@ -1402,20 +1341,8 @@ function clearEverything() {
   rectifiedCtx.clearRect(0, 0, rectifiedCanvas.width, rectifiedCanvas.height);
   originalCtx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
 
-  setStatus(cvReady ? "Alles gelöscht. Tippe auf „Foto aufnehmen“." : "OpenCV.js wird geladen ...");
-
   updateButtonStates();
 }
-
-function escapeHtml(text) {
-  return text
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
 </script>
-
 </body>
 </html>
