@@ -1,1348 +1,1543 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>4er-Quiz automatisch</title>
-
-<style>
-:root {
-  --cream: #fff1c7;
-  --sun: #f6c85f;
-  --orange: #e77b3c;
-  --red: #b6422b;
-  --brown: #3f2415;
-  --dark-brown: #27150c;
-  --green: #6f8f3d;
-  --danger: #b7352a;
-  --shadow: #2a160d;
-  --radius: 28px;
-}
-
-* {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  margin: 0;
-  min-height: 100%;
-}
-
-body {
-  font-family: "Trebuchet MS", "Arial Rounded MT Bold", system-ui, sans-serif;
-  color: var(--brown);
-  background:
-    radial-gradient(circle at 12% 18%, rgba(255,255,255,0.22) 0 8%, transparent 9%),
-    radial-gradient(circle at 82% 12%, rgba(255,255,255,0.18) 0 7%, transparent 8%),
-    radial-gradient(circle at 72% 78%, rgba(255,255,255,0.16) 0 9%, transparent 10%),
-    repeating-linear-gradient(
-      45deg,
-      rgba(63,36,21,0.08) 0 14px,
-      transparent 14px 34px
-    ),
-    linear-gradient(135deg, #f6c85f 0%, #e77b3c 48%, #b6422b 100%);
-  background-attachment: fixed;
-}
-
-button,
-.photo-button {
-  -webkit-tap-highlight-color: transparent;
-}
-
-header {
-  padding: 30px 18px 26px;
-  text-align: center;
-  color: var(--cream);
-  background:
-    repeating-radial-gradient(
-      circle at center,
-      rgba(255,241,199,0.14) 0 10px,
-      transparent 10px 24px
-    ),
-    linear-gradient(135deg, var(--brown), var(--red), var(--orange));
-  border-bottom: 8px solid var(--dark-brown);
-  box-shadow: 0 10px 0 rgba(42,22,13,0.35);
-}
-
-header h1 {
-  margin: 0;
-  font-size: clamp(2.5rem, 8vw, 5rem);
-  line-height: 0.95;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  text-shadow: 5px 5px 0 var(--shadow);
-}
-
-main {
-  max-width: 940px;
-  margin: 28px auto;
-  padding: 0 16px 44px;
-}
-
-.card,
-.modal,
-.quiz-question,
-.quiz-answer,
-.question-list-item {
-  background: var(--cream);
-  border: 5px solid var(--dark-brown);
-  border-radius: var(--radius);
-  box-shadow: 10px 10px 0 var(--shadow);
-}
-
-.card {
-  padding: 24px;
-  margin-bottom: 24px;
-}
-
-h2 {
-  margin: 0 0 16px;
-  color: var(--red);
-  font-size: clamp(1.6rem, 4vw, 2.3rem);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  text-shadow: 2px 2px 0 var(--sun);
-}
-
-.main-actions {
-  display: grid;
-  gap: 16px;
-}
-
-.photo-button {
-  min-height: 140px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 5px solid var(--dark-brown);
-  border-radius: 34px;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.25), transparent 22%),
-    linear-gradient(135deg, #f08a3c, var(--red));
-  color: var(--cream);
-  font-size: clamp(1.8rem, 6vw, 3.4rem);
-  font-weight: 1000;
-  text-align: center;
-  cursor: pointer;
-  box-shadow: 9px 9px 0 var(--shadow);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: 0.15s ease;
-  user-select: none;
-}
-
-.photo-button:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 12px 12px 0 var(--shadow);
-}
-
-.photo-button span {
-  padding: 14px;
-}
-
-input[type="file"] {
-  display: none;
-}
-
-.controls {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.start-quiz-button {
-  width: 100%;
-  min-height: 64px;
-  font-size: 1.25rem;
-}
-
-.bottom-delete-section {
-  display: none;
-}
-
-.bottom-delete-section button {
-  width: 100%;
-  min-height: 64px;
-  font-size: 1.18rem;
-}
-
-button {
-  border: 4px solid var(--dark-brown);
-  border-radius: 999px;
-  padding: 15px 22px;
-  font-size: 1.05rem;
-  font-weight: 1000;
-  cursor: pointer;
-  background: linear-gradient(135deg, var(--orange), var(--red));
-  color: var(--cream);
-  box-shadow: 6px 6px 0 var(--shadow);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: 0.15s ease;
-}
-
-button:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 8px 8px 0 var(--shadow);
-}
-
-button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: 4px 4px 0 var(--shadow);
-}
-
-button.secondary {
-  background: linear-gradient(135deg, #ffe083, var(--sun));
-  color: var(--brown);
-}
-
-button.success {
-  background: linear-gradient(135deg, #91aa4f, var(--green));
-}
-
-button.danger,
-.quiz-close-button {
-  background: linear-gradient(135deg, #d94a31, var(--danger));
-}
-
-.question-counter-box {
-  padding: 18px;
-  background: #dfe8a5;
-  border: 4px solid var(--dark-brown);
-  border-left: 12px solid var(--green);
-  border-radius: 20px;
-  text-align: center;
-  font-size: 1.35rem;
-  font-weight: 1000;
-  box-shadow: 5px 5px 0 rgba(42,22,13,0.35);
-}
-
-.progress-outer {
-  display: none;
-  height: 24px;
-  overflow: hidden;
-  background: var(--brown);
-  border: 4px solid var(--dark-brown);
-  border-radius: 999px;
-}
-
-.progress-inner {
-  height: 100%;
-  width: 0%;
-  background: repeating-linear-gradient(
-    45deg,
-    var(--sun) 0 14px,
-    var(--orange) 14px 28px
-  );
-  transition: width 0.25s ease;
-}
-
-.failed-list {
-  color: var(--danger);
-  font-weight: 900;
-}
-
-.question-list-section {
-  display: none;
-}
-
-.question-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 16px;
-  margin-top: 14px;
-}
-
-.question-list-item {
-  padding: 12px;
-  border-radius: 18px;
-}
-
-.question-list-item strong {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--red);
-  text-transform: uppercase;
-}
-
-.question-list-item img {
-  width: 100%;
-  height: 90px;
-  object-fit: contain;
-  background: white;
-  border: 3px solid var(--dark-brown);
-  border-radius: 10px;
-}
-
-.question-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 10px;
-}
-
-.question-actions button {
-  padding: 9px 8px;
-  font-size: 0.78rem;
-  box-shadow: 4px 4px 0 var(--shadow);
-}
-
-.question-actions .delete-question-button {
-  grid-column: 1 / -1;
-}
-
-.hidden-work-area {
-  display: none;
-}
-
-canvas {
-  max-width: 100%;
-}
-
-/* Start-Pop-up */
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(246,200,95,0.45), transparent 30%),
-    rgba(39,21,12,0.86);
-}
-
-.modal {
-  width: min(760px, 100%);
-  padding: 28px;
-}
-
-.modal p,
-.modal li {
-  font-size: 1.05rem;
-  line-height: 1.5;
-  font-weight: 700;
-}
-
-.modal ul {
-  padding-left: 1.4rem;
-}
-
-.modal-ok {
-  width: 100%;
-  margin-top: 18px;
-  font-size: 1.25rem;
-  padding: 18px;
-}
-
-/* Quiz-Ansicht */
-.quiz-screen {
-  display: none;
-  width: 100vw;
-
-  /*
-    Absichtlich etwas niedriger als die volle Browserhöhe:
-    So bleiben auf dem iPad ohne Vollbild die unteren Quiz-Buttons besser erreichbar.
-  */
-  height: min(100dvh, calc(100vh - 58px));
-  min-height: 560px;
-
-  overflow: hidden;
-  padding: 10px 14px 12px;
-  color: var(--cream);
-  background:
-    radial-gradient(circle at 15% 20%, rgba(246,200,95,0.28) 0 8%, transparent 9%),
-    radial-gradient(circle at 86% 80%, rgba(255,241,199,0.16) 0 10%, transparent 11%),
-    repeating-linear-gradient(
-      -45deg,
-      rgba(255,241,199,0.09) 0 14px,
-      transparent 14px 34px
-    ),
-    linear-gradient(135deg, var(--brown), var(--red) 55%, var(--orange));
-}
-
-.quiz-inner {
-  height: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-rows: auto minmax(120px, 24vh) minmax(230px, 1fr) auto;
-  gap: 9px;
-}
-
-.quiz-topbar {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 10px;
-}
-
-.quiz-title {
-  justify-self: center;
-  margin: 0;
-  color: var(--sun);
-  font-size: clamp(1.6rem, 4.3vw, 3rem);
-  line-height: 1;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  text-shadow: 4px 4px 0 var(--shadow);
-}
-
-.quiz-progress {
-  display: inline-block;
-  margin-left: 12px;
-  padding: 6px 12px;
-  border: 4px solid var(--cream);
-  border-radius: 999px;
-  background: var(--red);
-  color: var(--cream);
-  font-size: clamp(0.95rem, 2.2vw, 1.35rem);
-  vertical-align: middle;
-  white-space: nowrap;
-  box-shadow: 4px 4px 0 var(--shadow);
-}
-
-.quiz-close-button {
-  justify-self: end;
-  padding: 11px 20px;
-  font-size: clamp(0.95rem, 2vw, 1.1rem);
-  white-space: nowrap;
-}
-
-.quiz-question {
-  min-height: 0;
-  padding: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.quiz-question img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  display: block;
-}
-
-.quiz-answers {
-  min-height: 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-template-rows: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.quiz-answer {
-  min-height: 0;
-  padding: 9px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  overflow: hidden;
-}
-
-.quiz-answer.correct {
-  background: var(--green);
-  border-color: var(--dark-brown);
-  box-shadow: 10px 10px 0 var(--shadow), 0 0 0 8px var(--sun);
-}
-
-.big-letter {
-  flex: 0 0 auto;
-  width: clamp(48px, 7vw, 74px);
-  height: clamp(48px, 7vw, 74px);
-  border: 4px solid var(--dark-brown);
-  border-radius: 50%;
-  background: var(--red);
-  color: var(--cream);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: clamp(1.8rem, 4.5vw, 2.7rem);
-  font-weight: 1000;
-  box-shadow: 5px 5px 0 var(--shadow);
-}
-
-.quiz-answer.correct .big-letter {
-  background: var(--sun);
-  color: var(--brown);
-}
-
-.answer-image-wrap {
-  flex: 1;
-  height: 100%;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background: white;
-  border: 3px solid var(--dark-brown);
-  border-radius: 14px;
-}
-
-.answer-image-wrap img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  display: block;
-}
-
-.quiz-controls {
-  display: grid;
-  grid-template-columns: repeat(3, auto);
-  justify-content: center;
-  gap: 9px;
-}
-
-.quiz-controls button {
-  padding: 10px 16px;
-  font-size: 0.9rem;
-}
-
-@media (max-width: 700px) {
-  .controls {
-    grid-template-columns: 1fr;
-  }
-
-  .quiz-controls {
-    grid-template-columns: 1fr;
-  }
-
-  .question-actions {
-    grid-template-columns: 1fr;
-  }
-
-  .question-actions .delete-question-button {
-    grid-column: auto;
-  }
-}
-
-@media (orientation: portrait) {
-  .quiz-screen {
-    height: auto;
-    min-height: calc(100dvh - 58px);
-    overflow: auto;
-  }
-
-  .quiz-inner {
-    height: auto;
-    min-height: calc(100dvh - 76px);
-    grid-template-rows: auto auto auto auto;
-  }
-
-  .quiz-answers {
-    grid-template-columns: 1fr;
-    grid-template-rows: none;
-  }
-
-  .quiz-answer {
-    min-height: 126px;
-  }
-
-  .quiz-question {
-    min-height: 150px;
-  }
-
-  .quiz-topbar {
-    grid-template-columns: 1fr;
-  }
-
-  .quiz-close-button {
-    justify-self: center;
-  }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4er-Quiz automatisch</title>
+
+  <style>
+    :root {
+      --cream: #fff1c7;
+      --sun: #f6c85f;
+      --orange: #e77b3c;
+      --red: #b6422b;
+      --brown: #3f2415;
+      --dark-brown: #27150c;
+      --green: #6f8f3d;
+      --danger: #b7352a;
+      --shadow: #2a160d;
+      --radius: 28px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+    }
+
+    body {
+      font-family: "Trebuchet MS", "Arial Rounded MT Bold", system-ui, sans-serif;
+      color: var(--brown);
+      background:
+        radial-gradient(circle at 12% 18%, rgba(255,255,255,.22) 0 8%, transparent 9%),
+        radial-gradient(circle at 82% 12%, rgba(255,255,255,.18) 0 7%, transparent 8%),
+        radial-gradient(circle at 72% 78%, rgba(255,255,255,.16) 0 9%, transparent 10%),
+        repeating-linear-gradient(
+          45deg,
+          rgba(63,36,21,.08) 0 14px,
+          transparent 14px 34px
+        ),
+        linear-gradient(135deg, #f6c85f 0%, #e77b3c 48%, #b6422b 100%);
+      background-attachment: fixed;
+    }
+
+    button,
+    .photo-button {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    header {
+      padding: 30px 18px 26px;
+      text-align: center;
+      color: var(--cream);
+      background:
+        repeating-radial-gradient(
+          circle at center,
+          rgba(255,241,199,.14) 0 10px,
+          transparent 10px 24px
+        ),
+        linear-gradient(135deg, var(--brown), var(--red), var(--orange));
+      border-bottom: 8px solid var(--dark-brown);
+      box-shadow: 0 10px 0 rgba(42,22,13,.35);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      line-height: .95;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      text-shadow: 5px 5px 0 var(--shadow);
+    }
+
+    main {
+      max-width: 940px;
+      margin: 28px auto;
+      padding: 0 16px 44px;
+    }
+
+    .card,
+    .modal,
+    .quiz-question,
+    .quiz-answer,
+    .question-list-item {
+      background: var(--cream);
+      border: 5px solid var(--dark-brown);
+      border-radius: var(--radius);
+      box-shadow: 10px 10px 0 var(--shadow);
+    }
+
+    .card {
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      color: var(--red);
+      font-size: clamp(1.6rem, 4vw, 2.3rem);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-shadow: 2px 2px 0 var(--sun);
+    }
+
+    .main-actions {
+      display: grid;
+      gap: 16px;
+    }
+
+    .photo-button {
+      min-height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 5px solid var(--dark-brown);
+      border-radius: 34px;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.25), transparent 22%),
+        linear-gradient(135deg, #f08a3c, var(--red));
+      color: var(--cream);
+      font-size: clamp(1.8rem, 6vw, 3.4rem);
+      font-weight: 1000;
+      text-align: center;
+      cursor: pointer;
+      box-shadow: 9px 9px 0 var(--shadow);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: .15s ease;
+      user-select: none;
+    }
+
+    .photo-button:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 12px 12px 0 var(--shadow);
+    }
+
+    .photo-button span {
+      padding: 14px;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 8px;
+    }
+
+    .start-quiz-button,
+    .bottom-delete-section button {
+      width: 100%;
+      min-height: 64px;
+      font-size: 1.18rem;
+    }
+
+    .bottom-delete-section {
+      display: none;
+    }
+
+    button {
+      border: 4px solid var(--dark-brown);
+      border-radius: 999px;
+      padding: 15px 22px;
+      font-size: 1.05rem;
+      font-weight: 1000;
+      cursor: pointer;
+      background: linear-gradient(135deg, var(--orange), var(--red));
+      color: var(--cream);
+      box-shadow: 6px 6px 0 var(--shadow);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      transition: .15s ease;
+    }
+
+    button:hover {
+      transform: translate(-1px, -1px);
+      box-shadow: 8px 8px 0 var(--shadow);
+    }
+
+    button:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 4px 4px 0 var(--shadow);
+    }
+
+    button.secondary {
+      background: linear-gradient(135deg, #ffe083, var(--sun));
+      color: var(--brown);
+    }
+
+    button.success {
+      background: linear-gradient(135deg, #91aa4f, var(--green));
+    }
+
+    button.danger,
+    .quiz-close-button {
+      background: linear-gradient(135deg, #d94a31, var(--danger));
+    }
+
+    .question-counter-box {
+      padding: 18px;
+      background: #dfe8a5;
+      border: 4px solid var(--dark-brown);
+      border-left: 12px solid var(--green);
+      border-radius: 20px;
+      text-align: center;
+      font-size: 1.35rem;
+      font-weight: 1000;
+      box-shadow: 5px 5px 0 rgba(42,22,13,.35);
+    }
+
+    .progress-outer {
+      display: none;
+      height: 24px;
+      overflow: hidden;
+      background: var(--brown);
+      border: 4px solid var(--dark-brown);
+      border-radius: 999px;
+    }
+
+    .progress-inner {
+      height: 100%;
+      width: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        var(--sun) 0 14px,
+        var(--orange) 14px 28px
+      );
+      transition: width .25s ease;
+    }
+
+    .failed-list {
+      color: var(--danger);
+      font-weight: 900;
+    }
+
+    .question-list-section {
+      display: none;
+    }
+
+    .question-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    .question-list-item {
+      padding: 12px;
+      border-radius: 18px;
+    }
+
+    .question-list-item strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--red);
+      text-transform: uppercase;
+    }
+
+    .question-list-item img {
+      width: 100%;
+      height: 90px;
+      object-fit: contain;
+      background: white;
+      border: 3px solid var(--dark-brown);
+      border-radius: 10px;
+    }
+
+    .question-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .question-actions button {
+      padding: 9px 8px;
+      font-size: .78rem;
+      box-shadow: 4px 4px 0 var(--shadow);
+    }
+
+    .question-actions .delete-question-button {
+      grid-column: 1 / -1;
+    }
+
+    .hidden-work-area {
+      display: none;
+    }
+
+    canvas {
+      max-width: 100%;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(246,200,95,.45), transparent 30%),
+        rgba(39,21,12,.86);
+    }
+
+    .modal {
+      width: min(760px, 100%);
+      padding: 28px;
+    }
+
+    .modal p,
+    .modal li {
+      font-size: 1.05rem;
+      line-height: 1.5;
+      font-weight: 700;
+    }
+
+    .modal ul {
+      padding-left: 1.4rem;
+    }
+
+    .modal-ok {
+      width: 100%;
+      margin-top: 18px;
+      font-size: 1.25rem;
+      padding: 18px;
+    }
+
+    .quiz-screen {
+      display: none;
+      width: 100vw;
+      height: min(100dvh, calc(100vh - 58px));
+      min-height: 560px;
+      overflow: hidden;
+      padding: 10px 14px 12px;
+      color: var(--cream);
+      background:
+        radial-gradient(circle at 15% 20%, rgba(246,200,95,.28) 0 8%, transparent 9%),
+        radial-gradient(circle at 86% 80%, rgba(255,241,199,.16) 0 10%, transparent 11%),
+        repeating-linear-gradient(
+          -45deg,
+          rgba(255,241,199,.09) 0 14px,
+          transparent 14px 34px
+        ),
+        linear-gradient(135deg, var(--brown), var(--red) 55%, var(--orange));
+    }
+
+    .quiz-screen:fullscreen,
+    .quiz-screen:-webkit-full-screen {
+      width: 100vw;
+      height: 100dvh;
+      min-height: 100dvh;
+    }
+
+    .quiz-inner {
+      height: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-rows: auto minmax(120px, 24vh) minmax(230px, 1fr) auto;
+      gap: 9px;
+    }
+
+    .quiz-topbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .quiz-top-actions {
+      justify-self: end;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .quiz-title {
+      justify-self: center;
+      margin: 0;
+      color: var(--sun);
+      font-size: clamp(1.6rem, 4.3vw, 3rem);
+      line-height: 1;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      text-shadow: 4px 4px 0 var(--shadow);
+    }
+
+    .quiz-progress {
+      display: inline-block;
+      margin-left: 12px;
+      padding: 6px 12px;
+      border: 4px solid var(--cream);
+      border-radius: 999px;
+      background: var(--red);
+      color: var(--cream);
+      font-size: clamp(.95rem, 2.2vw, 1.35rem);
+      vertical-align: middle;
+      white-space: nowrap;
+      box-shadow: 4px 4px 0 var(--shadow);
+    }
+
+    .quiz-close-button {
+      justify-self: end;
+      padding: 11px 20px;
+      font-size: clamp(.95rem, 2vw, 1.1rem);
+      white-space: nowrap;
+    }
+
+    .quiz-fullscreen-button {
+      width: 52px;
+      height: 52px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.7rem;
+      line-height: 1;
+      background: linear-gradient(135deg, #ffe083, var(--sun));
+      color: var(--brown);
+    }
+
+    .quiz-question {
+      min-height: 0;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .quiz-question img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+
+    .quiz-answers {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .quiz-answer {
+      min-height: 0;
+      padding: 9px;
+      display: flex;
+      align-items: stretch;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .quiz-answer.correct {
+      background: var(--green);
+      border-color: var(--dark-brown);
+      box-shadow: 10px 10px 0 var(--shadow), 0 0 0 8px var(--sun);
+    }
+
+    .big-letter {
+      flex: 0 0 auto;
+      align-self: center;
+      width: clamp(48px, 7vw, 74px);
+      height: clamp(48px, 7vw, 74px);
+      border: 4px solid var(--dark-brown);
+      border-radius: 50%;
+      background: var(--red);
+      color: var(--cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(1.8rem, 4.5vw, 2.7rem);
+      font-weight: 1000;
+      box-shadow: 5px 5px 0 var(--shadow);
+    }
+
+    .quiz-answer.correct .big-letter {
+      background: var(--sun);
+      color: var(--brown);
+    }
+
+    .answer-image-wrap {
+      flex: 1 1 auto;
+      height: 100%;
+      aspect-ratio: 402 / 153;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: white;
+      border: 3px solid var(--dark-brown);
+      border-radius: 14px;
+    }
+
+    .answer-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      display: block;
+    }
+
+    .quiz-controls {
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      justify-content: center;
+      gap: 9px;
+    }
+
+    .quiz-controls button {
+      padding: 10px 16px;
+      font-size: .9rem;
+    }
+
+    @media (max-width: 700px) {
+      .question-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .question-actions .delete-question-button {
+        grid-column: auto;
+      }
+
+      .quiz-controls {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (orientation: portrait) {
+      .quiz-screen {
+        height: auto;
+        min-height: calc(100dvh - 58px);
+        overflow: auto;
+      }
+
+      .quiz-inner {
+        height: auto;
+        min-height: calc(100dvh - 76px);
+        grid-template-rows: auto auto auto auto;
+      }
+
+      .quiz-answers {
+        grid-template-columns: 1fr;
+        grid-template-rows: none;
+      }
+
+      .quiz-answer {
+        min-height: 126px;
+      }
+
+      .quiz-question {
+        min-height: 150px;
+      }
+
+      .quiz-topbar {
+        grid-template-columns: 1fr;
+      }
+
+      .quiz-close-button,
+      .quiz-top-actions {
+        justify-self: center;
+      }
+    }
+  </style>
 </head>
 
 <body>
-<div id="introModal" class="modal-backdrop">
-  <div class="modal">
-    <h2>So funktioniert das 4er-Quiz</h2>
-    <p>
-      Fotografiere eine oder mehrere ausgefüllte Fragenkarten.
-      Die App erkennt die vier schwarzen Eckmarken automatisch, richtet das Foto gerade aus
-      und erstellt daraus die Quizfrage.
-    </p>
-    <ul>
-      <li>Die vier schwarzen Eckmarken müssen auf dem Foto sichtbar sein.</li>
-      <li>Das Foto darf leicht schräg aufgenommen sein.</li>
-      <li>Die App nutzt möglichst genau die schwarzen Rahmen der Textfelder.</li>
-      <li>Wenn eine Karte nicht erkannt wird, wird sie übersprungen und gemeldet.</li>
-      <li>In der Fragensammlung kannst du einzelne Aufnahmen löschen oder verschieben.</li>
-      <li>Das Quiz ist besonders für ein iPad im Querformat geeignet.</li>
-    </ul>
-    <button id="introOkButton" class="modal-ok">Okay</button>
-  </div>
-</div>
+  <div id="introModal" class="modal-backdrop">
+    <div class="modal">
+      <h2>So funktioniert das 4er-Quiz</h2>
 
-<div id="editorView">
-  <header>
-    <h1>4er-Quiz</h1>
-  </header>
+      <p>
+        Fotografiere eine oder mehrere ausgefüllte Fragenkarten.
+        Die App erkennt die vier schwarzen Eckmarken automatisch, richtet das Foto gerade aus
+        und erstellt daraus die Quizfrage.
+      </p>
 
-  <main>
-    <section class="card">
-      <div class="main-actions">
-        <label for="imageInput" class="photo-button">
-          <span>📷 Foto aufnehmen</span>
-        </label>
+      <ul>
+        <li>Die vier schwarzen Eckmarken müssen auf dem Foto sichtbar sein.</li>
+        <li>Das Foto darf leicht schräg aufgenommen sein.</li>
+        <li>Die App nutzt möglichst genau die schwarzen Rahmen der Textfelder.</li>
+        <li>Wenn eine Karte nicht erkannt wird, wird sie übersprungen und gemeldet.</li>
+        <li>In der Fragensammlung kannst du einzelne Aufnahmen löschen oder verschieben.</li>
+        <li>Das Quiz ist besonders für ein iPad im Querformat geeignet.</li>
+      </ul>
 
-        <input id="imageInput" type="file" accept="image/*" capture="environment" multiple />
-
-        <div class="progress-outer" id="progressOuter">
-          <div class="progress-inner" id="progressInner"></div>
-        </div>
-
-        <div id="questionCounterBox" class="question-counter-box">
-          Gesammelte Fragen: <span id="questionCount">0</span>
-        </div>
-
-        <div id="failedList" class="failed-list"></div>
-
-        <div class="controls">
-          <button id="startQuizButton" class="success start-quiz-button" disabled>Quiz starten</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="questionListSection" class="card question-list-section">
-      <h2>Fragensammlung</h2>
-      <div id="questionList" class="question-list"></div>
-    </section>
-
-    <section id="bottomDeleteSection" class="card bottom-delete-section">
-      <button id="clearAllButton" class="danger">Alles löschen</button>
-    </section>
-  </main>
-</div>
-
-<div id="quizView" class="quiz-screen">
-  <div class="quiz-inner">
-    <div class="quiz-topbar">
-      <h1 class="quiz-title">
-        4er-Quiz <span id="quizProgress" class="quiz-progress">1 / 1</span>
-      </h1>
-
-      <button id="backButton" class="quiz-close-button" aria-label="Quiz abbrechen">
-        Abbrechen
-      </button>
-    </div>
-
-    <div class="quiz-question">
-      <img id="quizQuestionImage" alt="Quizfrage" />
-    </div>
-
-    <div class="quiz-answers">
-      <div id="answerBoxA" class="quiz-answer">
-        <div class="big-letter">A</div>
-        <div class="answer-image-wrap">
-          <img id="quizAnswerA" alt="Antwort A" />
-        </div>
-      </div>
-
-      <div id="answerBoxB" class="quiz-answer">
-        <div class="big-letter">B</div>
-        <div class="answer-image-wrap">
-          <img id="quizAnswerB" alt="Antwort B" />
-        </div>
-      </div>
-
-      <div id="answerBoxC" class="quiz-answer">
-        <div class="big-letter">C</div>
-        <div class="answer-image-wrap">
-          <img id="quizAnswerC" alt="Antwort C" />
-        </div>
-      </div>
-
-      <div id="answerBoxD" class="quiz-answer">
-        <div class="big-letter">D</div>
-        <div class="answer-image-wrap">
-          <img id="quizAnswerD" alt="Antwort D" />
-        </div>
-      </div>
-    </div>
-
-    <div class="quiz-controls">
-      <button id="prevQuestionButton" class="secondary">Vorherige Frage</button>
-      <button id="revealButton">Richtige Antwort zeigen</button>
-      <button id="nextQuestionButton">Nächste Frage</button>
+      <button id="introOkButton" class="modal-ok">Okay</button>
     </div>
   </div>
-</div>
 
-<div class="hidden-work-area">
-  <canvas id="sourceCanvas"></canvas>
-  <canvas id="rectifiedCanvas"></canvas>
-  <canvas id="originalCanvas"></canvas>
-  <canvas id="normalizedCanvas"></canvas>
+  <div id="editorView">
+    <header>
+      <h1>4er-Quiz</h1>
+    </header>
 
-  <img id="questionPreview" alt="Ausschnitt der Frage" />
-  <img id="correctPreview" alt="Ausschnitt der richtigen Antwort" />
-  <img id="wrong1Preview" alt="Ausschnitt der falschen Antwort 1" />
-  <img id="wrong2Preview" alt="Ausschnitt der falschen Antwort 2" />
-  <img id="wrong3Preview" alt="Ausschnitt der falschen Antwort 3" />
-</div>
+    <main>
+      <section class="card">
+        <div class="main-actions">
+          <label for="imageInput" class="photo-button">
+            <span>📷 Foto aufnehmen</span>
+          </label>
 
-<script>
-let cvReady = false;
-let waitingFiles = [];
+          <input
+            id="imageInput"
+            type="file"
+            accept="image/*"
+            capture="environment"
+            multiple
+          >
 
-window.Module = {
-  onRuntimeInitialized() {
-    cvReady = true;
-    updateButtonStates();
+          <div class="progress-outer" id="progressOuter">
+            <div class="progress-inner" id="progressInner"></div>
+          </div>
 
-    if (waitingFiles.length > 0) {
-      processFilesAutomatically(waitingFiles);
-      waitingFiles = [];
+          <div id="questionCounterBox" class="question-counter-box">
+            Gesammelte Fragen:
+            <span id="questionCount">0</span>
+          </div>
+
+          <div id="failedList" class="failed-list"></div>
+
+          <div class="controls">
+            <button id="startQuizButton" class="success start-quiz-button" disabled>
+              Quiz starten
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="questionListSection" class="card question-list-section">
+        <h2>Fragensammlung</h2>
+        <div id="questionList" class="question-list"></div>
+      </section>
+
+      <section id="bottomDeleteSection" class="card bottom-delete-section">
+        <button id="clearAllButton" class="danger">Alles löschen</button>
+      </section>
+    </main>
+  </div>
+
+  <div id="quizView" class="quiz-screen">
+    <div class="quiz-inner">
+      <div class="quiz-topbar">
+        <h1 class="quiz-title">
+          4er-Quiz
+          <span id="quizProgress" class="quiz-progress">1 / 1</span>
+        </h1>
+
+        <div class="quiz-top-actions">
+          <button
+            id="backButton"
+            class="quiz-close-button"
+            aria-label="Quiz abbrechen"
+          >
+            Abbrechen
+          </button>
+
+          <button
+            id="fullscreenButton"
+            class="quiz-fullscreen-button"
+            aria-label="Vollbild einschalten"
+            title="Vollbild einschalten"
+          >
+            ↗
+          </button>
+        </div>
+      </div>
+
+      <div class="quiz-question">
+        <img id="quizQuestionImage" alt="Quizfrage">
+      </div>
+
+      <div class="quiz-answers">
+        <div id="answerBoxA" class="quiz-answer">
+          <div class="big-letter">A</div>
+          <div class="answer-image-wrap">
+            <img id="quizAnswerA" alt="Antwort A">
+          </div>
+        </div>
+
+        <div id="answerBoxB" class="quiz-answer">
+          <div class="big-letter">B</div>
+          <div class="answer-image-wrap">
+            <img id="quizAnswerB" alt="Antwort B">
+          </div>
+        </div>
+
+        <div id="answerBoxC" class="quiz-answer">
+          <div class="big-letter">C</div>
+          <div class="answer-image-wrap">
+            <img id="quizAnswerC" alt="Antwort C">
+          </div>
+        </div>
+
+        <div id="answerBoxD" class="quiz-answer">
+          <div class="big-letter">D</div>
+          <div class="answer-image-wrap">
+            <img id="quizAnswerD" alt="Antwort D">
+          </div>
+        </div>
+      </div>
+
+      <div class="quiz-controls">
+        <button id="prevQuestionButton" class="secondary">
+          Vorherige Frage
+        </button>
+
+        <button id="revealButton">
+          Richtige Antwort zeigen
+        </button>
+
+        <button id="nextQuestionButton">
+          Nächste Frage
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="hidden-work-area">
+    <canvas id="sourceCanvas"></canvas>
+    <canvas id="rectifiedCanvas"></canvas>
+    <canvas id="originalCanvas"></canvas>
+    <canvas id="normalizedCanvas"></canvas>
+
+    <img id="questionPreview" alt="Ausschnitt der Frage">
+    <img id="correctPreview" alt="Ausschnitt der richtigen Antwort">
+    <img id="wrong1Preview" alt="Ausschnitt der falschen Antwort 1">
+    <img id="wrong2Preview" alt="Ausschnitt der falschen Antwort 2">
+    <img id="wrong3Preview" alt="Ausschnitt der falschen Antwort 3">
+  </div>
+
+  <script>
+    let cvReady = false;
+    let waitingFiles = [];
+
+    window.Module = {
+      onRuntimeInitialized() {
+        cvReady = true;
+        updateButtonStates();
+
+        if (waitingFiles.length > 0) {
+          processFilesAutomatically(waitingFiles);
+          waitingFiles = [];
+        }
+      }
+    };
+  </script>
+
+  <script async src="https://docs.opencv.org/4.x/opencv.js"></script>
+
+  <script>
+    const introModal = document.getElementById("introModal");
+    const introOkButton = document.getElementById("introOkButton");
+    const imageInput = document.getElementById("imageInput");
+    const startQuizButton = document.getElementById("startQuizButton");
+    const clearAllButton = document.getElementById("clearAllButton");
+    const bottomDeleteSection = document.getElementById("bottomDeleteSection");
+    const progressOuter = document.getElementById("progressOuter");
+    const progressInner = document.getElementById("progressInner");
+    const failedList = document.getElementById("failedList");
+    const questionCount = document.getElementById("questionCount");
+    const questionListSection = document.getElementById("questionListSection");
+    const questionList = document.getElementById("questionList");
+
+    const sourceCanvas = document.getElementById("sourceCanvas");
+    const sourceCtx = sourceCanvas.getContext("2d");
+
+    const rectifiedCanvas = document.getElementById("rectifiedCanvas");
+    const rectifiedCtx = rectifiedCanvas.getContext("2d");
+
+    const originalCanvas = document.getElementById("originalCanvas");
+    const originalCtx = originalCanvas.getContext("2d");
+
+    const normalizedCanvas = document.getElementById("normalizedCanvas");
+
+    const questionPreview = document.getElementById("questionPreview");
+    const correctPreview = document.getElementById("correctPreview");
+    const wrong1Preview = document.getElementById("wrong1Preview");
+    const wrong2Preview = document.getElementById("wrong2Preview");
+    const wrong3Preview = document.getElementById("wrong3Preview");
+
+    const editorView = document.getElementById("editorView");
+    const quizView = document.getElementById("quizView");
+    const quizProgress = document.getElementById("quizProgress");
+    const quizQuestionImage = document.getElementById("quizQuestionImage");
+
+    const quizAnswerA = document.getElementById("quizAnswerA");
+    const quizAnswerB = document.getElementById("quizAnswerB");
+    const quizAnswerC = document.getElementById("quizAnswerC");
+    const quizAnswerD = document.getElementById("quizAnswerD");
+
+    const answerBoxA = document.getElementById("answerBoxA");
+    const answerBoxB = document.getElementById("answerBoxB");
+    const answerBoxC = document.getElementById("answerBoxC");
+    const answerBoxD = document.getElementById("answerBoxD");
+
+    const revealButton = document.getElementById("revealButton");
+    const backButton = document.getElementById("backButton");
+    const fullscreenButton = document.getElementById("fullscreenButton");
+    const prevQuestionButton = document.getElementById("prevQuestionButton");
+    const nextQuestionButton = document.getElementById("nextQuestionButton");
+
+    let loadedImage = null;
+    let markerPoints = null;
+    let questions = [];
+    let currentQuizIndex = 0;
+    let correctLetter = null;
+    let isProcessing = false;
+
+    const NORMALIZED_WIDTH = 1021;
+    const NORMALIZED_HEIGHT = 724;
+
+    const TARGET_MARKERS = {
+      topLeft: { x: 141, y: 76 },
+      topRight: { x: 908, y: 76 },
+      bottomRight: { x: 908, y: 668 },
+      bottomLeft: { x: 141, y: 668 }
+    };
+
+    const CROP_FIELDS = {
+      question: { x: 112, y: 110, w: 824, h: 154 },
+      correct: { x: 111, y: 293, w: 402, h: 153 },
+      wrong1: { x: 531, y: 293, w: 402, h: 153 },
+      wrong2: { x: 111, y: 481, w: 402, h: 153 },
+      wrong3: { x: 531, y: 481, w: 402, h: 153 }
+    };
+
+    introOkButton.addEventListener("click", () => {
+      introModal.style.display = "none";
+    });
+
+    imageInput.addEventListener("change", handleFileSelection);
+    startQuizButton.addEventListener("click", startQuiz);
+    clearAllButton.addEventListener("click", clearEverything);
+    revealButton.addEventListener("click", revealCorrectAnswer);
+    backButton.addEventListener("click", confirmBackToEditor);
+    fullscreenButton.addEventListener("click", toggleFullscreen);
+
+    document.addEventListener("fullscreenchange", updateFullscreenButton);
+    document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
+
+    prevQuestionButton.addEventListener("click", showPreviousQuestion);
+    nextQuestionButton.addEventListener("click", showNextQuestion);
+
+    updateQuestionCollectionView();
+
+    function setProgress(done, total) {
+      if (total <= 0) {
+        progressOuter.style.display = "none";
+        progressInner.style.width = "0%";
+        return;
+      }
+
+      progressOuter.style.display = "block";
+      progressInner.style.width = Math.round(done / total * 100) + "%";
     }
-  }
-};
-</script>
 
-<script async src="https://docs.opencv.org/4.x/opencv.js"></script>
+    function updateButtonStates() {
+      const hasQuestions = questions.length > 0;
 
-<script>
-const introModal = document.getElementById("introModal");
-const introOkButton = document.getElementById("introOkButton");
-const imageInput = document.getElementById("imageInput");
-const startQuizButton = document.getElementById("startQuizButton");
-const clearAllButton = document.getElementById("clearAllButton");
-const bottomDeleteSection = document.getElementById("bottomDeleteSection");
-const progressOuter = document.getElementById("progressOuter");
-const progressInner = document.getElementById("progressInner");
-const failedList = document.getElementById("failedList");
-const questionCount = document.getElementById("questionCount");
-const questionListSection = document.getElementById("questionListSection");
-const questionList = document.getElementById("questionList");
+      startQuizButton.disabled = !hasQuestions || isProcessing;
+      bottomDeleteSection.style.display = hasQuestions ? "block" : "none";
+    }
 
-const sourceCanvas = document.getElementById("sourceCanvas");
-const sourceCtx = sourceCanvas.getContext("2d");
+    function handleFileSelection(event) {
+      const files = Array.from(event.target.files || []);
 
-const rectifiedCanvas = document.getElementById("rectifiedCanvas");
-const rectifiedCtx = rectifiedCanvas.getContext("2d");
+      if (files.length === 0) return;
 
-const originalCanvas = document.getElementById("originalCanvas");
-const originalCtx = originalCanvas.getContext("2d");
+      if (!cvReady) {
+        waitingFiles = files;
+        return;
+      }
 
-const normalizedCanvas = document.getElementById("normalizedCanvas");
+      processFilesAutomatically(files);
+    }
 
-const questionPreview = document.getElementById("questionPreview");
-const correctPreview = document.getElementById("correctPreview");
-const wrong1Preview = document.getElementById("wrong1Preview");
-const wrong2Preview = document.getElementById("wrong2Preview");
-const wrong3Preview = document.getElementById("wrong3Preview");
+    async function processFilesAutomatically(files) {
+      if (isProcessing) return;
 
-const editorView = document.getElementById("editorView");
-const quizView = document.getElementById("quizView");
-const quizProgress = document.getElementById("quizProgress");
-const quizQuestionImage = document.getElementById("quizQuestionImage");
-const quizAnswerA = document.getElementById("quizAnswerA");
-const quizAnswerB = document.getElementById("quizAnswerB");
-const quizAnswerC = document.getElementById("quizAnswerC");
-const quizAnswerD = document.getElementById("quizAnswerD");
-const answerBoxA = document.getElementById("answerBoxA");
-const answerBoxB = document.getElementById("answerBoxB");
-const answerBoxC = document.getElementById("answerBoxC");
-const answerBoxD = document.getElementById("answerBoxD");
-const revealButton = document.getElementById("revealButton");
-const backButton = document.getElementById("backButton");
-const prevQuestionButton = document.getElementById("prevQuestionButton");
-const nextQuestionButton = document.getElementById("nextQuestionButton");
+      isProcessing = true;
+      failedList.textContent = "";
+      updateButtonStates();
 
-let loadedImage = null;
-let markerPoints = null;
-let questions = [];
-let currentQuizIndex = 0;
-let correctLetter = null;
-let isProcessing = false;
+      const failedFiles = [];
+      setProgress(0, files.length);
 
-const NORMALIZED_WIDTH = 1021;
-const NORMALIZED_HEIGHT = 724;
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
 
-const TARGET_MARKERS = {
-  topLeft: { x: 141, y: 76 },
-  topRight: { x: 908, y: 76 },
-  bottomRight: { x: 908, y: 668 },
-  bottomLeft: { x: 141, y: 668 }
-};
+        try {
+          const image = await loadImageFromFile(file);
 
-const CROP_FIELDS = {
-  question: { x: 112, y: 110, w: 824, h: 154 },
-  correct: { x: 111, y: 293, w: 402, h: 153 },
-  wrong1: { x: 531, y: 293, w: 402, h: 153 },
-  wrong2: { x: 111, y: 481, w: 402, h: 153 },
-  wrong3: { x: 531, y: 481, w: 402, h: 153 }
-};
+          loadedImage = image;
+          prepareCanvasesForLoadedImage();
+          drawSourceImage();
 
-introOkButton.addEventListener("click", () => {
-  introModal.style.display = "none";
-});
+          const detected = autoDetectMarkers();
 
-imageInput.addEventListener("change", handleFileSelection);
-startQuizButton.addEventListener("click", startQuiz);
-clearAllButton.addEventListener("click", clearEverything);
-revealButton.addEventListener("click", revealCorrectAnswer);
-backButton.addEventListener("click", confirmBackToEditor);
-prevQuestionButton.addEventListener("click", showPreviousQuestion);
-nextQuestionButton.addEventListener("click", showNextQuestion);
+          if (!detected) {
+            failedFiles.push(file.name || `Foto ${i + 1}`);
+          } else {
+            const crops = rectifyAndCrop();
 
-updateQuestionCollectionView();
+            questions.push({
+              ...crops,
+              createdAt: Date.now()
+            });
 
-function setProgress(done, total) {
-  if (total <= 0) {
-    progressOuter.style.display = "none";
-    progressInner.style.width = "0%";
-    return;
-  }
+            showLatestCrops(crops);
+            updateQuestionCollectionView();
+          }
+        } catch (error) {
+          console.error(error);
+          failedFiles.push(file.name || `Foto ${i + 1}`);
+        }
 
-  progressOuter.style.display = "block";
-  const percent = Math.round((done / total) * 100);
-  progressInner.style.width = percent + "%";
-}
+        setProgress(i + 1, files.length);
+      }
 
-function updateButtonStates() {
-  const hasQuestions = questions.length > 0;
-  startQuizButton.disabled = !hasQuestions || isProcessing;
+      failedList.textContent = failedFiles.length
+        ? `Nicht erkannt: ${failedFiles.join(", ")}`
+        : "";
 
-  if (hasQuestions) {
-    bottomDeleteSection.style.display = "block";
-  } else {
-    bottomDeleteSection.style.display = "none";
-  }
-}
+      isProcessing = false;
+      imageInput.value = "";
+      updateButtonStates();
 
-function handleFileSelection(event) {
-  const files = Array.from(event.target.files || []);
+      setTimeout(() => setProgress(0, 0), 900);
+    }
 
-  if (files.length === 0) return;
+    function loadImageFromFile(file) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
 
-  if (!cvReady) {
-    waitingFiles = files;
-    return;
-  }
+        img.onload = () => {
+          URL.revokeObjectURL(img.src);
+          resolve(img);
+        };
 
-  processFilesAutomatically(files);
-}
+        img.onerror = () => {
+          reject(new Error("Bild konnte nicht geladen werden."));
+        };
 
-async function processFilesAutomatically(files) {
-  if (isProcessing) return;
+        img.src = URL.createObjectURL(file);
+      });
+    }
 
-  isProcessing = true;
-  failedList.textContent = "";
-  updateButtonStates();
+    function prepareCanvasesForLoadedImage() {
+      const maxSide = 1800;
+      const scale = Math.min(
+        1,
+        maxSide / Math.max(loadedImage.width, loadedImage.height)
+      );
 
-  const failedFiles = [];
-  setProgress(0, files.length);
+      sourceCanvas.width = Math.round(loadedImage.width * scale);
+      sourceCanvas.height = Math.round(loadedImage.height * scale);
 
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i];
+      originalCanvas.width = loadedImage.width;
+      originalCanvas.height = loadedImage.height;
 
-    try {
-      const image = await loadImageFromFile(file);
-      loadedImage = image;
+      rectifiedCanvas.width = NORMALIZED_WIDTH;
+      rectifiedCanvas.height = NORMALIZED_HEIGHT;
 
-      prepareCanvasesForLoadedImage();
-      drawSourceImage();
+      normalizedCanvas.width = NORMALIZED_WIDTH;
+      normalizedCanvas.height = NORMALIZED_HEIGHT;
+    }
 
-      const detected = autoDetectMarkers();
+    function drawSourceImage() {
+      sourceCtx.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
+      sourceCtx.drawImage(
+        loadedImage,
+        0,
+        0,
+        sourceCanvas.width,
+        sourceCanvas.height
+      );
 
-      if (!detected) {
-        failedFiles.push(file.name || `Foto ${i + 1}`);
+      originalCtx.clearRect(
+        0,
+        0,
+        originalCanvas.width,
+        originalCanvas.height
+      );
+
+      originalCtx.drawImage(
+        loadedImage,
+        0,
+        0,
+        originalCanvas.width,
+        originalCanvas.height
+      );
+    }
+
+    function autoDetectMarkers() {
+      if (!cvReady || !loadedImage) return false;
+
+      let src = null;
+      let gray = null;
+      let binary = null;
+      let contours = null;
+      let hierarchy = null;
+
+      try {
+        src = cv.imread(sourceCanvas);
+        gray = new cv.Mat();
+        binary = new cv.Mat();
+        contours = new cv.MatVector();
+        hierarchy = new cv.Mat();
+
+        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+        cv.threshold(
+          gray,
+          binary,
+          0,
+          255,
+          cv.THRESH_BINARY_INV + cv.THRESH_OTSU
+        );
+
+        cv.findContours(
+          binary,
+          contours,
+          hierarchy,
+          cv.RETR_EXTERNAL,
+          cv.CHAIN_APPROX_SIMPLE
+        );
+
+        const candidates = [];
+        const imageArea = sourceCanvas.width * sourceCanvas.height;
+
+        for (let i = 0; i < contours.size(); i++) {
+          const contour = contours.get(i);
+          const rect = cv.boundingRect(contour);
+          const area = cv.contourArea(contour);
+          const ratio = rect.width / rect.height;
+          const rectArea = rect.width * rect.height;
+          const fillRatio = area / rectArea;
+
+          const minArea = imageArea * .00035;
+          const maxArea = imageArea * .03;
+
+          const isSquareLike =
+            ratio > .65 &&
+            ratio < 1.45 &&
+            area > minArea &&
+            area < maxArea &&
+            fillRatio > .45;
+
+          if (isSquareLike) {
+            candidates.push({
+              x: rect.x + rect.width / 2,
+              y: rect.y + rect.height / 2,
+              width: rect.width,
+              height: rect.height,
+              area
+            });
+          }
+
+          contour.delete();
+        }
+
+        if (candidates.length < 4) {
+          markerPoints = null;
+          return false;
+        }
+
+        candidates.sort((a, b) => b.area - a.area);
+        markerPoints = orderPoints(candidates.slice(0, 4));
+
+        return true;
+      } catch (error) {
+        console.error(error);
+        markerPoints = null;
+        return false;
+      } finally {
+        if (src) src.delete();
+        if (gray) gray.delete();
+        if (binary) binary.delete();
+        if (contours) contours.delete();
+        if (hierarchy) hierarchy.delete();
+      }
+    }
+
+    function orderPoints(points) {
+      const topLeft = points.reduce((best, point) =>
+        point.x + point.y < best.x + best.y ? point : best
+      );
+
+      const bottomRight = points.reduce((best, point) =>
+        point.x + point.y > best.x + best.y ? point : best
+      );
+
+      const topRight = points.reduce((best, point) =>
+        point.x - point.y > best.x - best.y ? point : best
+      );
+
+      const bottomLeft = points.reduce((best, point) =>
+        point.x - point.y < best.x - best.y ? point : best
+      );
+
+      return [topLeft, topRight, bottomRight, bottomLeft];
+    }
+
+    function rectifyAndCrop() {
+      if (!markerPoints) {
+        throw new Error("Keine Eckmarken gefunden.");
+      }
+
+      let src = null;
+      let dst = null;
+      let srcTri = null;
+      let dstTri = null;
+      let matrix = null;
+
+      try {
+        src = cv.imread(sourceCanvas);
+        dst = new cv.Mat();
+
+        srcTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
+          markerPoints[0].x,
+          markerPoints[0].y,
+          markerPoints[1].x,
+          markerPoints[1].y,
+          markerPoints[2].x,
+          markerPoints[2].y,
+          markerPoints[3].x,
+          markerPoints[3].y
+        ]);
+
+        dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
+          TARGET_MARKERS.topLeft.x,
+          TARGET_MARKERS.topLeft.y,
+          TARGET_MARKERS.topRight.x,
+          TARGET_MARKERS.topRight.y,
+          TARGET_MARKERS.bottomRight.x,
+          TARGET_MARKERS.bottomRight.y,
+          TARGET_MARKERS.bottomLeft.x,
+          TARGET_MARKERS.bottomLeft.y
+        ]);
+
+        matrix = cv.getPerspectiveTransform(srcTri, dstTri);
+
+        cv.warpPerspective(
+          src,
+          dst,
+          matrix,
+          new cv.Size(NORMALIZED_WIDTH, NORMALIZED_HEIGHT),
+          cv.INTER_LINEAR,
+          cv.BORDER_CONSTANT,
+          new cv.Scalar()
+        );
+
+        cv.imshow(rectifiedCanvas, dst);
+
+        return {
+          question: cropField(CROP_FIELDS.question),
+          correct: cropField(CROP_FIELDS.correct),
+          wrong1: cropField(CROP_FIELDS.wrong1),
+          wrong2: cropField(CROP_FIELDS.wrong2),
+          wrong3: cropField(CROP_FIELDS.wrong3)
+        };
+      } finally {
+        if (src) src.delete();
+        if (dst) dst.delete();
+        if (srcTri) srcTri.delete();
+        if (dstTri) dstTri.delete();
+        if (matrix) matrix.delete();
+      }
+    }
+
+    function cropField(field) {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = field.w;
+      canvas.height = field.h;
+
+      ctx.drawImage(
+        rectifiedCanvas,
+        field.x,
+        field.y,
+        field.w,
+        field.h,
+        0,
+        0,
+        field.w,
+        field.h
+      );
+
+      return canvas.toDataURL("image/png");
+    }
+
+    function showLatestCrops(crops) {
+      questionPreview.src = crops.question;
+      correctPreview.src = crops.correct;
+      wrong1Preview.src = crops.wrong1;
+      wrong2Preview.src = crops.wrong2;
+      wrong3Preview.src = crops.wrong3;
+    }
+
+    function updateQuestionCollectionView() {
+      questionCount.textContent = questions.length;
+      questionList.innerHTML = "";
+
+      questionListSection.style.display =
+        questions.length === 0 ? "none" : "block";
+
+      questions.forEach((item, index) => {
+        const box = document.createElement("div");
+        box.className = "question-list-item";
+
+        const title = document.createElement("strong");
+        title.textContent = `Frage ${index + 1}`;
+
+        const img = document.createElement("img");
+        img.src = item.question;
+        img.alt = `Vorschau Frage ${index + 1}`;
+
+        const actions = document.createElement("div");
+        actions.className = "question-actions";
+
+        const moveUpButton = document.createElement("button");
+        moveUpButton.type = "button";
+        moveUpButton.className = "secondary";
+        moveUpButton.textContent = "↑ Hoch";
+        moveUpButton.disabled = index === 0;
+        moveUpButton.addEventListener(
+          "click",
+          () => moveQuestion(index, -1)
+        );
+
+        const moveDownButton = document.createElement("button");
+        moveDownButton.type = "button";
+        moveDownButton.className = "secondary";
+        moveDownButton.textContent = "↓ Runter";
+        moveDownButton.disabled = index === questions.length - 1;
+        moveDownButton.addEventListener(
+          "click",
+          () => moveQuestion(index, 1)
+        );
+
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "danger delete-question-button";
+        deleteButton.textContent = "Löschen";
+        deleteButton.addEventListener(
+          "click",
+          () => deleteQuestion(index)
+        );
+
+        actions.append(moveUpButton, moveDownButton, deleteButton);
+        box.append(title, img, actions);
+        questionList.appendChild(box);
+      });
+
+      updateButtonStates();
+    }
+
+    function moveQuestion(index, direction) {
+      const newIndex = index + direction;
+
+      if (newIndex < 0 || newIndex >= questions.length) return;
+
+      const movedQuestion = questions[index];
+      questions.splice(index, 1);
+      questions.splice(newIndex, 0, movedQuestion);
+
+      updateQuestionCollectionView();
+    }
+
+    function deleteQuestion(index) {
+      if (!confirm(`Möchtest du Frage ${index + 1} wirklich löschen?`)) {
+        return;
+      }
+
+      questions.splice(index, 1);
+
+      if (currentQuizIndex >= questions.length) {
+        currentQuizIndex = Math.max(0, questions.length - 1);
+      }
+
+      updateQuestionCollectionView();
+    }
+
+    function startQuiz() {
+      if (questions.length === 0) {
+        alert("Bitte füge zuerst mindestens eine Frage hinzu.");
+        return;
+      }
+
+      currentQuizIndex = 0;
+      editorView.style.display = "none";
+      quizView.style.display = "block";
+
+      showQuizQuestion(currentQuizIndex);
+      updateFullscreenButton();
+    }
+
+    function showQuizQuestion(index) {
+      removeCorrectHighlight();
+
+      const item = questions[index];
+
+      quizProgress.textContent = `${index + 1} / ${questions.length}`;
+      quizQuestionImage.src = item.question;
+
+      const answers = [
+        { image: item.correct, isCorrect: true },
+        { image: item.wrong1, isCorrect: false },
+        { image: item.wrong2, isCorrect: false },
+        { image: item.wrong3, isCorrect: false }
+      ];
+
+      const shuffled = shuffleArray(answers);
+      const letters = ["A", "B", "C", "D"];
+
+      const imageElements = {
+        A: quizAnswerA,
+        B: quizAnswerB,
+        C: quizAnswerC,
+        D: quizAnswerD
+      };
+
+      correctLetter = null;
+
+      shuffled.forEach((answer, answerIndex) => {
+        const letter = letters[answerIndex];
+
+        imageElements[letter].src = answer.image;
+
+        if (answer.isCorrect) {
+          correctLetter = letter;
+        }
+      });
+
+      prevQuestionButton.disabled = index === 0;
+
+      if (index === questions.length - 1) {
+        nextQuestionButton.disabled = false;
+        nextQuestionButton.textContent = "Quiz beenden";
       } else {
-        const crops = rectifyAndCrop();
-
-        questions.push({
-          ...crops,
-          createdAt: Date.now()
-        });
-
-        showLatestCrops(crops);
-        updateQuestionCollectionView();
+        nextQuestionButton.disabled = false;
+        nextQuestionButton.textContent = "Nächste Frage";
       }
-    } catch (error) {
-      console.error(error);
-      failedFiles.push(file.name || `Foto ${i + 1}`);
     }
 
-    setProgress(i + 1, files.length);
-  }
+    function showPreviousQuestion() {
+      if (currentQuizIndex <= 0) return;
 
-  if (failedFiles.length === 0) {
-    failedList.textContent = "";
-  } else {
-    failedList.textContent = `Nicht erkannt: ${failedFiles.join(", ")}`;
-  }
-
-  isProcessing = false;
-  imageInput.value = "";
-  updateButtonStates();
-
-  setTimeout(() => {
-    setProgress(0, 0);
-  }, 900);
-}
-
-function loadImageFromFile(file) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-
-    img.onload = () => {
-      URL.revokeObjectURL(img.src);
-      resolve(img);
-    };
-
-    img.onerror = () => {
-      reject(new Error("Bild konnte nicht geladen werden."));
-    };
-
-    img.src = URL.createObjectURL(file);
-  });
-}
-
-function prepareCanvasesForLoadedImage() {
-  const maxSide = 1800;
-  const scale = Math.min(1, maxSide / Math.max(loadedImage.width, loadedImage.height));
-
-  sourceCanvas.width = Math.round(loadedImage.width * scale);
-  sourceCanvas.height = Math.round(loadedImage.height * scale);
-
-  originalCanvas.width = loadedImage.width;
-  originalCanvas.height = loadedImage.height;
-
-  rectifiedCanvas.width = NORMALIZED_WIDTH;
-  rectifiedCanvas.height = NORMALIZED_HEIGHT;
-
-  normalizedCanvas.width = NORMALIZED_WIDTH;
-  normalizedCanvas.height = NORMALIZED_HEIGHT;
-}
-
-function drawSourceImage() {
-  sourceCtx.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
-  sourceCtx.drawImage(loadedImage, 0, 0, sourceCanvas.width, sourceCanvas.height);
-
-  originalCtx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
-  originalCtx.drawImage(loadedImage, 0, 0, originalCanvas.width, originalCanvas.height);
-}
-
-function autoDetectMarkers() {
-  if (!cvReady || !loadedImage) return false;
-
-  let src = null;
-  let gray = null;
-  let binary = null;
-  let contours = null;
-  let hierarchy = null;
-
-  try {
-    src = cv.imread(sourceCanvas);
-    gray = new cv.Mat();
-    binary = new cv.Mat();
-    contours = new cv.MatVector();
-    hierarchy = new cv.Mat();
-
-    cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
-    cv.threshold(gray, binary, 0, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU);
-    cv.findContours(binary, contours, hierarchy, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE);
-
-    const candidates = [];
-    const imageArea = sourceCanvas.width * sourceCanvas.height;
-
-    for (let i = 0; i < contours.size(); i++) {
-      const contour = contours.get(i);
-      const rect = cv.boundingRect(contour);
-      const area = cv.contourArea(contour);
-
-      const ratio = rect.width / rect.height;
-      const rectArea = rect.width * rect.height;
-      const fillRatio = area / rectArea;
-
-      const minArea = imageArea * 0.00035;
-      const maxArea = imageArea * 0.03;
-
-      const isSquareLike =
-        ratio > 0.65 &&
-        ratio < 1.45 &&
-        area > minArea &&
-        area < maxArea &&
-        fillRatio > 0.45;
-
-      if (isSquareLike) {
-        candidates.push({
-          x: rect.x + rect.width / 2,
-          y: rect.y + rect.height / 2,
-          width: rect.width,
-          height: rect.height,
-          area
-        });
-      }
-
-      contour.delete();
+      currentQuizIndex--;
+      showQuizQuestion(currentQuizIndex);
     }
 
-    if (candidates.length < 4) {
+    function showNextQuestion() {
+      if (currentQuizIndex >= questions.length - 1) {
+        backToEditor();
+        return;
+      }
+
+      currentQuizIndex++;
+      showQuizQuestion(currentQuizIndex);
+    }
+
+    function shuffleArray(array) {
+      const copy = [...array];
+
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+
+      return copy;
+    }
+
+    function revealCorrectAnswer() {
+      removeCorrectHighlight();
+
+      if (!correctLetter) return;
+
+      const box = document.getElementById("answerBox" + correctLetter);
+      box.classList.add("correct");
+    }
+
+    function removeCorrectHighlight() {
+      [answerBoxA, answerBoxB, answerBoxC, answerBoxD].forEach(box => {
+        box.classList.remove("correct");
+      });
+    }
+
+    function confirmBackToEditor() {
+      if (!confirm("Möchtest du das Quiz wirklich abbrechen?")) return;
+      backToEditor();
+    }
+
+    async function toggleFullscreen() {
+      try {
+        const isFullscreen =
+          document.fullscreenElement ||
+          document.webkitFullscreenElement;
+
+        if (!isFullscreen) {
+          if (quizView.requestFullscreen) {
+            await quizView.requestFullscreen();
+          } else if (quizView.webkitRequestFullscreen) {
+            await quizView.webkitRequestFullscreen();
+          } else if (document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen();
+          } else if (document.documentElement.webkitRequestFullscreen) {
+            await document.documentElement.webkitRequestFullscreen();
+          } else {
+            alert(
+              "Der Vollbildmodus wird von diesem Browser leider nicht unterstützt."
+            );
+          }
+        } else {
+          if (document.exitFullscreen) {
+            await document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+
+      updateFullscreenButton();
+    }
+
+    function updateFullscreenButton() {
+      const isFullscreen =
+        document.fullscreenElement ||
+        document.webkitFullscreenElement;
+
+      if (isFullscreen) {
+        fullscreenButton.textContent = "↙";
+        fullscreenButton.setAttribute(
+          "aria-label",
+          "Vollbild beenden"
+        );
+        fullscreenButton.setAttribute(
+          "title",
+          "Vollbild beenden"
+        );
+      } else {
+        fullscreenButton.textContent = "↗";
+        fullscreenButton.setAttribute(
+          "aria-label",
+          "Vollbild einschalten"
+        );
+        fullscreenButton.setAttribute(
+          "title",
+          "Vollbild einschalten"
+        );
+      }
+    }
+
+    function backToEditor() {
+      quizView.style.display = "none";
+      editorView.style.display = "block";
+
+      removeCorrectHighlight();
+
+      const isFullscreen =
+        document.fullscreenElement ||
+        document.webkitFullscreenElement;
+
+      if (isFullscreen) {
+        if (document.exitFullscreen) {
+          document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
+    }
+
+    function clearEverything() {
+      if (!confirm(
+        "Möchtest du wirklich alle Fotos und alle gesammelten Fragen löschen?"
+      )) {
+        return;
+      }
+
+      questions = [];
+      currentQuizIndex = 0;
+      correctLetter = null;
+      loadedImage = null;
       markerPoints = null;
-      return false;
+      isProcessing = false;
+      waitingFiles = [];
+
+      imageInput.value = "";
+
+      [
+        questionPreview,
+        correctPreview,
+        wrong1Preview,
+        wrong2Preview,
+        wrong3Preview
+      ].forEach(image => image.removeAttribute("src"));
+
+      questionListSection.style.display = "none";
+      questionList.innerHTML = "";
+      questionCount.textContent = "0";
+      failedList.textContent = "";
+
+      setProgress(0, 0);
+
+      sourceCtx.clearRect(
+        0,
+        0,
+        sourceCanvas.width,
+        sourceCanvas.height
+      );
+
+      rectifiedCtx.clearRect(
+        0,
+        0,
+        rectifiedCanvas.width,
+        rectifiedCanvas.height
+      );
+
+      originalCtx.clearRect(
+        0,
+        0,
+        originalCanvas.width,
+        originalCanvas.height
+      );
+
+      updateButtonStates();
     }
-
-    candidates.sort((a, b) => b.area - a.area);
-    const bestFour = candidates.slice(0, 4);
-    markerPoints = orderPoints(bestFour);
-
-    return true;
-  } catch (error) {
-    console.error(error);
-    markerPoints = null;
-    return false;
-  } finally {
-    if (src) src.delete();
-    if (gray) gray.delete();
-    if (binary) binary.delete();
-    if (contours) contours.delete();
-    if (hierarchy) hierarchy.delete();
-  }
-}
-
-function orderPoints(points) {
-  const topLeft = points.reduce((best, p) => (p.x + p.y < best.x + best.y ? p : best));
-  const bottomRight = points.reduce((best, p) => (p.x + p.y > best.x + best.y ? p : best));
-  const topRight = points.reduce((best, p) => (p.x - p.y > best.x - best.y ? p : best));
-  const bottomLeft = points.reduce((best, p) => (p.x - p.y < best.x - best.y ? p : best));
-
-  return [topLeft, topRight, bottomRight, bottomLeft];
-}
-
-function rectifyAndCrop() {
-  if (!markerPoints) {
-    throw new Error("Keine Eckmarken gefunden.");
-  }
-
-  let src = null;
-  let dst = null;
-  let srcTri = null;
-  let dstTri = null;
-  let matrix = null;
-
-  try {
-    src = cv.imread(sourceCanvas);
-    dst = new cv.Mat();
-
-    srcTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
-      markerPoints[0].x, markerPoints[0].y,
-      markerPoints[1].x, markerPoints[1].y,
-      markerPoints[2].x, markerPoints[2].y,
-      markerPoints[3].x, markerPoints[3].y
-    ]);
-
-    dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
-      TARGET_MARKERS.topLeft.x, TARGET_MARKERS.topLeft.y,
-      TARGET_MARKERS.topRight.x, TARGET_MARKERS.topRight.y,
-      TARGET_MARKERS.bottomRight.x, TARGET_MARKERS.bottomRight.y,
-      TARGET_MARKERS.bottomLeft.x, TARGET_MARKERS.bottomLeft.y
-    ]);
-
-    matrix = cv.getPerspectiveTransform(srcTri, dstTri);
-    const dsize = new cv.Size(NORMALIZED_WIDTH, NORMALIZED_HEIGHT);
-
-    cv.warpPerspective(
-      src,
-      dst,
-      matrix,
-      dsize,
-      cv.INTER_LINEAR,
-      cv.BORDER_CONSTANT,
-      new cv.Scalar()
-    );
-
-    cv.imshow(rectifiedCanvas, dst);
-
-    return {
-      question: cropField(CROP_FIELDS.question),
-      correct: cropField(CROP_FIELDS.correct),
-      wrong1: cropField(CROP_FIELDS.wrong1),
-      wrong2: cropField(CROP_FIELDS.wrong2),
-      wrong3: cropField(CROP_FIELDS.wrong3)
-    };
-  } finally {
-    if (src) src.delete();
-    if (dst) dst.delete();
-    if (srcTri) srcTri.delete();
-    if (dstTri) dstTri.delete();
-    if (matrix) matrix.delete();
-  }
-}
-
-function cropField(field) {
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-
-  canvas.width = field.w;
-  canvas.height = field.h;
-
-  ctx.drawImage(
-    rectifiedCanvas,
-    field.x,
-    field.y,
-    field.w,
-    field.h,
-    0,
-    0,
-    field.w,
-    field.h
-  );
-
-  return canvas.toDataURL("image/png");
-}
-
-function showLatestCrops(crops) {
-  questionPreview.src = crops.question;
-  correctPreview.src = crops.correct;
-  wrong1Preview.src = crops.wrong1;
-  wrong2Preview.src = crops.wrong2;
-  wrong3Preview.src = crops.wrong3;
-}
-
-function updateQuestionCollectionView() {
-  questionCount.textContent = questions.length;
-  questionList.innerHTML = "";
-
-  if (questions.length === 0) {
-    questionListSection.style.display = "none";
-  } else {
-    questionListSection.style.display = "block";
-  }
-
-  questions.forEach((item, index) => {
-    const box = document.createElement("div");
-    box.className = "question-list-item";
-
-    const title = document.createElement("strong");
-    title.textContent = `Frage ${index + 1}`;
-
-    const img = document.createElement("img");
-    img.src = item.question;
-    img.alt = `Vorschau Frage ${index + 1}`;
-
-    const actions = document.createElement("div");
-    actions.className = "question-actions";
-
-    const moveUpButton = document.createElement("button");
-    moveUpButton.type = "button";
-    moveUpButton.className = "secondary";
-    moveUpButton.textContent = "↑ Hoch";
-    moveUpButton.disabled = index === 0;
-    moveUpButton.addEventListener("click", () => moveQuestion(index, -1));
-
-    const moveDownButton = document.createElement("button");
-    moveDownButton.type = "button";
-    moveDownButton.className = "secondary";
-    moveDownButton.textContent = "↓ Runter";
-    moveDownButton.disabled = index === questions.length - 1;
-    moveDownButton.addEventListener("click", () => moveQuestion(index, 1));
-
-    const deleteButton = document.createElement("button");
-    deleteButton.type = "button";
-    deleteButton.className = "danger delete-question-button";
-    deleteButton.textContent = "Löschen";
-    deleteButton.addEventListener("click", () => deleteQuestion(index));
-
-    actions.appendChild(moveUpButton);
-    actions.appendChild(moveDownButton);
-    actions.appendChild(deleteButton);
-
-    box.appendChild(title);
-    box.appendChild(img);
-    box.appendChild(actions);
-
-    questionList.appendChild(box);
-  });
-
-  updateButtonStates();
-}
-
-function moveQuestion(index, direction) {
-  const newIndex = index + direction;
-
-  if (newIndex < 0 || newIndex >= questions.length) return;
-
-  const movedQuestion = questions[index];
-  questions.splice(index, 1);
-  questions.splice(newIndex, 0, movedQuestion);
-
-  updateQuestionCollectionView();
-}
-
-function deleteQuestion(index) {
-  const confirmed = confirm(`Möchtest du Frage ${index + 1} wirklich löschen?`);
-
-  if (!confirmed) return;
-
-  questions.splice(index, 1);
-
-  if (currentQuizIndex >= questions.length) {
-    currentQuizIndex = Math.max(0, questions.length - 1);
-  }
-
-  updateQuestionCollectionView();
-}
-
-function startQuiz() {
-  if (questions.length === 0) {
-    alert("Bitte füge zuerst mindestens eine Frage hinzu.");
-    return;
-  }
-
-  currentQuizIndex = 0;
-  editorView.style.display = "none";
-  quizView.style.display = "block";
-
-  showQuizQuestion(currentQuizIndex);
-
-  /*
-    Kein automatischer Vollbildmodus:
-    So bleibt die normale iPad-Browseransicht erhalten und die Quiz-Höhe ist besser kontrollierbar.
-  */
-}
-
-function showQuizQuestion(index) {
-  removeCorrectHighlight();
-
-  const item = questions[index];
-
-  quizProgress.textContent = `${index + 1} / ${questions.length}`;
-  quizQuestionImage.src = item.question;
-
-  const answers = [
-    { image: item.correct, isCorrect: true },
-    { image: item.wrong1, isCorrect: false },
-    { image: item.wrong2, isCorrect: false },
-    { image: item.wrong3, isCorrect: false }
-  ];
-
-  const shuffled = shuffleArray(answers);
-  const letters = ["A", "B", "C", "D"];
-
-  const imageElements = {
-    A: quizAnswerA,
-    B: quizAnswerB,
-    C: quizAnswerC,
-    D: quizAnswerD
-  };
-
-  correctLetter = null;
-
-  shuffled.forEach((answer, answerIndex) => {
-    const letter = letters[answerIndex];
-    imageElements[letter].src = answer.image;
-
-    if (answer.isCorrect) {
-      correctLetter = letter;
-    }
-  });
-
-  prevQuestionButton.disabled = index === 0;
-  nextQuestionButton.disabled = index === questions.length - 1;
-}
-
-function showPreviousQuestion() {
-  if (currentQuizIndex <= 0) return;
-
-  currentQuizIndex--;
-  showQuizQuestion(currentQuizIndex);
-}
-
-function showNextQuestion() {
-  if (currentQuizIndex >= questions.length - 1) return;
-
-  currentQuizIndex++;
-  showQuizQuestion(currentQuizIndex);
-}
-
-function shuffleArray(array) {
-  const copy = [...array];
-
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-
-  return copy;
-}
-
-function revealCorrectAnswer() {
-  removeCorrectHighlight();
-
-  if (!correctLetter) return;
-
-  const box = document.getElementById("answerBox" + correctLetter);
-  box.classList.add("correct");
-}
-
-function removeCorrectHighlight() {
-  [answerBoxA, answerBoxB, answerBoxC, answerBoxD].forEach(box => {
-    box.classList.remove("correct");
-  });
-}
-
-function confirmBackToEditor() {
-  const reallyAbort = confirm("Möchtest du das Quiz wirklich abbrechen?");
-
-  if (!reallyAbort) return;
-
-  backToEditor();
-}
-
-function backToEditor() {
-  quizView.style.display = "none";
-  editorView.style.display = "block";
-  removeCorrectHighlight();
-
-  if (document.fullscreenElement) {
-    document.exitFullscreen().catch(() => {});
-  }
-}
-
-function clearEverything() {
-  const confirmed = confirm("Möchtest du wirklich alle Fotos und alle gesammelten Fragen löschen?");
-
-  if (!confirmed) return;
-
-  questions = [];
-  currentQuizIndex = 0;
-  correctLetter = null;
-  loadedImage = null;
-  markerPoints = null;
-  isProcessing = false;
-  waitingFiles = [];
-
-  imageInput.value = "";
-
-  questionPreview.removeAttribute("src");
-  correctPreview.removeAttribute("src");
-  wrong1Preview.removeAttribute("src");
-  wrong2Preview.removeAttribute("src");
-  wrong3Preview.removeAttribute("src");
-
-  questionListSection.style.display = "none";
-  questionList.innerHTML = "";
-  questionCount.textContent = "0";
-  failedList.textContent = "";
-
-  setProgress(0, 0);
-
-  sourceCtx.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
-  rectifiedCtx.clearRect(0, 0, rectifiedCanvas.width, rectifiedCanvas.height);
-  originalCtx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
-
-  updateButtonStates();
-}
-</script>
+  </script>
 </body>
 </html>
