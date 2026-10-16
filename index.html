@@ -2,76 +2,100 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+  >
+
+  <!--
+    Über "Teilen > Zum Home-Bildschirm" startet die App ohne
+    Safari-Leisten, also dauerhaft randlos.
+  -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="4er-Quiz">
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+  >
   <title>4er-Quiz automatisch</title>
 
+  <!--
+    Atkinson Hyperlegible: Schrift mit besonders gut unterscheidbaren
+    Buchstaben. Ohne Internet greift die Systemschrift.
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap"
+  >
+
   <style>
+    /*
+     * Ruhiges Design für die digitale Tafel und für Schülerinnen
+     * und Schüler, die schnell reizüberflutet sind:
+     * - wenige Farben, klare Kontraste (Text mindestens 7:1)
+     * - keine Muster, Verläufe, Schatten oder Bewegungen
+     * - gebrochenes Weiß statt Reinweiß, das blendet weniger
+     * - "richtig" wird nicht nur farbig, sondern auch mit Zeichen
+     *   und Text angezeigt
+     */
     :root {
-      --cream: #fff1c7;
-      --sun: #f6c85f;
-      --orange: #e77b3c;
-      --red: #b6422b;
-      --brown: #3f2415;
-      --dark-brown: #27150c;
-      --green: #6f8f3d;
-      --danger: #b7352a;
-      --shadow: #2a160d;
-      --radius: 28px;
+      --bg: #f4f3ef;
+      --surface: #ffffff;
+      --text: #1b1b1b;
+      --muted: #555555;
+      --line: #1b1b1b;
+      --line-soft: #c8c5bc;
+
+      --accent: #1f4e8c;
+      --accent-soft: #e4ebf5;
+
+      --correct: #1e6b3a;
+      --correct-soft: #e3f0e7;
+
+      --warn-text: #6b4a00;
+      --warn-soft: #fbefcf;
+
+      --error: #9b1c1c;
+      --error-soft: #f8e3e3;
+
+      --radius: 12px;
+      --font: "Atkinson Hyperlegible", system-ui, -apple-system,
+        "Segoe UI", Arial, sans-serif;
     }
 
     * {
       box-sizing: border-box;
     }
 
-    html,
     body {
       margin: 0;
-      min-height: 100%;
-    }
-
-    body {
-      font-family: "Trebuchet MS", "Arial Rounded MT Bold", system-ui, sans-serif;
-      color: var(--brown);
-      background:
-        radial-gradient(circle at 12% 18%, rgba(255,255,255,.22) 0 8%, transparent 9%),
-        radial-gradient(circle at 82% 12%, rgba(255,255,255,.18) 0 7%, transparent 8%),
-        radial-gradient(circle at 72% 78%, rgba(255,255,255,.16) 0 9%, transparent 10%),
-        repeating-linear-gradient(
-          45deg,
-          rgba(63,36,21,.08) 0 14px,
-          transparent 14px 34px
-        ),
-        linear-gradient(135deg, #f6c85f 0%, #e77b3c 48%, #b6422b 100%);
-      background-attachment: fixed;
+      min-height: 100vh;
+      font-family: var(--font);
+      font-size: 1.1rem;
+      line-height: 1.45;
+      color: var(--text);
+      background: var(--bg);
     }
 
     button,
-    .photo-button {
-      -webkit-tap-highlight-color: transparent;
+    input {
+      font-family: inherit;
     }
 
     header {
-      padding: 30px 18px 26px;
+      padding: max(18px, env(safe-area-inset-top)) 18px 18px;
       text-align: center;
-      color: var(--cream);
-      background:
-        repeating-radial-gradient(
-          circle at center,
-          rgba(255,241,199,.14) 0 10px,
-          transparent 10px 24px
-        ),
-        linear-gradient(135deg, var(--brown), var(--red), var(--orange));
-      border-bottom: 8px solid var(--dark-brown);
-      box-shadow: 0 10px 0 rgba(42,22,13,.35);
+      background: var(--surface);
+      border-bottom: 3px solid var(--line);
     }
 
     header h1 {
       margin: 0;
-      font-size: clamp(2.5rem, 8vw, 5rem);
-      line-height: .95;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      text-shadow: 5px 5px 0 var(--shadow);
+      font-size: clamp(2rem, 6vw, 3rem);
+      font-weight: 700;
     }
 
     main {
@@ -85,192 +109,189 @@
     .quiz-question,
     .quiz-answer,
     .question-list-item {
-      background: var(--cream);
-      border: 5px solid var(--dark-brown);
+      background: var(--surface);
+      border: 3px solid var(--line);
       border-radius: var(--radius);
-      box-shadow: 10px 10px 0 var(--shadow);
     }
 
     .card {
-      padding: 24px;
       margin-bottom: 24px;
+      padding: 24px;
     }
 
     h2 {
-      margin: 0 0 16px;
-      color: var(--red);
-      font-size: clamp(1.6rem, 4vw, 2.3rem);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      text-shadow: 2px 2px 0 var(--sun);
-    }
-
-    .main-actions {
-      display: grid;
-      gap: 16px;
+      margin-top: 0;
+      font-size: 1.5rem;
     }
 
     .photo-button {
-      min-height: 140px;
+      min-height: 120px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 5px solid var(--dark-brown);
-      border-radius: 34px;
-      background:
-        radial-gradient(circle at 20% 20%, rgba(255,255,255,.25), transparent 22%),
-        linear-gradient(135deg, #f08a3c, var(--red));
-      color: var(--cream);
-      font-size: clamp(1.8rem, 6vw, 3.4rem);
-      font-weight: 1000;
+      gap: 14px;
+      border: 3px solid var(--accent);
+      border-radius: var(--radius);
+      background: var(--accent);
+      color: #ffffff;
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      font-weight: 700;
       text-align: center;
       cursor: pointer;
-      box-shadow: 9px 9px 0 var(--shadow);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      transition: .15s ease;
-      user-select: none;
-    }
-
-    .photo-button:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 12px 12px 0 var(--shadow);
-    }
-
-    .photo-button span {
-      padding: 14px;
     }
 
     input[type="file"] {
       display: none;
     }
 
-    .controls {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      margin-top: 8px;
-    }
-
-    .start-quiz-button,
-    .bottom-delete-section button {
-      width: 100%;
-      min-height: 64px;
-      font-size: 1.18rem;
-    }
-
-    .bottom-delete-section {
-      display: none;
-    }
-
     button {
-      border: 4px solid var(--dark-brown);
-      border-radius: 999px;
-      padding: 15px 22px;
-      font-size: 1.05rem;
-      font-weight: 1000;
+      min-height: 48px;
+      border: 3px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 10px 20px;
+      font-size: 1.1rem;
+      font-weight: 700;
       cursor: pointer;
-      background: linear-gradient(135deg, var(--orange), var(--red));
-      color: var(--cream);
-      box-shadow: 6px 6px 0 var(--shadow);
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      transition: .15s ease;
-    }
-
-    button:hover {
-      transform: translate(-1px, -1px);
-      box-shadow: 8px 8px 0 var(--shadow);
+      color: #ffffff;
+      background: var(--accent);
     }
 
     button:disabled {
-      opacity: .45;
+      opacity: .4;
       cursor: not-allowed;
-      transform: none;
-      box-shadow: 4px 4px 0 var(--shadow);
+    }
+
+    button:focus-visible,
+    .photo-button:focus-within {
+      outline: 4px solid var(--text);
+      outline-offset: 3px;
     }
 
     button.secondary {
-      background: linear-gradient(135deg, #ffe083, var(--sun));
-      color: var(--brown);
+      color: var(--text);
+      background: var(--surface);
+      border-color: var(--line);
     }
 
     button.success {
-      background: linear-gradient(135deg, #91aa4f, var(--green));
+      background: var(--correct);
+      border-color: var(--correct);
     }
 
-    button.danger,
-    .quiz-close-button {
-      background: linear-gradient(135deg, #d94a31, var(--danger));
+    button.danger {
+      color: var(--error);
+      background: var(--surface);
+      border-color: var(--error);
+    }
+
+    .controls {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
     }
 
     .question-counter-box {
-      padding: 18px;
-      background: #dfe8a5;
-      border: 4px solid var(--dark-brown);
-      border-left: 12px solid var(--green);
-      border-radius: 20px;
+      margin-top: 16px;
+      padding: 14px;
       text-align: center;
-      font-size: 1.35rem;
-      font-weight: 1000;
-      box-shadow: 5px 5px 0 rgba(42,22,13,.35);
+      font-size: 1.3rem;
+      font-weight: 700;
+      background: var(--bg);
+      border: 2px solid var(--line-soft);
+      border-radius: var(--radius);
     }
 
     .progress-outer {
       display: none;
-      height: 24px;
+      height: 16px;
+      margin-top: 16px;
       overflow: hidden;
-      background: var(--brown);
-      border: 4px solid var(--dark-brown);
+      background: var(--accent-soft);
+      border: 2px solid var(--accent);
       border-radius: 999px;
     }
 
     .progress-inner {
-      height: 100%;
       width: 0;
-      background: repeating-linear-gradient(
-        45deg,
-        var(--sun) 0 14px,
-        var(--orange) 14px 28px
-      );
-      transition: width .25s ease;
+      height: 100%;
+      background: var(--accent);
     }
 
-    .failed-list {
-      color: var(--danger);
-      font-weight: 900;
+    .status-list {
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
     }
 
-    .question-list-section {
+    .status-list li {
+      margin-top: 6px;
+      padding: 10px 14px;
+      border: 2px solid;
+      border-radius: var(--radius);
+    }
+
+    .status-list .ok {
+      color: var(--correct);
+      background: var(--correct-soft);
+    }
+
+    .status-list .warn {
+      color: var(--warn-text);
+      background: var(--warn-soft);
+    }
+
+    .status-list .error {
+      color: var(--error);
+      background: var(--error-soft);
+    }
+
+    .last-card-preview {
+      display: none;
+      margin: 16px 0 0;
+    }
+
+    .last-card-preview figcaption {
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .last-card-preview img {
+      display: block;
+      width: 100%;
+      background: #ffffff;
+      border: 2px solid var(--line-soft);
+      border-radius: var(--radius);
+    }
+
+    .question-list-section,
+    .bottom-delete-section {
       display: none;
     }
 
     .question-list {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 16px;
-      margin-top: 14px;
     }
 
     .question-list-item {
       padding: 12px;
-      border-radius: 18px;
+      border-width: 2px;
+      border-color: var(--line-soft);
     }
 
     .question-list-item strong {
       display: block;
       margin-bottom: 8px;
-      color: var(--red);
-      text-transform: uppercase;
     }
 
     .question-list-item img {
       width: 100%;
       height: 90px;
       object-fit: contain;
-      background: white;
-      border: 3px solid var(--dark-brown);
-      border-radius: 10px;
+      background: #ffffff;
+      border: 2px solid var(--line-soft);
+      border-radius: 8px;
     }
 
     .question-actions {
@@ -281,92 +302,137 @@
     }
 
     .question-actions button {
-      padding: 9px 8px;
-      font-size: .78rem;
-      box-shadow: 4px 4px 0 var(--shadow);
+      min-height: 40px;
+      padding: 6px;
+      font-size: .9rem;
     }
 
-    .question-actions .delete-question-button {
+    .question-actions .delete-question-button,
+    .question-actions .view-question-button {
       grid-column: 1 / -1;
     }
 
-    .hidden-work-area {
+    .question-thumb {
+      cursor: pointer;
+    }
+
+    .modal-backdrop[hidden],
+    .quiz-end[hidden] {
       display: none;
     }
 
-    canvas {
-      max-width: 100%;
+    /*
+     * Großansicht einer Frage: alle fünf Felder untereinander bzw.
+     * die Antworten im 2x2-Raster, die richtige grün markiert.
+     */
+    .detail-modal {
+      width: min(1100px, 100%);
+      max-width: none;
+    }
+
+    .detail-field {
+      margin: 0 0 14px;
+      padding: 10px;
+      border: 2px solid var(--line-soft);
+      border-radius: var(--radius);
+    }
+
+    .detail-field figcaption {
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .detail-field img {
+      display: block;
+      width: 100%;
+      background: #ffffff;
+    }
+
+    .detail-answers {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .detail-answers .detail-field {
+      margin: 0;
+    }
+
+    .detail-correct {
+      border: 4px solid var(--correct);
+      background: var(--correct-soft);
+    }
+
+    .detail-correct figcaption {
+      color: var(--correct);
+    }
+
+    @media (max-width: 700px) {
+      .detail-answers {
+        grid-template-columns: 1fr;
+      }
     }
 
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      z-index: 9999;
+      z-index: 10;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 20px;
-      background:
-        radial-gradient(circle at 20% 20%, rgba(246,200,95,.45), transparent 30%),
-        rgba(39,21,12,.86);
+      background: rgba(27, 27, 27, .6);
     }
 
     .modal {
-      width: min(760px, 100%);
+      max-width: 760px;
+      max-height: 100%;
+      overflow: auto;
       padding: 28px;
     }
 
-    .modal p,
-    .modal li {
-      font-size: 1.05rem;
-      line-height: 1.5;
+    .modal a {
+      color: var(--accent);
       font-weight: 700;
-    }
-
-    .modal ul {
-      padding-left: 1.4rem;
     }
 
     .modal-ok {
       width: 100%;
-      margin-top: 18px;
-      font-size: 1.25rem;
-      padding: 18px;
+      margin-top: 16px;
     }
 
+    /*
+     * Die Quiz-Ansicht füllt genau den sichtbaren Bereich, mit
+     * und ohne Vollbild. "position: fixed" mit "inset: 0" richtet
+     * sich in Safari nach dem tatsächlich sichtbaren Teil (ohne
+     * Adress- und Werkzeugleiste), anders als 100vh. So bleiben
+     * die Knöpfe unten immer im Bild.
+     */
     .quiz-screen {
       display: none;
-      width: 100vw;
-      height: min(100dvh, calc(100vh - 58px));
-      min-height: 560px;
+      position: fixed;
+      inset: 0;
+      z-index: 5;
       overflow: hidden;
-      padding: 10px 14px 12px;
-      color: var(--cream);
-      background:
-        radial-gradient(circle at 15% 20%, rgba(246,200,95,.28) 0 8%, transparent 9%),
-        radial-gradient(circle at 86% 80%, rgba(255,241,199,.16) 0 10%, transparent 11%),
-        repeating-linear-gradient(
-          -45deg,
-          rgba(255,241,199,.09) 0 14px,
-          transparent 14px 34px
-        ),
-        linear-gradient(135deg, var(--brown), var(--red) 55%, var(--orange));
-    }
-
-    .quiz-screen:fullscreen,
-    .quiz-screen:-webkit-full-screen {
-      width: 100vw;
-      height: 100dvh;
-      min-height: 100dvh;
+      padding:
+        max(10px, env(safe-area-inset-top))
+        max(12px, env(safe-area-inset-right))
+        max(10px, env(safe-area-inset-bottom))
+        max(12px, env(safe-area-inset-left));
+      background: var(--bg);
     }
 
     .quiz-inner {
+      max-width: 1400px;
       height: 100%;
-      max-width: 1200px;
       margin: 0 auto;
       display: grid;
-      grid-template-rows: auto minmax(120px, 24vh) minmax(230px, 1fr) auto;
-      gap: 9px;
+      grid-template-rows:
+        auto
+        minmax(0, 1fr)
+        minmax(0, 2fr)
+        auto;
+      gap: clamp(8px, 1.6vh, 16px);
     }
 
     .quiz-topbar {
@@ -376,57 +442,31 @@
       gap: 10px;
     }
 
-    .quiz-top-actions {
-      justify-self: end;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
     .quiz-title {
-      justify-self: center;
       margin: 0;
-      color: var(--sun);
-      font-size: clamp(1.6rem, 4.3vw, 3rem);
-      line-height: 1;
-      text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      text-shadow: 4px 4px 0 var(--shadow);
+      font-size: clamp(1.3rem, 4.5vh, 2rem);
+      font-weight: 700;
     }
 
     .quiz-progress {
       display: inline-block;
-      margin-left: 12px;
-      padding: 6px 12px;
-      border: 4px solid var(--cream);
+      margin-left: 10px;
+      padding: 2px 12px;
+      border: 2px solid var(--line);
       border-radius: 999px;
-      background: var(--red);
-      color: var(--cream);
-      font-size: clamp(.95rem, 2.2vw, 1.35rem);
+      font-size: .8em;
       vertical-align: middle;
-      white-space: nowrap;
-      box-shadow: 4px 4px 0 var(--shadow);
     }
 
-    .quiz-close-button {
-      justify-self: end;
-      padding: 11px 20px;
-      font-size: clamp(.95rem, 2vw, 1.1rem);
-      white-space: nowrap;
+    .quiz-top-actions {
+      display: flex;
+      gap: 8px;
     }
 
     .quiz-fullscreen-button {
       width: 52px;
-      height: 52px;
       padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.7rem;
-      line-height: 1;
-      background: linear-gradient(135deg, #ffe083, var(--sun));
-      color: var(--brown);
+      font-size: 1.5rem;
     }
 
     .quiz-question {
@@ -438,160 +478,229 @@
     }
 
     .quiz-question img {
-      max-width: 100%;
-      max-height: 100%;
+      width: 100%;
+      height: 100%;
       object-fit: contain;
-      display: block;
     }
 
     .quiz-answers {
       min-height: 0;
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      grid-template-rows: repeat(2, minmax(0, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: clamp(8px, 1.6vh, 16px);
     }
 
     .quiz-answer {
+      position: relative;
       min-height: 0;
-      padding: 9px;
+      padding: 8px;
       display: flex;
       align-items: stretch;
       gap: 10px;
       overflow: hidden;
     }
 
-    .quiz-answer.correct {
-      background: var(--green);
-      border-color: var(--dark-brown);
-      box-shadow: 10px 10px 0 var(--shadow), 0 0 0 8px var(--sun);
-    }
-
     .big-letter {
+      width: clamp(44px, 9vh, 72px);
       flex: 0 0 auto;
-      align-self: center;
-      width: clamp(48px, 7vw, 74px);
-      height: clamp(48px, 7vw, 74px);
-      border: 4px solid var(--dark-brown);
-      border-radius: 50%;
-      background: var(--red);
-      color: var(--cream);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: clamp(1.8rem, 4.5vw, 2.7rem);
-      font-weight: 1000;
-      box-shadow: 5px 5px 0 var(--shadow);
-    }
-
-    .quiz-answer.correct .big-letter {
-      background: var(--sun);
-      color: var(--brown);
+      border-radius: 8px;
+      background: var(--text);
+      color: #ffffff;
+      font-size: clamp(1.6rem, 5.5vh, 2.6rem);
+      font-weight: 700;
+      line-height: 1;
     }
 
     .answer-image-wrap {
-      flex: 1 1 auto;
-      height: 100%;
-      aspect-ratio: 402 / 153;
       min-width: 0;
+      flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      background: white;
-      border: 3px solid var(--dark-brown);
-      border-radius: 14px;
+      background: #ffffff;
     }
 
+    /*
+     * "contain" statt "fill": Die Handschrift wird nicht verzerrt.
+     */
     .answer-image-wrap img {
       width: 100%;
       height: 100%;
-      object-fit: fill;
-      display: block;
+      object-fit: contain;
+    }
+
+    /*
+     * Auflösung: Die richtige Antwort bekommt einen dicken grünen
+     * Rahmen, ein Häkchen statt des Buchstabens und das Wort
+     * "Richtig". Die anderen Antworten treten zurück.
+     */
+    .quiz-answers.revealed .quiz-answer:not(.correct) {
+      opacity: .35;
+    }
+
+    .quiz-answer.correct {
+      border: 6px solid var(--correct);
+      background: var(--correct-soft);
+    }
+
+    .quiz-answer.correct .big-letter {
+      background: var(--correct);
+      font-size: 0;
+    }
+
+    .quiz-answer.correct .big-letter::after {
+      content: "✓";
+      font-size: clamp(1.8rem, 6vh, 3rem);
+    }
+
+    .quiz-answer.correct::after {
+      content: "Richtig";
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 2px 12px;
+      border-radius: 999px;
+      background: var(--correct);
+      color: #ffffff;
+      font-size: clamp(.9rem, 2.4vh, 1.2rem);
+      font-weight: 700;
     }
 
     .quiz-controls {
       display: grid;
       grid-template-columns: repeat(3, auto);
       justify-content: center;
-      gap: 9px;
+      gap: 12px;
     }
 
-    .quiz-controls button {
-      padding: 10px 16px;
-      font-size: .9rem;
+    .quiz-controls button,
+    .quiz-top-actions button {
+      padding: clamp(6px, 1.4vh, 12px) clamp(14px, 2vw, 24px);
+      font-size: clamp(1rem, 2.4vh, 1.25rem);
     }
 
-    @media (max-width: 700px) {
-      .question-actions {
-        grid-template-columns: 1fr;
-      }
-
-      .question-actions .delete-question-button {
-        grid-column: auto;
-      }
-
-      .quiz-controls {
-        grid-template-columns: 1fr;
-      }
+    .quiz-top-actions .quiz-fullscreen-button {
+      padding-left: 0;
+      padding-right: 0;
     }
 
+    .hidden-work-area {
+      display: none;
+    }
+
+    /*
+     * Abschluss nach der letzten Frage: schlicht und mittig, nur
+     * zwei klare Möglichkeiten.
+     */
+    .quiz-end {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 24px;
+      text-align: center;
+      background: var(--bg);
+    }
+
+    .quiz-end-title {
+      margin: 0;
+      font-size: clamp(2.4rem, 10vh, 4.5rem);
+    }
+
+    .quiz-end-text {
+      margin: 0 0 16px;
+      font-size: clamp(1.3rem, 4vh, 2rem);
+    }
+
+    .quiz-end-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px;
+    }
+
+    .quiz-end-actions button {
+      min-width: 260px;
+      padding: 14px 28px;
+      font-size: clamp(1.1rem, 3vh, 1.5rem);
+    }
+
+    /*
+     * Hochkant (iPad hochkant, Handy): Antworten untereinander,
+     * so sind sie breit wie die Antwortfelder der Karte.
+     */
     @media (orientation: portrait) {
-      .quiz-screen {
-        height: auto;
-        min-height: calc(100dvh - 58px);
-        overflow: auto;
-      }
-
       .quiz-inner {
-        height: auto;
-        min-height: calc(100dvh - 76px);
-        grid-template-rows: auto auto auto auto;
+        grid-template-rows:
+          auto
+          minmax(0, 1fr)
+          minmax(0, 3fr)
+          auto;
       }
 
       .quiz-answers {
         grid-template-columns: 1fr;
-        grid-template-rows: none;
+        grid-template-rows: repeat(4, minmax(0, 1fr));
       }
+    }
 
-      .quiz-answer {
-        min-height: 126px;
-      }
-
-      .quiz-question {
-        min-height: 150px;
-      }
-
+    @media (max-width: 700px) {
       .quiz-topbar {
         grid-template-columns: 1fr;
       }
 
-      .quiz-close-button,
       .quiz-top-actions {
-        justify-self: center;
+        justify-content: center;
+      }
+
+      .quiz-controls {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+
+      .quiz-controls button {
+        padding: 6px;
+        font-size: .9rem;
       }
     }
   </style>
 </head>
 
 <body>
+
   <div id="introModal" class="modal-backdrop">
     <div class="modal">
       <h2>So funktioniert das 4er-Quiz</h2>
 
       <p>
-        Fotografiere eine oder mehrere ausgefüllte Fragenkarten.
-        Die App erkennt die vier schwarzen Eckmarken automatisch, richtet das Foto gerade aus
-        und erstellt daraus die Quizfrage.
+        Fotografiere eine oder mehrere ausgefüllte Fragekarten.
+        Die App erkennt die vier Eckmarken automatisch.
+      </p>
+
+      <p>
+        <a href="vorlage/quiz-vorlage.pdf" target="_blank">
+          Neue Quiz-Vorlage zum Ausdrucken (PDF)
+        </a>
       </p>
 
       <ul>
-        <li>Die vier schwarzen Eckmarken müssen auf dem Foto sichtbar sein.</li>
-        <li>Das Foto darf leicht schräg aufgenommen sein.</li>
-        <li>Die App nutzt möglichst genau die schwarzen Rahmen der Textfelder.</li>
-        <li>Wenn eine Karte nicht erkannt wird, wird sie übersprungen und gemeldet.</li>
-        <li>In der Fragensammlung kannst du einzelne Aufnahmen löschen oder verschieben.</li>
-        <li>Das Quiz ist besonders für ein iPad im Querformat geeignet.</li>
+        <li>Alle vier Eckmarken müssen sichtbar sein.</li>
+        <li>Der weiße Rand um die Eckmarken darf nicht verdeckt sein.</li>
+        <li>Das Foto darf schräg aufgenommen sein.</li>
+        <li>Die Karte darf auch auf dem Kopf stehen.</li>
+        <li>Nicht erkannte Fotos werden mit Grund gemeldet.</li>
+        <li>
+          Die Fragen bleiben auf diesem Gerät gespeichert, bis du
+          sie löschst.
+        </li>
       </ul>
 
       <button id="introOkButton" class="modal-ok">Okay</button>
@@ -605,35 +714,38 @@
 
     <main>
       <section class="card">
-        <div class="main-actions">
-          <label for="imageInput" class="photo-button">
-            <span>📷 Foto aufnehmen</span>
-          </label>
+        <label for="imageInput" class="photo-button">
+          📷 Foto aufnehmen
+        </label>
 
-          <input
-            id="imageInput"
-            type="file"
-            accept="image/*"
-            capture="environment"
-            multiple
-          >
+        <input
+          id="imageInput"
+          type="file"
+          accept="image/*"
+          capture="environment"
+          multiple
+        >
 
-          <div class="progress-outer" id="progressOuter">
-            <div class="progress-inner" id="progressInner"></div>
-          </div>
+        <div id="progressOuter" class="progress-outer">
+          <div id="progressInner" class="progress-inner"></div>
+        </div>
 
-          <div id="questionCounterBox" class="question-counter-box">
-            Gesammelte Fragen:
-            <span id="questionCount">0</span>
-          </div>
+        <div class="question-counter-box">
+          Gesammelte Fragen:
+          <span id="questionCount">0</span>
+        </div>
 
-          <div id="failedList" class="failed-list"></div>
+        <ul id="statusList" class="status-list"></ul>
 
-          <div class="controls">
-            <button id="startQuizButton" class="success start-quiz-button" disabled>
-              Quiz starten
-            </button>
-          </div>
+        <figure id="lastCardPreview" class="last-card-preview">
+          <figcaption>Zuletzt erkannte Karte</figcaption>
+          <img id="lastCardImage" alt="Entzerrte Karte mit erkannten Feldern">
+        </figure>
+
+        <div class="controls">
+          <button id="startQuizButton" class="success" disabled>
+            Quiz starten
+          </button>
         </div>
       </section>
 
@@ -643,7 +755,9 @@
       </section>
 
       <section id="bottomDeleteSection" class="card bottom-delete-section">
-        <button id="clearAllButton" class="danger">Alles löschen</button>
+        <button id="clearAllButton" class="danger">
+          Alles löschen
+        </button>
       </section>
     </main>
   </div>
@@ -657,18 +771,13 @@
         </h1>
 
         <div class="quiz-top-actions">
-          <button
-            id="backButton"
-            class="quiz-close-button"
-            aria-label="Quiz abbrechen"
-          >
+          <button id="backButton" class="danger">
             Abbrechen
           </button>
 
           <button
             id="fullscreenButton"
             class="quiz-fullscreen-button"
-            aria-label="Vollbild einschalten"
             title="Vollbild einschalten"
           >
             ↗
@@ -724,19 +833,68 @@
         </button>
       </div>
     </div>
+
+    <div id="quizEnd" class="quiz-end" hidden>
+      <h2 class="quiz-end-title">Geschafft!</h2>
+      <p id="quizEndText" class="quiz-end-text"></p>
+
+      <div class="quiz-end-actions">
+        <button id="quizEndToCollectionButton">
+          Zur Fragensammlung
+        </button>
+        <button id="quizRestartButton" class="secondary">
+          Nochmal von vorn
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="detailModal" class="modal-backdrop" hidden>
+    <div
+      class="modal detail-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="detailTitle"
+    >
+      <h2 id="detailTitle">Frage</h2>
+
+      <figure class="detail-field detail-question">
+        <figcaption>Frage</figcaption>
+        <img id="detailQuestion" alt="Frage">
+      </figure>
+
+      <div class="detail-answers">
+        <figure class="detail-field detail-correct">
+          <figcaption>✓ Richtige Antwort</figcaption>
+          <img id="detailCorrect" alt="Richtige Antwort">
+        </figure>
+        <figure class="detail-field">
+          <figcaption>Falsche Antwort</figcaption>
+          <img id="detailWrong1" alt="Falsche Antwort 1">
+        </figure>
+        <figure class="detail-field">
+          <figcaption>Falsche Antwort</figcaption>
+          <img id="detailWrong2" alt="Falsche Antwort 2">
+        </figure>
+        <figure class="detail-field">
+          <figcaption>Falsche Antwort</figcaption>
+          <img id="detailWrong3" alt="Falsche Antwort 3">
+        </figure>
+      </div>
+
+      <button id="detailCloseButton" class="modal-ok">Schließen</button>
+    </div>
   </div>
 
   <div class="hidden-work-area">
     <canvas id="sourceCanvas"></canvas>
     <canvas id="rectifiedCanvas"></canvas>
-    <canvas id="originalCanvas"></canvas>
-    <canvas id="normalizedCanvas"></canvas>
 
-    <img id="questionPreview" alt="Ausschnitt der Frage">
-    <img id="correctPreview" alt="Ausschnitt der richtigen Antwort">
-    <img id="wrong1Preview" alt="Ausschnitt der falschen Antwort 1">
-    <img id="wrong2Preview" alt="Ausschnitt der falschen Antwort 2">
-    <img id="wrong3Preview" alt="Ausschnitt der falschen Antwort 3">
+    <img id="questionPreview" alt="">
+    <img id="correctPreview" alt="">
+    <img id="wrong1Preview" alt="">
+    <img id="wrong2Preview" alt="">
+    <img id="wrong3Preview" alt="">
   </div>
 
   <script>
@@ -749,14 +907,15 @@
         updateButtonStates();
 
         if (waitingFiles.length > 0) {
-          processFilesAutomatically(waitingFiles);
+          const files = waitingFiles;
           waitingFiles = [];
+          processFilesAutomatically(files);
         }
       }
     };
   </script>
 
-  <script async src="https://docs.opencv.org/4.x/opencv.js"></script>
+  <script async src="opencv.js"></script>
 
   <script>
     const introModal = document.getElementById("introModal");
@@ -764,12 +923,17 @@
     const imageInput = document.getElementById("imageInput");
     const startQuizButton = document.getElementById("startQuizButton");
     const clearAllButton = document.getElementById("clearAllButton");
-    const bottomDeleteSection = document.getElementById("bottomDeleteSection");
+    const bottomDeleteSection =
+      document.getElementById("bottomDeleteSection");
+
     const progressOuter = document.getElementById("progressOuter");
     const progressInner = document.getElementById("progressInner");
-    const failedList = document.getElementById("failedList");
+    const statusList = document.getElementById("statusList");
+    const lastCardPreview = document.getElementById("lastCardPreview");
+    const lastCardImage = document.getElementById("lastCardImage");
     const questionCount = document.getElementById("questionCount");
-    const questionListSection = document.getElementById("questionListSection");
+    const questionListSection =
+      document.getElementById("questionListSection");
     const questionList = document.getElementById("questionList");
 
     const sourceCanvas = document.getElementById("sourceCanvas");
@@ -778,10 +942,12 @@
     const rectifiedCanvas = document.getElementById("rectifiedCanvas");
     const rectifiedCtx = rectifiedCanvas.getContext("2d");
 
-    const originalCanvas = document.getElementById("originalCanvas");
-    const originalCtx = originalCanvas.getContext("2d");
-
-    const normalizedCanvas = document.getElementById("normalizedCanvas");
+    /*
+     * Die Marken werden im kleinen sourceCanvas gesucht (schnell),
+     * entzerrt wird aus diesem größeren Bild (scharfe Ausschnitte).
+     */
+    const hiResCanvas = document.createElement("canvas");
+    const hiResCtx = hiResCanvas.getContext("2d");
 
     const questionPreview = document.getElementById("questionPreview");
     const correctPreview = document.getElementById("correctPreview");
@@ -792,7 +958,8 @@
     const editorView = document.getElementById("editorView");
     const quizView = document.getElementById("quizView");
     const quizProgress = document.getElementById("quizProgress");
-    const quizQuestionImage = document.getElementById("quizQuestionImage");
+    const quizQuestionImage =
+      document.getElementById("quizQuestionImage");
 
     const quizAnswerA = document.getElementById("quizAnswerA");
     const quizAnswerB = document.getElementById("quizAnswerB");
@@ -803,40 +970,227 @@
     const answerBoxB = document.getElementById("answerBoxB");
     const answerBoxC = document.getElementById("answerBoxC");
     const answerBoxD = document.getElementById("answerBoxD");
+    const quizAnswers = document.querySelector(".quiz-answers");
+
+    const quizEnd = document.getElementById("quizEnd");
+    const quizEndText = document.getElementById("quizEndText");
+    const quizEndToCollectionButton =
+      document.getElementById("quizEndToCollectionButton");
+    const quizRestartButton =
+      document.getElementById("quizRestartButton");
+
+    const detailModal = document.getElementById("detailModal");
+    const detailTitle = document.getElementById("detailTitle");
+    const detailCloseButton =
+      document.getElementById("detailCloseButton");
+    const detailImages = {
+      question: document.getElementById("detailQuestion"),
+      correct: document.getElementById("detailCorrect"),
+      wrong1: document.getElementById("detailWrong1"),
+      wrong2: document.getElementById("detailWrong2"),
+      wrong3: document.getElementById("detailWrong3")
+    };
 
     const revealButton = document.getElementById("revealButton");
     const backButton = document.getElementById("backButton");
-    const fullscreenButton = document.getElementById("fullscreenButton");
-    const prevQuestionButton = document.getElementById("prevQuestionButton");
-    const nextQuestionButton = document.getElementById("nextQuestionButton");
+    const fullscreenButton =
+      document.getElementById("fullscreenButton");
+    const prevQuestionButton =
+      document.getElementById("prevQuestionButton");
+    const nextQuestionButton =
+      document.getElementById("nextQuestionButton");
 
     let loadedImage = null;
     let markerPoints = null;
+    let activeLayout = null;
     let questions = [];
     let currentQuizIndex = 0;
+
+    /*
+     * Reihenfolge der Antworten je Frage, einmal beim Quizstart
+     * gemischt. Beim Zurückblättern bleibt so jede Antwort unter
+     * demselben Buchstaben.
+     */
+    let quizAnswerOrders = [];
     let correctLetter = null;
     let isProcessing = false;
 
-    const NORMALIZED_WIDTH = 1021;
-    const NORMALIZED_HEIGHT = 724;
+    /*
+     * Alle Maße stammen aus den Quiz-Vorlagen (2000 x 1563 Pixel)
+     * und sind hier halbiert. Die Felder liegen knapp innerhalb
+     * der schwarzen Rahmen.
+     */
+    const NORMALIZED_WIDTH = 1000;
+    const NORMALIZED_HEIGHT = 782;
 
-    const TARGET_MARKERS = {
-      topLeft: { x: 141, y: 76 },
-      topRight: { x: 908, y: 76 },
-      bottomRight: { x: 908, y: 668 },
-      bottomLeft: { x: 141, y: 668 }
-    };
+    /*
+     * Die entzerrte Karte wird doppelt so groß berechnet wie die
+     * Maße unten, damit Handschrift auch auf dem Beamer scharf ist.
+     */
+    const OUTPUT_SCALE = 2;
 
-    const CROP_FIELDS = {
-      question: { x: 112, y: 110, w: 824, h: 154 },
-      correct: { x: 111, y: 293, w: 402, h: 153 },
-      wrong1: { x: 531, y: 293, w: 402, h: 153 },
-      wrong2: { x: 111, y: 481, w: 402, h: 153 },
-      wrong3: { x: 531, y: 481, w: 402, h: 153 }
+    const DETECTION_MAX_SIDE = 1800;
+    const HI_RES_MAX_SIDE = 3200;
+
+    /*
+     * Ab dieser Kantenbreite (siehe measureEdgeWidth) gilt ein Foto
+     * als unscharf. Ermittelt mit scharfen und weichgezeichneten
+     * Testfotos beider Vorlagen: scharf etwa 1,6 bis 2,3, leicht
+     * weich etwa 5,2, deutlich unscharf ab etwa 7,4 Pixel.
+     */
+    const MAX_EDGE_WIDTH = 6.5;
+
+    const LAYOUTS = {
+      /*
+       * Neue Vorlage (vorlage/quiz-vorlage.svg) mit ArUco-Marken
+       * aus DICT_4X4_50: 0 oben links, 1 oben rechts,
+       * 2 unten rechts, 3 unten links. Die Punkte sind die
+       * äußeren Ecken der Marken.
+       */
+      aruco: {
+        markers: {
+          topLeft: {
+            x: 60,
+            y: 60
+          },
+          topRight: {
+            x: 940,
+            y: 60
+          },
+          bottomRight: {
+            x: 940,
+            y: 721.5
+          },
+          bottomLeft: {
+            x: 60,
+            y: 721.5
+          }
+        },
+        /*
+         * Die Marken selbst (60 x 60), daran wird die Schärfe
+         * gemessen: Sie sind auf jeder Karte gleich.
+         */
+        markerAreas: [
+          { x: 60, y: 60, w: 60, h: 60 },
+          { x: 880, y: 60, w: 60, h: 60 },
+          { x: 880, y: 661.5, w: 60, h: 60 },
+          { x: 60, y: 661.5, w: 60, h: 60 }
+        ],
+        fields: {
+          question: {
+            x: 70,
+            y: 150,
+            w: 860,
+            h: 120
+          },
+          correct: {
+            x: 70,
+            y: 333,
+            w: 410,
+            h: 115
+          },
+          wrong1: {
+            x: 520,
+            y: 333,
+            w: 410,
+            h: 115
+          },
+          wrong2: {
+            x: 70,
+            y: 508,
+            w: 410,
+            h: 115
+          },
+          wrong3: {
+            x: 520,
+            y: 508,
+            w: 410,
+            h: 115
+          }
+        }
+      },
+
+      /*
+       * Alte Vorlage: schwarze Quadrate, oben links mit weißem
+       * Dreieck. Die Punkte sind die Mittelpunkte der Quadrate.
+       */
+      classic: {
+        markers: {
+          topLeft: {
+            x: 60.5,
+            y: 55
+          },
+          topRight: {
+            x: 937.5,
+            y: 55
+          },
+          bottomRight: {
+            x: 936.25,
+            y: 730.75
+          },
+          bottomLeft: {
+            x: 59.5,
+            y: 730.75
+          }
+        },
+        markerAreas: [
+          { x: 29.5, y: 24, w: 62, h: 62 },
+          { x: 906.5, y: 24, w: 62, h: 62 },
+          { x: 905.25, y: 699.75, w: 62, h: 62 },
+          { x: 28.5, y: 699.75, w: 62, h: 62 }
+        ],
+        fields: {
+          question: {
+            x: 39,
+            y: 103,
+            w: 920,
+            h: 156
+          },
+          correct: {
+            x: 36,
+            y: 312,
+            w: 439,
+            h: 156
+          },
+          wrong1: {
+            x: 517,
+            y: 312,
+            w: 439,
+            h: 156
+          },
+          wrong2: {
+            x: 36,
+            y: 526,
+            w: 439,
+            h: 156
+          },
+          wrong3: {
+            x: 517,
+            y: 526,
+            w: 439,
+            h: 156
+          }
+        }
+      }
     };
 
     introOkButton.addEventListener("click", () => {
       introModal.style.display = "none";
+    });
+
+    quizEndToCollectionButton.addEventListener("click", leaveQuiz);
+    quizRestartButton.addEventListener("click", startQuiz);
+
+    detailCloseButton.addEventListener("click", closeQuestionDetail);
+    detailModal.addEventListener("click", event => {
+      if (event.target === detailModal) {
+        closeQuestionDetail();
+      }
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && !detailModal.hidden) {
+        closeQuestionDetail();
+      }
     });
 
     imageInput.addEventListener("change", handleFileSelection);
@@ -845,14 +1199,198 @@
     revealButton.addEventListener("click", revealCorrectAnswer);
     backButton.addEventListener("click", confirmBackToEditor);
     fullscreenButton.addEventListener("click", toggleFullscreen);
-
-    document.addEventListener("fullscreenchange", updateFullscreenButton);
-    document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
-
     prevQuestionButton.addEventListener("click", showPreviousQuestion);
     nextQuestionButton.addEventListener("click", showNextQuestion);
 
+    document.addEventListener(
+      "fullscreenchange",
+      updateFullscreenButton
+    );
+    document.addEventListener(
+      "webkitfullscreenchange",
+      updateFullscreenButton
+    );
+
+    /*
+     * Als App vom Home-Bildschirm gestartet ist die Ansicht schon
+     * randlos; ohne Vollbild-Unterstützung (z. B. iPhone) wird der
+     * Knopf ausgeblendet.
+     */
+    const isStandalone =
+      window.navigator.standalone === true ||
+      window.matchMedia("(display-mode: standalone)").matches;
+    const canFullscreen =
+      !!(quizView.requestFullscreen || quizView.webkitRequestFullscreen);
+
+    if (isStandalone || !canFullscreen) {
+      fullscreenButton.style.display = "none";
+    }
+
     updateQuestionCollectionView();
+
+    /*
+     * Speicherung der Fragen im Browser (IndexedDB), damit sie
+     * Neuladen und das Schließen des Tabs überstehen. Jede Frage
+     * ist ein eigener Eintrag, die Reihenfolge steht separat.
+     * Schlägt etwas fehl, läuft die App ohne Speicherung weiter.
+     */
+    const DB_NAME = "4er-quiz";
+    const DB_VERSION = 1;
+    const QUESTION_STORE = "questions";
+    const META_STORE = "meta";
+
+    let dbPromise = null;
+    let storageWarningShown = false;
+
+    function openDatabase() {
+      if (!dbPromise) {
+        dbPromise = new Promise((resolve, reject) => {
+          const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+          request.onupgradeneeded = () => {
+            const db = request.result;
+            db.createObjectStore(QUESTION_STORE, { keyPath: "id" });
+            db.createObjectStore(META_STORE);
+          };
+
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      }
+
+      return dbPromise;
+    }
+
+    async function runTransaction(storeNames, work) {
+      const db = await openDatabase();
+
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction(storeNames, "readwrite");
+        const result = work(transaction);
+
+        transaction.oncomplete = () => resolve(result);
+        transaction.onerror = () => reject(transaction.error);
+        transaction.onabort = () => reject(transaction.error);
+      });
+    }
+
+    function handleStorageError(error) {
+      console.error(error);
+
+      if (!storageWarningShown) {
+        storageWarningShown = true;
+        addStatus(
+          "warn",
+          "⚠ Die Fragen konnten nicht im Browser gespeichert " +
+          "werden. Sie gehen beim Neuladen verloren."
+        );
+      }
+    }
+
+    function createQuestionId() {
+      return Date.now().toString(36) +
+        Math.random().toString(36).slice(2, 8);
+    }
+
+    function saveQuestion(question) {
+      runTransaction([QUESTION_STORE], transaction => {
+        transaction.objectStore(QUESTION_STORE).put(question);
+      }).catch(handleStorageError);
+    }
+
+    function saveQuestionOrder() {
+      const ids = questions.map(question => question.id);
+
+      runTransaction([META_STORE], transaction => {
+        transaction.objectStore(META_STORE).put(ids, "order");
+      }).catch(handleStorageError);
+    }
+
+    function deleteSavedQuestion(id) {
+      runTransaction([QUESTION_STORE], transaction => {
+        transaction.objectStore(QUESTION_STORE).delete(id);
+      }).catch(handleStorageError);
+    }
+
+    function clearSavedQuestions() {
+      runTransaction([QUESTION_STORE, META_STORE], transaction => {
+        transaction.objectStore(QUESTION_STORE).clear();
+        transaction.objectStore(META_STORE).clear();
+      }).catch(handleStorageError);
+    }
+
+    async function loadSavedQuestions() {
+      try {
+        /*
+         * Bittet den Browser, die Daten nicht automatisch zu
+         * löschen, wenn der Speicher knapp wird.
+         */
+        if (navigator.storage && navigator.storage.persist) {
+          navigator.storage.persist().catch(() => {});
+        }
+
+        const db = await openDatabase();
+
+        const [saved, order] = await new Promise((resolve, reject) => {
+          const transaction = db.transaction(
+            [QUESTION_STORE, META_STORE],
+            "readonly"
+          );
+          const all = transaction.objectStore(QUESTION_STORE).getAll();
+          const ids = transaction.objectStore(META_STORE).get("order");
+
+          transaction.oncomplete = () =>
+            resolve([all.result || [], ids.result || []]);
+          transaction.onerror = () => reject(transaction.error);
+        });
+
+        if (saved.length === 0) {
+          return;
+        }
+
+        /*
+         * Fragen in der gespeicherten Reihenfolge, danach eventuell
+         * fehlende (z. B. wenn das Speichern der Reihenfolge
+         * fehlschlug) nach Aufnahmezeit.
+         */
+        const byId = new Map(saved.map(question => [question.id, question]));
+        const ordered = order
+          .filter(id => byId.has(id))
+          .map(id => byId.get(id));
+        const rest = saved
+          .filter(question => !order.includes(question.id))
+          .sort((a, b) => a.createdAt - b.createdAt);
+
+        /*
+         * Falls schon während des Ladens fotografiert wurde, kommen
+         * die neuen Fragen hinten an.
+         */
+        questions = [...ordered, ...rest, ...questions];
+
+        updateQuestionCollectionView();
+        addStatus(
+          "ok",
+          `✓ ${saved.length} gespeicherte ` +
+          `${saved.length === 1 ? "Frage" : "Fragen"} geladen.`
+        );
+      } catch (error) {
+        handleStorageError(error);
+      }
+    }
+
+    loadSavedQuestions();
+
+    /*
+     * Offline-Betrieb: sw.js speichert die App beim ersten Öffnen,
+     * danach startet sie auch ohne Internet.
+     */
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js").catch(error => {
+          console.warn("Offline-Speicher nicht verfügbar.", error);
+        });
+      });
+    }
 
     function setProgress(done, total) {
       if (total <= 0) {
@@ -862,20 +1400,26 @@
       }
 
       progressOuter.style.display = "block";
-      progressInner.style.width = Math.round(done / total * 100) + "%";
+      progressInner.style.width =
+        Math.round(done / total * 100) + "%";
     }
 
     function updateButtonStates() {
       const hasQuestions = questions.length > 0;
 
-      startQuizButton.disabled = !hasQuestions || isProcessing;
-      bottomDeleteSection.style.display = hasQuestions ? "block" : "none";
+      startQuizButton.disabled =
+        !hasQuestions || isProcessing;
+
+      bottomDeleteSection.style.display =
+        hasQuestions ? "block" : "none";
     }
 
     function handleFileSelection(event) {
       const files = Array.from(event.target.files || []);
 
-      if (files.length === 0) return;
+      if (files.length === 0) {
+        return;
+      }
 
       if (!cvReady) {
         waitingFiles = files;
@@ -886,51 +1430,80 @@
     }
 
     async function processFilesAutomatically(files) {
-      if (isProcessing) return;
+      if (isProcessing) {
+        return;
+      }
 
       isProcessing = true;
-      failedList.textContent = "";
+      statusList.innerHTML = "";
       updateButtonStates();
-
-      const failedFiles = [];
       setProgress(0, files.length);
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
 
-        try {
-          const image = await loadImageFromFile(file);
+        /*
+         * Kamerafotos heißen auf dem iPhone alle "image.jpg",
+         * deshalb werden sie durchnummeriert.
+         */
+        const label = files.length > 1 ? `Foto ${i + 1}` : "Foto";
 
-          loadedImage = image;
+        try {
+          loadedImage = await loadImageFromFile(file);
+
           prepareCanvasesForLoadedImage();
           drawSourceImage();
 
-          const detected = autoDetectMarkers();
+          const detection = autoDetectMarkers();
 
-          if (!detected) {
-            failedFiles.push(file.name || `Foto ${i + 1}`);
+          if (!detection.ok) {
+            addStatus("error", `✗ ${label}: ${detection.reason}`);
           } else {
             const crops = rectifyAndCrop();
+            const edgeWidth = measureEdgeWidth();
 
-            questions.push({
+            const question = {
+              id: createQuestionId(),
               ...crops,
               createdAt: Date.now()
-            });
+            };
+
+            questions.push(question);
+            saveQuestion(question);
+            saveQuestionOrder();
 
             showLatestCrops(crops);
+            showCardPreview();
             updateQuestionCollectionView();
+
+            const number = questions.length;
+
+            if (edgeWidth > MAX_EDGE_WIDTH) {
+              addStatus(
+                "warn",
+                `⚠ ${label}: als Frage ${number} übernommen, ` +
+                "aber das Foto ist unscharf. Prüfe die Vorschau " +
+                "und fotografiere die Karte sonst neu."
+              );
+            } else {
+              addStatus(
+                "ok",
+                `✓ ${label}: als Frage ${number} übernommen.`
+              );
+            }
           }
         } catch (error) {
           console.error(error);
-          failedFiles.push(file.name || `Foto ${i + 1}`);
+          addStatus(
+            "error",
+            `✗ ${label}: Das Bild konnte nicht verarbeitet werden.`
+          );
+        } finally {
+          releaseCanvas(hiResCanvas);
         }
 
         setProgress(i + 1, files.length);
       }
-
-      failedList.textContent = failedFiles.length
-        ? `Nicht erkannt: ${failedFiles.join(", ")}`
-        : "";
 
       isProcessing = false;
       imageInput.value = "";
@@ -941,43 +1514,45 @@
 
     function loadImageFromFile(file) {
       return new Promise((resolve, reject) => {
-        const img = new Image();
+        const image = new Image();
 
-        img.onload = () => {
-          URL.revokeObjectURL(img.src);
-          resolve(img);
+        image.onload = () => {
+          URL.revokeObjectURL(image.src);
+          resolve(image);
         };
 
-        img.onerror = () => {
+        image.onerror = () => {
           reject(new Error("Bild konnte nicht geladen werden."));
         };
 
-        img.src = URL.createObjectURL(file);
+        image.src = URL.createObjectURL(file);
       });
     }
 
-    function prepareCanvasesForLoadedImage() {
-      const maxSide = 1800;
-      const scale = Math.min(
+    function fitScale(maxSide) {
+      return Math.min(
         1,
-        maxSide / Math.max(loadedImage.width, loadedImage.height)
+        maxSide / Math.max(
+          loadedImage.width,
+          loadedImage.height
+        )
       );
+    }
 
+    function prepareCanvasesForLoadedImage() {
+      const scale = fitScale(DETECTION_MAX_SIDE);
       sourceCanvas.width = Math.round(loadedImage.width * scale);
       sourceCanvas.height = Math.round(loadedImage.height * scale);
 
-      originalCanvas.width = loadedImage.width;
-      originalCanvas.height = loadedImage.height;
+      const hiResScale = fitScale(HI_RES_MAX_SIDE);
+      hiResCanvas.width = Math.round(loadedImage.width * hiResScale);
+      hiResCanvas.height = Math.round(loadedImage.height * hiResScale);
 
-      rectifiedCanvas.width = NORMALIZED_WIDTH;
-      rectifiedCanvas.height = NORMALIZED_HEIGHT;
-
-      normalizedCanvas.width = NORMALIZED_WIDTH;
-      normalizedCanvas.height = NORMALIZED_HEIGHT;
+      rectifiedCanvas.width = NORMALIZED_WIDTH * OUTPUT_SCALE;
+      rectifiedCanvas.height = NORMALIZED_HEIGHT * OUTPUT_SCALE;
     }
 
     function drawSourceImage() {
-      sourceCtx.clearRect(0, 0, sourceCanvas.width, sourceCanvas.height);
       sourceCtx.drawImage(
         loadedImage,
         0,
@@ -986,25 +1561,165 @@
         sourceCanvas.height
       );
 
-      originalCtx.clearRect(
-        0,
-        0,
-        originalCanvas.width,
-        originalCanvas.height
-      );
-
-      originalCtx.drawImage(
+      hiResCtx.drawImage(
         loadedImage,
         0,
         0,
-        originalCanvas.width,
-        originalCanvas.height
+        hiResCanvas.width,
+        hiResCanvas.height
       );
     }
 
-    function autoDetectMarkers() {
-      if (!cvReady || !loadedImage) return false;
+    /*
+     * Safari auf dem iPhone gibt Canvas-Speicher nur frei,
+     * wenn die Größe auf 0 gesetzt wird.
+     */
+    function releaseCanvas(canvas) {
+      canvas.width = 0;
+      canvas.height = 0;
+    }
 
+    /*
+     * Sucht zuerst die ArUco-Marken der neuen Vorlage. Werden sie
+     * nicht gefunden, folgt die Erkennung der alten Vorlage, damit
+     * bereits gedruckte Karten weiter funktionieren.
+     */
+    function autoDetectMarkers() {
+      activeLayout = null;
+      markerPoints = null;
+
+      const arucoCount = detectArucoMarkers();
+
+      if (arucoCount === 4) {
+        activeLayout = LAYOUTS.aruco;
+        return { ok: true };
+      }
+
+      /*
+       * Teilweise gefundene ArUco-Marken: Es ist die neue Vorlage,
+       * aber Ecken fehlen oder sind verdeckt.
+       */
+      if (arucoCount > 0) {
+        return {
+          ok: false,
+          reason:
+            `Nur ${arucoCount} von 4 Eckmarken erkannt. ` +
+            "Sind alle Ecken im Bild und nicht verdeckt?"
+        };
+      }
+
+      const classicResult = detectClassicMarkers();
+
+      if (classicResult === "ok") {
+        activeLayout = LAYOUTS.classic;
+        return { ok: true };
+      }
+
+      if (classicResult === "no-triangle") {
+        return {
+          ok: false,
+          reason:
+            "Ecke oben links (Dreieck) nicht eindeutig erkannt."
+        };
+      }
+
+      return {
+        ok: false,
+        reason:
+          "Keine Eckmarken gefunden. Ist die ganze Karte im Bild?"
+      };
+    }
+
+    /*
+     * Liefert die Anzahl der gefundenen Marken (0 bis 4). Bei allen
+     * vier wird markerPoints gesetzt.
+     */
+    function detectArucoMarkers() {
+      let src = null;
+      let gray = null;
+      let dictionary = null;
+      let parameters = null;
+      let refineParameters = null;
+      let detector = null;
+      let corners = null;
+      let ids = null;
+      let rejected = null;
+
+      try {
+        src = cv.imread(sourceCanvas);
+        gray = new cv.Mat();
+        cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+
+        dictionary = cv.getPredefinedDictionary(cv.DICT_4X4_50);
+        parameters = new cv.aruco_DetectorParameters();
+        refineParameters = new cv.aruco_RefineParameters(10, 3, true);
+        detector = new cv.aruco_ArucoDetector(
+          dictionary,
+          parameters,
+          refineParameters
+        );
+
+        corners = new cv.MatVector();
+        ids = new cv.Mat();
+        rejected = new cv.MatVector();
+
+        detector.detectMarkers(gray, corners, ids, rejected);
+
+        /*
+         * Marke n liefert ihre Ecken in der Reihenfolge oben links,
+         * oben rechts, unten rechts, unten links. Ecke n ist damit
+         * genau die Ecke, die zur Kartenecke zeigt.
+         */
+        const found = [];
+
+        for (let i = 0; i < corners.size(); i++) {
+          const id = ids.data32S[i];
+
+          if (id < 0 || id > 3 || found[id]) {
+            continue;
+          }
+
+          const data = corners.get(i).data32F;
+
+          found[id] = {
+            x: data[id * 2],
+            y: data[id * 2 + 1]
+          };
+        }
+
+        const count = [0, 1, 2, 3].filter(id => found[id]).length;
+
+        if (count === 4) {
+          markerPoints = found;
+        }
+
+        return count;
+      } catch (error) {
+        console.error(error);
+        return 0;
+      } finally {
+        [
+          src,
+          gray,
+          dictionary,
+          parameters,
+          refineParameters,
+          detector,
+          corners,
+          ids,
+          rejected
+        ].forEach(item => {
+          if (item) item.delete();
+        });
+      }
+    }
+
+    /*
+     * Erkennt die vier schwarzen Eckmarken der alten Vorlage und
+     * wertet zusätzlich den Innenbereich jeder Marke aus.
+     * Ergebnis: "ok", "few-markers", "no-triangle" oder "error".
+     */
+    function detectClassicMarkers() {
       let src = null;
       let gray = null;
       let binary = null;
@@ -1019,6 +1734,7 @@
         hierarchy = new cv.Mat();
 
         cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+
         cv.threshold(
           gray,
           binary,
@@ -1031,12 +1747,19 @@
           binary,
           contours,
           hierarchy,
-          cv.RETR_EXTERNAL,
+          /*
+           * Alle Konturen, nicht nur die äußeren: Liegt die Karte
+           * auf einem dunklen Tisch, wäre sonst nur der Hintergrund
+           * eine äußere Kontur und die Eckmarken lägen darin.
+           */
+          cv.RETR_LIST,
           cv.CHAIN_APPROX_SIMPLE
         );
 
+        const imageArea =
+          sourceCanvas.width * sourceCanvas.height;
+
         const candidates = [];
-        const imageArea = sourceCanvas.width * sourceCanvas.height;
 
         for (let i = 0; i < contours.size(); i++) {
           const contour = contours.get(i);
@@ -1046,15 +1769,15 @@
           const rectArea = rect.width * rect.height;
           const fillRatio = area / rectArea;
 
-          const minArea = imageArea * .00035;
-          const maxArea = imageArea * .03;
+          const minArea = imageArea * 0.00035;
+          const maxArea = imageArea * 0.03;
 
           const isSquareLike =
-            ratio > .65 &&
+            ratio > 0.65 &&
             ratio < 1.45 &&
             area > minArea &&
             area < maxArea &&
-            fillRatio > .45;
+            fillRatio > 0.45;
 
           if (isSquareLike) {
             candidates.push({
@@ -1062,6 +1785,7 @@
               y: rect.y + rect.height / 2,
               width: rect.width,
               height: rect.height,
+              rect,
               area
             });
           }
@@ -1070,18 +1794,60 @@
         }
 
         if (candidates.length < 4) {
-          markerPoints = null;
-          return false;
+          return "few-markers";
         }
 
         candidates.sort((a, b) => b.area - a.area);
-        markerPoints = orderPoints(candidates.slice(0, 4));
 
-        return true;
+        const bestFour = candidates.slice(0, 4);
+
+        /*
+         * Das Dreieck wird direkt in jeder Eckmarke gesucht.
+         * Die Marke mit dem Dreieck ist die echte obere linke Ecke.
+         */
+        const triangleScores = bestFour.map(candidate => ({
+          candidate,
+          score: detectTriangleScore(
+            binary,
+            candidate
+          )
+        }));
+
+        triangleScores.sort((a, b) => b.score - a.score);
+
+        const triangleCandidate = triangleScores[0];
+
+        /*
+         * Nur die Marke oben links hat ein weißes Dreieck. Ist
+         * keine Marke deutlich heller als die anderen, wird das
+         * Foto lieber als nicht erkannt gemeldet als falsch
+         * gedreht übernommen.
+         */
+        const secondScore =
+          triangleScores[1]?.score || 0;
+
+        const triangleIsReliable =
+          triangleCandidate.score >= 0.04 &&
+          triangleCandidate.score > secondScore * 2;
+
+        if (!triangleIsReliable) {
+          console.warn(
+            "Dreieck nicht eindeutig erkannt.",
+            triangleScores
+          );
+          return "no-triangle";
+        }
+
+        markerPoints = orderPointsFromTriangle(
+          bestFour,
+          triangleCandidate.candidate
+        );
+
+        return "ok";
       } catch (error) {
         console.error(error);
         markerPoints = null;
-        return false;
+        return "error";
       } finally {
         if (src) src.delete();
         if (gray) gray.delete();
@@ -1091,24 +1857,84 @@
       }
     }
 
-    function orderPoints(points) {
-      const topLeft = points.reduce((best, point) =>
-        point.x + point.y < best.x + best.y ? point : best
+    /*
+     * Prüft den inneren Bereich einer quadratischen Marke und
+     * liefert den Anteil heller Pixel (das weiße Dreieck).
+     */
+    function detectTriangleScore(binary, candidate) {
+      const r = candidate.rect;
+
+      const marginX = Math.round(r.width * 0.18);
+      const marginY = Math.round(r.height * 0.18);
+
+      const x0 = r.x + marginX;
+      const y0 = r.y + marginY;
+      const w = r.width - marginX * 2;
+      const h = r.height - marginY * 2;
+
+      if (w <= 4 || h <= 4) {
+        return 0;
+      }
+
+      /*
+       * Ein ROI ist nur ein Ausschnitt des großen Bildes.
+       * Erst die Kopie liegt Zeile für Zeile lückenlos im
+       * Speicher, sodass y * cols + x stimmt.
+       */
+      const view = binary.roi(
+        new cv.Rect(x0, y0, w, h)
+      );
+      const roi = view.clone();
+      view.delete();
+
+      try {
+        /*
+         * Im invertierten Binärbild ist Schwarz 255 und Weiß 0.
+         * Die Eckmarken sind volle schwarze Quadrate, nur die
+         * Marke oben links enthält ein weißes Dreieck. Deshalb
+         * zählt hier der Anteil heller Pixel im Inneren.
+         */
+        const data = roi.data;
+        let light = 0;
+
+        for (let i = 0; i < w * h; i++) {
+          if (data[i] === 0) {
+            light++;
+          }
+        }
+
+        return light / (w * h);
+      } finally {
+        roi.delete();
+      }
+    }
+
+    /*
+     * Ordnet die vier Punkte relativ zur erkannten Dreiecksecke.
+     * Die Dreiecksecke wird dadurch immer zu markers.topLeft.
+     */
+    function orderPointsFromTriangle(points, trianglePoint) {
+      /*
+       * Die Punkte werden im Uhrzeigersinn um ihren Mittelpunkt
+       * sortiert. Danach beginnt die Reihe bei der Dreiecksecke.
+       * So bleibt die Reihenfolge auch bei gedrehten Karten
+       * eindeutig.
+       */
+      const centerX =
+        points.reduce((sum, point) => sum + point.x, 0) / 4;
+      const centerY =
+        points.reduce((sum, point) => sum + point.y, 0) / 4;
+
+      const clockwise = [...points].sort((a, b) =>
+        Math.atan2(a.y - centerY, a.x - centerX) -
+        Math.atan2(b.y - centerY, b.x - centerX)
       );
 
-      const bottomRight = points.reduce((best, point) =>
-        point.x + point.y > best.x + best.y ? point : best
-      );
+      const start = clockwise.indexOf(trianglePoint);
 
-      const topRight = points.reduce((best, point) =>
-        point.x - point.y > best.x - best.y ? point : best
+      return [0, 1, 2, 3].map(
+        offset => clockwise[(start + offset) % 4]
       );
-
-      const bottomLeft = points.reduce((best, point) =>
-        point.x - point.y < best.x - best.y ? point : best
-      );
-
-      return [topLeft, topRight, bottomRight, bottomLeft];
     }
 
     function rectifyAndCrop() {
@@ -1122,52 +1948,72 @@
       let dstTri = null;
       let matrix = null;
 
+      /*
+       * Die Marken wurden im kleinen Bild gefunden, entzerrt wird
+       * aus dem großen. Deshalb werden die Punkte umgerechnet.
+       */
+      const s = hiResCanvas.width / sourceCanvas.width;
+      const o = OUTPUT_SCALE;
+      const target = activeLayout.markers;
+
       try {
-        src = cv.imread(sourceCanvas);
+        src = cv.imread(hiResCanvas);
         dst = new cv.Mat();
 
         srcTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
-          markerPoints[0].x,
-          markerPoints[0].y,
-          markerPoints[1].x,
-          markerPoints[1].y,
-          markerPoints[2].x,
-          markerPoints[2].y,
-          markerPoints[3].x,
-          markerPoints[3].y
+          markerPoints[0].x * s,
+          markerPoints[0].y * s,
+
+          markerPoints[1].x * s,
+          markerPoints[1].y * s,
+
+          markerPoints[2].x * s,
+          markerPoints[2].y * s,
+
+          markerPoints[3].x * s,
+          markerPoints[3].y * s
         ]);
 
         dstTri = cv.matFromArray(4, 1, cv.CV_32FC2, [
-          TARGET_MARKERS.topLeft.x,
-          TARGET_MARKERS.topLeft.y,
-          TARGET_MARKERS.topRight.x,
-          TARGET_MARKERS.topRight.y,
-          TARGET_MARKERS.bottomRight.x,
-          TARGET_MARKERS.bottomRight.y,
-          TARGET_MARKERS.bottomLeft.x,
-          TARGET_MARKERS.bottomLeft.y
+          target.topLeft.x * o,
+          target.topLeft.y * o,
+
+          target.topRight.x * o,
+          target.topRight.y * o,
+
+          target.bottomRight.x * o,
+          target.bottomRight.y * o,
+
+          target.bottomLeft.x * o,
+          target.bottomLeft.y * o
         ]);
 
-        matrix = cv.getPerspectiveTransform(srcTri, dstTri);
+        matrix = cv.getPerspectiveTransform(
+          srcTri,
+          dstTri
+        );
 
         cv.warpPerspective(
           src,
           dst,
           matrix,
-          new cv.Size(NORMALIZED_WIDTH, NORMALIZED_HEIGHT),
+          new cv.Size(
+            rectifiedCanvas.width,
+            rectifiedCanvas.height
+          ),
           cv.INTER_LINEAR,
           cv.BORDER_CONSTANT,
-          new cv.Scalar()
+          new cv.Scalar(255, 255, 255, 255)
         );
 
         cv.imshow(rectifiedCanvas, dst);
 
         return {
-          question: cropField(CROP_FIELDS.question),
-          correct: cropField(CROP_FIELDS.correct),
-          wrong1: cropField(CROP_FIELDS.wrong1),
-          wrong2: cropField(CROP_FIELDS.wrong2),
-          wrong3: cropField(CROP_FIELDS.wrong3)
+          question: cropField(activeLayout.fields.question),
+          correct: cropField(activeLayout.fields.correct),
+          wrong1: cropField(activeLayout.fields.wrong1),
+          wrong2: cropField(activeLayout.fields.wrong2),
+          wrong3: cropField(activeLayout.fields.wrong3)
         };
       } finally {
         if (src) src.delete();
@@ -1181,23 +2027,166 @@
     function cropField(field) {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
+      const o = OUTPUT_SCALE;
 
-      canvas.width = field.w;
-      canvas.height = field.h;
+      canvas.width = field.w * o;
+      canvas.height = field.h * o;
 
       ctx.drawImage(
         rectifiedCanvas,
-        field.x,
-        field.y,
-        field.w,
-        field.h,
+        field.x * o,
+        field.y * o,
+        field.w * o,
+        field.h * o,
         0,
         0,
-        field.w,
-        field.h
+        canvas.width,
+        canvas.height
       );
 
-      return canvas.toDataURL("image/png");
+      /*
+       * JPEG statt PNG: bei Fotos etwa ein Drittel so groß, das
+       * spart Speicherplatz für die gesicherten Fragen.
+       */
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.88);
+
+      releaseCanvas(canvas);
+
+      return dataUrl;
+    }
+
+    function addStatus(type, text) {
+      const item = document.createElement("li");
+      item.className = type;
+      item.textContent = text;
+      statusList.appendChild(item);
+    }
+
+    /*
+     * Misst die Schärfe an den schwarzen Außenkanten der vier
+     * Eckmarken in der entzerrten Karte. Für jede Ober- und
+     * Linkskante wird ein Helligkeitsprofil quer zur Kante über
+     * viele Pixel gemittelt (das glättet Bildrauschen). Die
+     * Kantenbreite ist dann Helligkeitssprung geteilt durch den
+     * steilsten Anstieg: etwa 1 bis 2 Pixel bei scharfen Fotos,
+     * deutlich mehr bei verwackelten. Ergebnis ist der Median in
+     * Pixeln der entzerrten Karte.
+     */
+    function measureEdgeWidth() {
+      const o = OUTPUT_SCALE;
+      const reach = 8 * o;
+      const width = rectifiedCanvas.width;
+      const image = rectifiedCtx.getImageData(
+        0,
+        0,
+        width,
+        rectifiedCanvas.height
+      ).data;
+
+      const brightness = (x, y) => {
+        const i = (y * width + x) * 4;
+        return (image[i] + image[i + 1] + image[i + 2]) / 3;
+      };
+
+      /*
+       * Profil von außen (hell) nach innen (dunkel) über die Kante
+       * bei "edge", gemittelt entlang der Kante von "from" bis "to".
+       */
+      const edgeWidth = (edge, from, to, horizontal) => {
+        const profile = [];
+
+        for (let k = -reach; k <= reach; k++) {
+          let sum = 0;
+
+          for (let t = from; t < to; t++) {
+            sum += horizontal
+              ? brightness(t, edge + k)
+              : brightness(edge + k, t);
+          }
+
+          profile.push(sum / (to - from));
+        }
+
+        const outside = (profile[0] + profile[1] + profile[2]) / 3;
+        const n = profile.length;
+        const inside =
+          (profile[n - 1] + profile[n - 2] + profile[n - 3]) / 3;
+        const contrast = outside - inside;
+
+        let steepest = 0;
+
+        for (let k = 0; k < n - 1; k++) {
+          steepest = Math.max(steepest, profile[k] - profile[k + 1]);
+        }
+
+        return contrast > 20 && steepest > 0
+          ? contrast / steepest
+          : Infinity;
+      };
+
+      const widths = [];
+
+      activeLayout.markerAreas.forEach(area => {
+        const x0 = Math.round(area.x * o);
+        const y0 = Math.round(area.y * o);
+        const w = Math.round(area.w * o);
+        const h = Math.round(area.h * o);
+
+        widths.push(edgeWidth(
+          y0,
+          x0 + Math.round(w * 0.2),
+          x0 + Math.round(w * 0.8),
+          true
+        ));
+
+        widths.push(edgeWidth(
+          x0,
+          y0 + Math.round(h * 0.2),
+          y0 + Math.round(h * 0.8),
+          false
+        ));
+      });
+
+      widths.sort((a, b) => a - b);
+      return (widths[3] + widths[4]) / 2;
+    }
+
+    /*
+     * Zeigt die entzerrte Karte verkleinert mit blauen Rahmen um
+     * die ausgeschnittenen Felder.
+     */
+    function showCardPreview() {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      const scale = 800 / NORMALIZED_WIDTH;
+
+      canvas.width = 800;
+      canvas.height = Math.round(NORMALIZED_HEIGHT * scale);
+
+      ctx.drawImage(
+        rectifiedCanvas,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
+      ctx.strokeStyle = "#1f4e8c";
+      ctx.lineWidth = 4;
+
+      Object.values(activeLayout.fields).forEach(field => {
+        ctx.strokeRect(
+          field.x * scale,
+          field.y * scale,
+          field.w * scale,
+          field.h * scale
+        );
+      });
+
+      lastCardImage.src = canvas.toDataURL("image/jpeg", 0.8);
+      lastCardPreview.style.display = "block";
+
+      releaseCanvas(canvas);
     }
 
     function showLatestCrops(crops) {
@@ -1213,7 +2202,7 @@
       questionList.innerHTML = "";
 
       questionListSection.style.display =
-        questions.length === 0 ? "none" : "block";
+        questions.length ? "block" : "none";
 
       questions.forEach((item, index) => {
         const box = document.createElement("div");
@@ -1222,88 +2211,110 @@
         const title = document.createElement("strong");
         title.textContent = `Frage ${index + 1}`;
 
-        const img = document.createElement("img");
-        img.src = item.question;
-        img.alt = `Vorschau Frage ${index + 1}`;
+        const image = document.createElement("img");
+        image.src = item.question;
+        image.alt = `Vorschau Frage ${index + 1}`;
+        image.className = "question-thumb";
+        image.onclick = () => openQuestionDetail(index);
+
+        const view = document.createElement("button");
+        view.className = "secondary view-question-button";
+        view.textContent = "Ansehen";
+        view.onclick = () => openQuestionDetail(index);
 
         const actions = document.createElement("div");
         actions.className = "question-actions";
 
-        const moveUpButton = document.createElement("button");
-        moveUpButton.type = "button";
-        moveUpButton.className = "secondary";
-        moveUpButton.textContent = "↑ Hoch";
-        moveUpButton.disabled = index === 0;
-        moveUpButton.addEventListener(
-          "click",
-          () => moveQuestion(index, -1)
-        );
+        const up = document.createElement("button");
+        up.className = "secondary";
+        up.textContent = "↑ Hoch";
+        up.disabled = index === 0;
+        up.onclick = () => moveQuestion(index, -1);
 
-        const moveDownButton = document.createElement("button");
-        moveDownButton.type = "button";
-        moveDownButton.className = "secondary";
-        moveDownButton.textContent = "↓ Runter";
-        moveDownButton.disabled = index === questions.length - 1;
-        moveDownButton.addEventListener(
-          "click",
-          () => moveQuestion(index, 1)
-        );
+        const down = document.createElement("button");
+        down.className = "secondary";
+        down.textContent = "↓ Runter";
+        down.disabled = index === questions.length - 1;
+        down.onclick = () => moveQuestion(index, 1);
 
-        const deleteButton = document.createElement("button");
-        deleteButton.type = "button";
-        deleteButton.className = "danger delete-question-button";
-        deleteButton.textContent = "Löschen";
-        deleteButton.addEventListener(
-          "click",
-          () => deleteQuestion(index)
-        );
+        const remove = document.createElement("button");
+        remove.className = "danger delete-question-button";
+        remove.textContent = "Löschen";
+        remove.onclick = () => deleteQuestion(index);
 
-        actions.append(moveUpButton, moveDownButton, deleteButton);
-        box.append(title, img, actions);
+        actions.append(view, up, down, remove);
+        box.append(title, image, actions);
         questionList.appendChild(box);
       });
 
       updateButtonStates();
     }
 
+    function openQuestionDetail(index) {
+      const item = questions[index];
+
+      detailTitle.textContent = `Frage ${index + 1}`;
+      Object.entries(detailImages).forEach(([key, image]) => {
+        image.src = item[key];
+      });
+
+      detailModal.hidden = false;
+      detailCloseButton.focus();
+    }
+
+    function closeQuestionDetail() {
+      detailModal.hidden = true;
+    }
+
     function moveQuestion(index, direction) {
       const newIndex = index + direction;
 
-      if (newIndex < 0 || newIndex >= questions.length) return;
+      if (
+        newIndex < 0 ||
+        newIndex >= questions.length
+      ) {
+        return;
+      }
 
-      const movedQuestion = questions[index];
-      questions.splice(index, 1);
-      questions.splice(newIndex, 0, movedQuestion);
-
+      const item = questions.splice(index, 1)[0];
+      questions.splice(newIndex, 0, item);
+      saveQuestionOrder();
       updateQuestionCollectionView();
     }
 
     function deleteQuestion(index) {
-      if (!confirm(`Möchtest du Frage ${index + 1} wirklich löschen?`)) {
+      if (!confirm(
+        `Möchtest du Frage ${index + 1} wirklich löschen?`
+      )) {
         return;
       }
 
-      questions.splice(index, 1);
+      const [removed] = questions.splice(index, 1);
+      deleteSavedQuestion(removed.id);
+      saveQuestionOrder();
 
-      if (currentQuizIndex >= questions.length) {
-        currentQuizIndex = Math.max(0, questions.length - 1);
-      }
+      currentQuizIndex = Math.min(
+        currentQuizIndex,
+        Math.max(0, questions.length - 1)
+      );
 
       updateQuestionCollectionView();
     }
 
     function startQuiz() {
       if (questions.length === 0) {
-        alert("Bitte füge zuerst mindestens eine Frage hinzu.");
         return;
       }
 
       currentQuizIndex = 0;
+      quizAnswerOrders = questions.map(() =>
+        shuffleArray(["correct", "wrong1", "wrong2", "wrong3"])
+      );
+
+      quizEnd.hidden = true;
       editorView.style.display = "none";
       quizView.style.display = "block";
-
       showQuizQuestion(currentQuizIndex);
-      updateFullscreenButton();
     }
 
     function showQuizQuestion(index) {
@@ -1311,20 +2322,15 @@
 
       const item = questions[index];
 
-      quizProgress.textContent = `${index + 1} / ${questions.length}`;
+      quizProgress.textContent =
+        `${index + 1} / ${questions.length}`;
+
       quizQuestionImage.src = item.question;
 
-      const answers = [
-        { image: item.correct, isCorrect: true },
-        { image: item.wrong1, isCorrect: false },
-        { image: item.wrong2, isCorrect: false },
-        { image: item.wrong3, isCorrect: false }
-      ];
-
-      const shuffled = shuffleArray(answers);
+      const order = quizAnswerOrders[index];
       const letters = ["A", "B", "C", "D"];
 
-      const imageElements = {
+      const elements = {
         A: quizAnswerA,
         B: quizAnswerB,
         C: quizAnswerC,
@@ -1333,42 +2339,21 @@
 
       correctLetter = null;
 
-      shuffled.forEach((answer, answerIndex) => {
-        const letter = letters[answerIndex];
+      order.forEach((key, position) => {
+        const letter = letters[position];
+        elements[letter].src = item[key];
 
-        imageElements[letter].src = answer.image;
-
-        if (answer.isCorrect) {
+        if (key === "correct") {
           correctLetter = letter;
         }
       });
 
       prevQuestionButton.disabled = index === 0;
 
-      if (index === questions.length - 1) {
-        nextQuestionButton.disabled = false;
-        nextQuestionButton.textContent = "Quiz beenden";
-      } else {
-        nextQuestionButton.disabled = false;
-        nextQuestionButton.textContent = "Nächste Frage";
-      }
-    }
-
-    function showPreviousQuestion() {
-      if (currentQuizIndex <= 0) return;
-
-      currentQuizIndex--;
-      showQuizQuestion(currentQuizIndex);
-    }
-
-    function showNextQuestion() {
-      if (currentQuizIndex >= questions.length - 1) {
-        backToEditor();
-        return;
-      }
-
-      currentQuizIndex++;
-      showQuizQuestion(currentQuizIndex);
+      const isLast = index === questions.length - 1;
+      nextQuestionButton.textContent =
+        isLast ? "Quiz beenden" : "Nächste Frage";
+      nextQuestionButton.classList.toggle("success", isLast);
     }
 
     function shuffleArray(array) {
@@ -1376,7 +2361,9 @@
 
       for (let i = copy.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [copy[i], copy[j]] = [copy[j], copy[i]];
+
+        [copy[i], copy[j]] =
+          [copy[j], copy[i]];
       }
 
       return copy;
@@ -1385,135 +2372,132 @@
     function revealCorrectAnswer() {
       removeCorrectHighlight();
 
-      if (!correctLetter) return;
+      if (!correctLetter) {
+        return;
+      }
 
-      const box = document.getElementById("answerBox" + correctLetter);
-      box.classList.add("correct");
+      document
+        .getElementById("answerBox" + correctLetter)
+        .classList.add("correct");
+      quizAnswers.classList.add("revealed");
     }
 
     function removeCorrectHighlight() {
-      [answerBoxA, answerBoxB, answerBoxC, answerBoxD].forEach(box => {
-        box.classList.remove("correct");
-      });
+      [
+        answerBoxA,
+        answerBoxB,
+        answerBoxC,
+        answerBoxD
+      ].forEach(box => box.classList.remove("correct"));
+      quizAnswers.classList.remove("revealed");
+    }
+
+    function showPreviousQuestion() {
+      if (currentQuizIndex <= 0) {
+        return;
+      }
+
+      currentQuizIndex--;
+      showQuizQuestion(currentQuizIndex);
+    }
+
+    function showNextQuestion() {
+      if (currentQuizIndex >= questions.length - 1) {
+        showQuizEnd();
+        return;
+      }
+
+      currentQuizIndex++;
+      showQuizQuestion(currentQuizIndex);
+    }
+
+    function showQuizEnd() {
+      removeCorrectHighlight();
+
+      const count = questions.length;
+      quizEndText.textContent =
+        `Alle ${count} ${count === 1 ? "Frage" : "Fragen"} geschafft.`;
+      quizEnd.hidden = false;
+      quizEndToCollectionButton.focus();
     }
 
     function confirmBackToEditor() {
-      if (!confirm("Möchtest du das Quiz wirklich abbrechen?")) return;
-      backToEditor();
-    }
-
-    async function toggleFullscreen() {
-      try {
-        const isFullscreen =
-          document.fullscreenElement ||
-          document.webkitFullscreenElement;
-
-        if (!isFullscreen) {
-          if (quizView.requestFullscreen) {
-            await quizView.requestFullscreen();
-          } else if (quizView.webkitRequestFullscreen) {
-            await quizView.webkitRequestFullscreen();
-          } else if (document.documentElement.requestFullscreen) {
-            await document.documentElement.requestFullscreen();
-          } else if (document.documentElement.webkitRequestFullscreen) {
-            await document.documentElement.webkitRequestFullscreen();
-          } else {
-            alert(
-              "Der Vollbildmodus wird von diesem Browser leider nicht unterstützt."
-            );
-          }
-        } else {
-          if (document.exitFullscreen) {
-            await document.exitFullscreen();
-          } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-          }
-        }
-      } catch (error) {
-        console.error(error);
+      if (!confirm("Quiz wirklich abbrechen?")) {
+        return;
       }
 
-      updateFullscreenButton();
+      leaveQuiz();
+    }
+
+    function leaveQuiz() {
+      if (getFullscreenElement()) {
+        exitFullscreen();
+      }
+
+      quizView.style.display = "none";
+      quizEnd.hidden = true;
+      editorView.style.display = "block";
+      removeCorrectHighlight();
+    }
+
+    /*
+     * Ältere iPadOS-Versionen kennen Vollbild nur mit dem
+     * Präfix "webkit".
+     */
+    function getFullscreenElement() {
+      return document.fullscreenElement ||
+        document.webkitFullscreenElement ||
+        null;
+    }
+
+    function exitFullscreen() {
+      const exit = document.exitFullscreen ||
+        document.webkitExitFullscreen;
+
+      if (exit) {
+        Promise.resolve(exit.call(document)).catch(() => {});
+      }
+    }
+
+    function toggleFullscreen() {
+      if (getFullscreenElement()) {
+        exitFullscreen();
+        return;
+      }
+
+      const request = quizView.requestFullscreen ||
+        quizView.webkitRequestFullscreen;
+
+      if (request) {
+        Promise.resolve(request.call(quizView)).catch(error => {
+          console.warn("Vollbild nicht möglich.", error);
+        });
+      }
     }
 
     function updateFullscreenButton() {
-      const isFullscreen =
-        document.fullscreenElement ||
-        document.webkitFullscreenElement;
-
-      if (isFullscreen) {
-        fullscreenButton.textContent = "↙";
-        fullscreenButton.setAttribute(
-          "aria-label",
-          "Vollbild beenden"
-        );
-        fullscreenButton.setAttribute(
-          "title",
-          "Vollbild beenden"
-        );
-      } else {
-        fullscreenButton.textContent = "↗";
-        fullscreenButton.setAttribute(
-          "aria-label",
-          "Vollbild einschalten"
-        );
-        fullscreenButton.setAttribute(
-          "title",
-          "Vollbild einschalten"
-        );
-      }
-    }
-
-    function backToEditor() {
-      quizView.style.display = "none";
-      editorView.style.display = "block";
-
-      removeCorrectHighlight();
-
-      const isFullscreen =
-        document.fullscreenElement ||
-        document.webkitFullscreenElement;
-
-      if (isFullscreen) {
-        if (document.exitFullscreen) {
-          document.exitFullscreen().catch(() => {});
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        }
-      }
+      fullscreenButton.textContent =
+        getFullscreenElement() ? "↙" : "↗";
     }
 
     function clearEverything() {
       if (!confirm(
-        "Möchtest du wirklich alle Fotos und alle gesammelten Fragen löschen?"
+        "Möchtest du wirklich alle Fragen löschen?"
       )) {
         return;
       }
 
       questions = [];
+      clearSavedQuestions();
+
       currentQuizIndex = 0;
       correctLetter = null;
       loadedImage = null;
       markerPoints = null;
-      isProcessing = false;
-      waitingFiles = [];
-
+      statusList.innerHTML = "";
+      lastCardPreview.style.display = "none";
+      lastCardImage.removeAttribute("src");
       imageInput.value = "";
-
-      [
-        questionPreview,
-        correctPreview,
-        wrong1Preview,
-        wrong2Preview,
-        wrong3Preview
-      ].forEach(image => image.removeAttribute("src"));
-
-      questionListSection.style.display = "none";
-      questionList.innerHTML = "";
-      questionCount.textContent = "0";
-      failedList.textContent = "";
-
-      setProgress(0, 0);
 
       sourceCtx.clearRect(
         0,
@@ -1529,14 +2513,8 @@
         rectifiedCanvas.height
       );
 
-      originalCtx.clearRect(
-        0,
-        0,
-        originalCanvas.width,
-        originalCanvas.height
-      );
-
-      updateButtonStates();
+      updateQuestionCollectionView();
+      setProgress(0, 0);
     }
   </script>
 </body>

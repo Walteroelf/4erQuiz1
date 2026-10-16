@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 1563" width="2000" height="1563" font-family="Arial, Helvetica, sans-serif">
+  <rect width="2000" height="1563" fill="#fff"/>
+  <rect x="120" y="120" width="120" height="120" fill="#000"/>
+  <rect x="140" y="140" width="20" height="20" fill="#fff"/>
+  <rect x="180" y="140" width="20" height="20" fill="#fff"/>
+  <rect x="200" y="140" width="20" height="20" fill="#fff"/>
+  <rect x="160" y="160" width="20" height="20" fill="#fff"/>
+  <rect x="200" y="160" width="20" height="20" fill="#fff"/>
+  <rect x="180" y="180" width="20" height="20" fill="#fff"/>
+  <rect x="200" y="180" width="20" height="20" fill="#fff"/>
+  <rect x="180" y="200" width="20" height="20" fill="#fff"/>
+  <rect x="1760" y="120" width="120" height="120" fill="#000"/>
+  <rect x="1780" y="160" width="20" height="20" fill="#fff"/>
+  <rect x="1800" y="160" width="20" height="20" fill="#fff"/>
+  <rect x="1820" y="160" width="20" height="20" fill="#fff"/>
+  <rect x="1840" y="160" width="20" height="20" fill="#fff"/>
+  <rect x="1780" y="180" width="20" height="20" fill="#fff"/>
+  <rect x="1840" y="180" width="20" height="20" fill="#fff"/>
+  <rect x="1780" y="200" width="20" height="20" fill="#fff"/>
+  <rect x="1820" y="200" width="20" height="20" fill="#fff"/>
+  <rect x="1760" y="1323" width="120" height="120" fill="#000"/>
+  <rect x="1820" y="1343" width="20" height="20" fill="#fff"/>
+  <rect x="1840" y="1343" width="20" height="20" fill="#fff"/>
+  <rect x="1820" y="1363" width="20" height="20" fill="#fff"/>
+  <rect x="1840" y="1363" width="20" height="20" fill="#fff"/>
+  <rect x="1820" y="1383" width="20" height="20" fill="#fff"/>
+  <rect x="1780" y="1403" width="20" height="20" fill="#fff"/>
+  <rect x="1800" y="1403" width="20" height="20" fill="#fff"/>
+  <rect x="1840" y="1403" width="20" height="20" fill="#fff"/>
+  <rect x="120" y="1323" width="120" height="120" fill="#000"/>
+  <rect x="140" y="1343" width="20" height="20" fill="#fff"/>
+  <rect x="200" y="1343" width="20" height="20" fill="#fff"/>
+  <rect x="140" y="1363" width="20" height="20" fill="#fff"/>
+  <rect x="200" y="1363" width="20" height="20" fill="#fff"/>
+  <rect x="160" y="1383" width="20" height="20" fill="#fff"/>
+  <rect x="160" y="1403" width="20" height="20" fill="#fff"/>
+  <rect x="180" y="1403" width="20" height="20" fill="#fff"/>
+  <text x="1000" y="215" font-size="110" text-anchor="middle" fill="#000">Quiz-Vorlage</text>
+  <rect x="127.0" y="287.0" width="1746" height="266" fill="none" stroke="#000" stroke-width="14"/>
+  <text x="160" y="360" font-size="52" text-anchor="start" fill="#000">Frage:</text>
+  <text x="125" y="625" font-size="50" text-anchor="start" fill="#000">Richtige Antwort:</text>
+  <text x="1025" y="625" font-size="50" text-anchor="start" fill="#000">Falsche Antwort:</text>
+  <rect x="127.0" y="652.0" width="846" height="256" fill="none" stroke="#000" stroke-width="14"/>
+  <rect x="1027.0" y="652.0" width="846" height="256" fill="none" stroke="#000" stroke-width="14"/>
+  <text x="125" y="975" font-size="50" text-anchor="start" fill="#000">Falsche Antwort:</text>
+  <text x="1025" y="975" font-size="50" text-anchor="start" fill="#000">Falsche Antwort:</text>
+  <rect x="127.0" y="1002.0" width="846" height="256" fill="none" stroke="#000" stroke-width="14"/>
+  <rect x="1027.0" y="1002.0" width="846" height="256" fill="none" stroke="#000" stroke-width="14"/>
+  <text x="1000" y="1400" font-size="34" text-anchor="middle" fill="#555">Mit dunklem Stift schreiben · Ecken nicht verdecken</text>
+</svg>
