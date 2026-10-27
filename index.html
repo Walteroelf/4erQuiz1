@@ -1233,8 +1233,18 @@
      * Neuladen und das Schließen des Tabs überstehen. Jede Frage
      * ist ein eigener Eintrag, die Reihenfolge steht separat.
      * Schlägt etwas fehl, läuft die App ohne Speicherung weiter.
+     *
+     * 4erQuiz1 und die Testumgebung liegen beide unter
+     * walteroelf.github.io und würden sich sonst einen Speicher
+     * teilen. Die Testumgebung (erkannt am Ordnernamen) bekommt
+     * deshalb einen eigenen; alle anderen behalten den bisherigen
+     * Namen, damit vorhandene Fragen erhalten bleiben.
      */
-    const DB_NAME = "4er-quiz";
+    const IS_TEST_ENVIRONMENT =
+      location.pathname.includes("Testumgebung");
+    const DB_NAME = IS_TEST_ENVIRONMENT
+      ? "4er-quiz-testumgebung"
+      : "4er-quiz";
     const DB_VERSION = 1;
     const QUESTION_STORE = "questions";
     const META_STORE = "meta";
@@ -1459,8 +1469,7 @@
           if (!detection.ok) {
             addStatus("error", `✗ ${label}: ${detection.reason}`);
           } else {
-            const crops = rectifyAndCrop();
-            const edgeWidth = measureEdgeWidth();
+            const { crops, edgeWidth } = rectifyAndCrop();
 
             const question = {
               id: createQuestionId(),
@@ -2006,14 +2015,25 @@
           new cv.Scalar(255, 255, 255, 255)
         );
 
+        /*
+         * Schärfe am unbearbeiteten Bild messen, danach die
+         * Handschrift für die Tafel aufbereiten.
+         */
+        cv.imshow(rectifiedCanvas, dst);
+        const edgeWidth = measureEdgeWidth();
+
+        enhanceHandwriting(dst);
         cv.imshow(rectifiedCanvas, dst);
 
         return {
-          question: cropField(activeLayout.fields.question),
-          correct: cropField(activeLayout.fields.correct),
-          wrong1: cropField(activeLayout.fields.wrong1),
-          wrong2: cropField(activeLayout.fields.wrong2),
-          wrong3: cropField(activeLayout.fields.wrong3)
+          edgeWidth,
+          crops: {
+            question: cropField(activeLayout.fields.question),
+            correct: cropField(activeLayout.fields.correct),
+            wrong1: cropField(activeLayout.fields.wrong1),
+            wrong2: cropField(activeLayout.fields.wrong2),
+            wrong3: cropField(activeLayout.fields.wrong3)
+          }
         };
       } finally {
         if (src) src.delete();
@@ -2021,6 +2041,87 @@
         if (srcTri) srcTri.delete();
         if (dstTri) dstTri.delete();
         if (matrix) matrix.delete();
+      }
+    }
+
+    /*
+     * Macht Papier reinweiß und Schrift kräftig, direkt im Bild:
+     * 1. Hintergrund schätzen: Das verkleinerte Bild wird so stark
+     *    "aufgehellt" (Dilatation), dass die dünnen Schriftstriche
+     *    verschwinden. Übrig bleibt das Papier mit Schatten und
+     *    Farbstich.
+     * 2. Bild durch diesen Hintergrund teilen: Papier wird überall
+     *    weiß, Schatten und Graustich verschwinden, die Farbe der
+     *    Tinte bleibt erhalten.
+     * 3. Kontrast anheben, damit blasse Schrift dunkel wird.
+     * Der Mindestwert für den Hintergrund verhindert, dass große
+     * dunkle Flächen (z. B. ausgemalte Zeichnungen) weiß werden.
+     */
+    const ENHANCE_DOWNSCALE = 4;
+    const ENHANCE_KERNEL = 11;
+    const ENHANCE_MIN_BACKGROUND = 110;
+    const ENHANCE_CONTRAST = 1.8;
+
+    function enhanceHandwriting(image) {
+      const small = new cv.Mat();
+      const background = new cv.Mat();
+      const minimum = new cv.Mat(
+        image.rows,
+        image.cols,
+        image.type(),
+        new cv.Scalar(
+          ENHANCE_MIN_BACKGROUND,
+          ENHANCE_MIN_BACKGROUND,
+          ENHANCE_MIN_BACKGROUND,
+          255
+        )
+      );
+      const kernel = cv.getStructuringElement(
+        cv.MORPH_RECT,
+        new cv.Size(ENHANCE_KERNEL, ENHANCE_KERNEL)
+      );
+
+      try {
+        cv.resize(
+          image,
+          small,
+          new cv.Size(
+            Math.round(image.cols / ENHANCE_DOWNSCALE),
+            Math.round(image.rows / ENHANCE_DOWNSCALE)
+          ),
+          0,
+          0,
+          cv.INTER_AREA
+        );
+        cv.dilate(small, small, kernel);
+        cv.GaussianBlur(small, small, new cv.Size(15, 15), 0);
+        cv.resize(
+          small,
+          background,
+          new cv.Size(image.cols, image.rows),
+          0,
+          0,
+          cv.INTER_LINEAR
+        );
+        cv.max(background, minimum, background);
+
+        cv.divide(image, background, image, 255);
+
+        /*
+         * Weiß bleibt weiß (255), dunklere Werte werden dunkler:
+         * neu = alt * 1,8 - 0,8 * 255.
+         */
+        image.convertTo(
+          image,
+          -1,
+          ENHANCE_CONTRAST,
+          -(ENHANCE_CONTRAST - 1) * 255
+        );
+      } finally {
+        small.delete();
+        background.delete();
+        minimum.delete();
+        kernel.delete();
       }
     }
 
