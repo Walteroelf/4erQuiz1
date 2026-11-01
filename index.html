@@ -1062,6 +1062,17 @@
       </label>
 
       <label class="setting">
+        <input id="settingZoomCorrect" type="checkbox">
+        <span>
+          <strong>Richtige Antwort groß zeigen</strong>
+          <small>
+            „Richtige Antwort zeigen“ öffnet sie bildschirmfüllend.
+            Aus: Auf eine Antwort tippen zeigt sie groß.
+          </small>
+        </span>
+      </label>
+
+      <label class="setting">
         <input id="settingShuffleQuestions" type="checkbox">
         <span>
           <strong>Fragen mischen</strong>
@@ -1249,6 +1260,7 @@
     const showHelpButton = document.getElementById("showHelpButton");
     const settingInputs = {
       stepReveal: document.getElementById("settingStepReveal"),
+      zoomCorrect: document.getElementById("settingZoomCorrect"),
       shuffleQuestions: document.getElementById("settingShuffleQuestions"),
       shuffleAnswers: document.getElementById("settingShuffleAnswers"),
       enhanceHandwriting: document.getElementById("settingEnhance")
@@ -1718,6 +1730,7 @@
 
     const DEFAULT_SETTINGS = {
       stepReveal: false,
+      zoomCorrect: false,
       shuffleQuestions: false,
       shuffleAnswers: true,
       enhanceHandwriting: true
@@ -3008,6 +3021,10 @@
       }
 
       revealCorrectAnswer();
+
+      if (settings.zoomCorrect && correctLetter) {
+        zoomAnswer(ANSWER_LETTERS.indexOf(correctLetter));
+      }
     }
 
     function zoomAnswer(position) {
