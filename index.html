@@ -92,6 +92,40 @@
       border-bottom: 3px solid var(--line);
     }
 
+    header {
+      position: relative;
+    }
+
+    /*
+     * Einstellungen oben rechts in der Kopfzeile; auf schmalen
+     * Bildschirmen nur das Zahnrad.
+     */
+    .settings-button {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1rem;
+    }
+
+    .settings-button span[aria-hidden] {
+      font-size: 1.4rem;
+      line-height: 1;
+    }
+
+    @media (max-width: 600px) {
+      .settings-button-text {
+        display: none;
+      }
+
+      .settings-button {
+        padding: 8px 12px;
+      }
+    }
+
     header h1 {
       margin: 0;
       font-size: clamp(2rem, 6vw, 3rem);
@@ -324,18 +358,57 @@
 
     .setting {
       display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 4px;
-      font-weight: 700;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 12px 4px;
+      border-bottom: 2px solid var(--line-soft);
       cursor: pointer;
     }
 
     .setting input {
-      width: 28px;
-      height: 28px;
-      margin: 0;
+      flex: 0 0 auto;
+      width: 30px;
+      height: 30px;
+      margin: 2px 0 0;
       accent-color: var(--accent);
+    }
+
+    .setting strong {
+      display: block;
+    }
+
+    .setting small {
+      display: block;
+      margin-top: 2px;
+      font-size: .95rem;
+      color: var(--muted);
+    }
+
+    .settings-modal {
+      width: min(640px, 100%);
+    }
+
+    .settings-modal h3 {
+      margin: 22px 0 4px;
+      font-size: 1.15rem;
+    }
+
+    .settings-links {
+      margin: 8px 0 14px;
+      padding-left: 22px;
+    }
+
+    .settings-links li {
+      margin: 6px 0;
+    }
+
+    .settings-links a {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    #showHelpButton {
+      width: 100%;
     }
 
     /*
@@ -806,6 +879,14 @@
   <div id="editorView">
     <header>
       <h1>4er-Quiz</h1>
+      <button
+        id="openSettingsButton"
+        class="secondary settings-button"
+        aria-label="Einstellungen"
+      >
+        <span aria-hidden="true">⚙️</span>
+        <span class="settings-button-text">Einstellungen</span>
+      </button>
     </header>
 
     <main>
@@ -839,11 +920,6 @@
         </figure>
 
         <div class="controls">
-          <label class="setting">
-            <input id="stepRevealToggle" type="checkbox">
-            Antworten einzeln aufdecken
-          </label>
-
           <button id="startQuizButton" class="success" disabled>
             Quiz starten
           </button>
@@ -960,6 +1036,85 @@
           Nochmal von vorn
         </button>
       </div>
+    </div>
+  </div>
+
+  <div id="settingsModal" class="modal-backdrop" hidden>
+    <div
+      class="modal settings-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="settingsTitle"
+    >
+      <h2 id="settingsTitle">Einstellungen</h2>
+
+      <h3>Quiz</h3>
+
+      <label class="setting">
+        <input id="settingStepReveal" type="checkbox">
+        <span>
+          <strong>Antworten einzeln aufdecken</strong>
+          <small>
+            Erst nur die Frage, dann Antwort A, B, C und D nacheinander
+            per Knopf.
+          </small>
+        </span>
+      </label>
+
+      <label class="setting">
+        <input id="settingShuffleQuestions" type="checkbox">
+        <span>
+          <strong>Fragen mischen</strong>
+          <small>
+            Aus: Fragen kommen in der Reihenfolge der Sammlung.
+          </small>
+        </span>
+      </label>
+
+      <label class="setting">
+        <input id="settingShuffleAnswers" type="checkbox">
+        <span>
+          <strong>Antworten bei jedem Quiz neu mischen</strong>
+          <small>
+            Aus: Jede Frage hat immer dieselbe Antwortreihenfolge,
+            auch in späteren Durchgängen.
+          </small>
+        </span>
+      </label>
+
+      <h3>Fotos</h3>
+
+      <label class="setting">
+        <input id="settingEnhance" type="checkbox">
+        <span>
+          <strong>Handschrift kräftiger machen</strong>
+          <small>
+            Papier wird weiß, blasse Schrift dunkler. Gilt für neue
+            Fotos.
+          </small>
+        </span>
+      </label>
+
+      <h3>Vorlagen und Hilfe</h3>
+
+      <ul class="settings-links">
+        <li>
+          <a href="vorlage/quiz-vorlage.pdf" target="_blank">
+            Vorlage, eine Karte pro Blatt (PDF)
+          </a>
+        </li>
+        <li>
+          <a href="vorlage/quiz-vorlage-a5.pdf" target="_blank">
+            Vorlage, zwei Karten pro Blatt, A5 (PDF)
+          </a>
+        </li>
+      </ul>
+
+      <button id="showHelpButton" class="secondary">
+        Anleitung anzeigen
+      </button>
+
+      <button id="closeSettingsButton" class="modal-ok">Fertig</button>
     </div>
   </div>
 
@@ -1086,7 +1241,18 @@
     const answerBoxD = document.getElementById("answerBoxD");
     const quizAnswers = document.querySelector(".quiz-answers");
 
-    const stepRevealToggle = document.getElementById("stepRevealToggle");
+    const openSettingsButton =
+      document.getElementById("openSettingsButton");
+    const settingsModal = document.getElementById("settingsModal");
+    const closeSettingsButton =
+      document.getElementById("closeSettingsButton");
+    const showHelpButton = document.getElementById("showHelpButton");
+    const settingInputs = {
+      stepReveal: document.getElementById("settingStepReveal"),
+      shuffleQuestions: document.getElementById("settingShuffleQuestions"),
+      shuffleAnswers: document.getElementById("settingShuffleAnswers"),
+      enhanceHandwriting: document.getElementById("settingEnhance")
+    };
 
     const answerZoom = document.getElementById("answerZoom");
     const answerZoomLabel = document.getElementById("answerZoomLabel");
@@ -1132,6 +1298,11 @@
      * demselben Buchstaben.
      */
     let quizAnswerOrders = [];
+
+    /*
+     * Die Fragen dieses Durchgangs in Quiz-Reihenfolge.
+     */
+    let quizItems = [];
 
     /*
      * Wie viele Antworten je Frage schon aufgedeckt sind (0 bis 4).
@@ -1317,6 +1488,11 @@
     document.addEventListener("keydown", event => {
       if (event.key === "Escape" && !answerZoom.hidden) {
         closeZoom();
+        return;
+      }
+
+      if (event.key === "Escape" && !settingsModal.hidden) {
+        closeSettings();
         return;
       }
 
@@ -1533,29 +1709,88 @@
     loadSavedQuestions();
 
     /*
-     * Schalter "Antworten einzeln aufdecken". Gemerkt wird er nur
-     * auf diesem Gerät; Testumgebung und 4erQuiz1 getrennt.
+     * Einstellungen. Gemerkt werden sie nur auf diesem Gerät;
+     * Testumgebung und 4erQuiz1 getrennt.
      */
-    const STEP_REVEAL_KEY = IS_TEST_ENVIRONMENT
-      ? "4er-quiz-testumgebung:einzeln-aufdecken"
-      : "4er-quiz:einzeln-aufdecken";
+    const SETTINGS_KEY = IS_TEST_ENVIRONMENT
+      ? "4er-quiz-testumgebung:einstellungen"
+      : "4er-quiz:einstellungen";
 
-    try {
-      stepRevealToggle.checked =
-        localStorage.getItem(STEP_REVEAL_KEY) === "1";
-    } catch (error) {
-      // Ohne Speicher bleibt der Schalter einfach aus.
+    const DEFAULT_SETTINGS = {
+      stepReveal: false,
+      shuffleQuestions: false,
+      shuffleAnswers: true,
+      enhanceHandwriting: true
+    };
+
+    const settings = loadSettings();
+
+    function loadSettings() {
+      const loaded = { ...DEFAULT_SETTINGS };
+
+      try {
+        const stored = JSON.parse(
+          localStorage.getItem(SETTINGS_KEY) || "{}"
+        );
+        Object.keys(DEFAULT_SETTINGS).forEach(key => {
+          if (typeof stored[key] === "boolean") {
+            loaded[key] = stored[key];
+          }
+        });
+
+        /*
+         * Früherer Einzelschalter "Antworten einzeln aufdecken".
+         */
+        const legacyKey = IS_TEST_ENVIRONMENT
+          ? "4er-quiz-testumgebung:einzeln-aufdecken"
+          : "4er-quiz:einzeln-aufdecken";
+        const legacy = localStorage.getItem(legacyKey);
+
+        if (legacy !== null && stored.stepReveal === undefined) {
+          loaded.stepReveal = legacy === "1";
+        }
+      } catch (error) {
+        // Ohne Speicher gelten die Standardwerte.
+      }
+
+      return loaded;
     }
 
-    stepRevealToggle.addEventListener("change", () => {
+    function saveSettings() {
       try {
-        localStorage.setItem(
-          STEP_REVEAL_KEY,
-          stepRevealToggle.checked ? "1" : "0"
-        );
+        localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
       } catch (error) {
-        // Ohne Speicher gilt die Einstellung nur bis zum Neuladen.
+        // Ohne Speicher gelten die Einstellungen bis zum Neuladen.
       }
+    }
+
+    Object.entries(settingInputs).forEach(([key, input]) => {
+      input.checked = settings[key];
+      input.addEventListener("change", () => {
+        settings[key] = input.checked;
+        saveSettings();
+      });
+    });
+
+    function openSettings() {
+      settingsModal.hidden = false;
+      closeSettingsButton.focus();
+    }
+
+    function closeSettings() {
+      settingsModal.hidden = true;
+    }
+
+    openSettingsButton.addEventListener("click", openSettings);
+    closeSettingsButton.addEventListener("click", closeSettings);
+    settingsModal.addEventListener("click", event => {
+      if (event.target === settingsModal) {
+        closeSettings();
+      }
+    });
+    showHelpButton.addEventListener("click", () => {
+      closeSettings();
+      introModal.style.display = "flex";
     });
 
     /*
@@ -2243,7 +2478,9 @@
         cv.imshow(rectifiedCanvas, dst);
         const edgeWidth = measureEdgeWidth();
 
-        enhanceHandwriting(dst);
+        if (settings.enhanceHandwriting) {
+          enhanceHandwriting(dst);
+        }
         cv.imshow(rectifiedCanvas, dst);
 
         return {
@@ -2666,11 +2903,18 @@
       }
 
       currentQuizIndex = 0;
-      quizAnswerOrders = questions.map(() =>
-        shuffleArray(["correct", "wrong1", "wrong2", "wrong3"])
+      quizItems = settings.shuffleQuestions
+        ? shuffleArray(questions)
+        : [...questions];
+
+      const answerKeys = ["correct", "wrong1", "wrong2", "wrong3"];
+      quizAnswerOrders = quizItems.map(item =>
+        settings.shuffleAnswers
+          ? shuffleArray(answerKeys)
+          : shuffleArray(answerKeys, seededRandom(item.id))
       );
-      quizRevealCounts = questions.map(() =>
-        stepRevealToggle.checked ? 0 : 4
+      quizRevealCounts = quizItems.map(() =>
+        settings.stepReveal ? 0 : 4
       );
 
       quizEnd.hidden = true;
@@ -2683,10 +2927,10 @@
     function showQuizQuestion(index) {
       removeCorrectHighlight();
 
-      const item = questions[index];
+      const item = quizItems[index];
 
       quizProgress.textContent =
-        `${index + 1} / ${questions.length}`;
+        `${index + 1} / ${quizItems.length}`;
 
       quizQuestionImage.src = item.question;
 
@@ -2716,17 +2960,17 @@
 
       prevQuestionButton.disabled = index === 0;
 
-      const isLast = index === questions.length - 1;
+      const isLast = index === quizItems.length - 1;
       nextQuestionButton.textContent =
         isLast ? "Quiz beenden" : "Nächste Frage";
       nextQuestionButton.classList.toggle("success", isLast);
     }
 
-    function shuffleArray(array) {
+    function shuffleArray(array, random = Math.random) {
       const copy = [...array];
 
       for (let i = copy.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = Math.floor(random() * (i + 1));
 
         [copy[i], copy[j]] =
           [copy[j], copy[i]];
@@ -2799,6 +3043,26 @@
       answerZoom.hidden = true;
     }
 
+    /*
+     * Zufallszahlen, die für denselben Text immer gleich ausfallen
+     * (Hash + Mulberry32). So bekommt jede Frage eine feste, aber
+     * nicht vorhersehbare Antwortreihenfolge.
+     */
+    function seededRandom(text) {
+      let seed = 2166136261;
+
+      for (let i = 0; i < text.length; i++) {
+        seed = Math.imul(seed ^ text.charCodeAt(i), 16777619);
+      }
+
+      return () => {
+        seed = (seed + 0x6d2b79f5) | 0;
+        let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+        t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
     function revealCorrectAnswer() {
       removeCorrectHighlight();
 
@@ -2832,7 +3096,7 @@
     }
 
     function showNextQuestion() {
-      if (currentQuizIndex >= questions.length - 1) {
+      if (currentQuizIndex >= quizItems.length - 1) {
         showQuizEnd();
         return;
       }
@@ -2845,7 +3109,7 @@
       removeCorrectHighlight();
       closeZoom();
 
-      const count = questions.length;
+      const count = quizItems.length;
       quizEndText.textContent =
         `Alle ${count} ${count === 1 ? "Frage" : "Fragen"} geschafft.`;
       quizEnd.hidden = false;
