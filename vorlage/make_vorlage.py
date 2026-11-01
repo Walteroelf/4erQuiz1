@@ -112,10 +112,11 @@ def card_svg(card_set=0):
 def a5_sheet_svg():
     """A4 hochkant (Einheit 0,1 mm), zwei A5-Karten mit Schnittlinie.
 
-    Jede Karte wird in ihre A5-Hälfte (148,5 mm) gesetzt, mit
-    SLOT_PAD Abstand oben und unten. Viele Drucker lassen am
-    Papierrand 5 bis 15 mm frei; so liegen die Marken rund 20 mm
-    vom Papierrand entfernt und werden mitgedruckt.
+    Jede Karte wird in ihre A5-Hälfte (148,5 mm) gesetzt und auf
+    slot_pad weniger als die halbe Höhe verkleinert. Viele Drucker
+    lassen am Papierrand 5 bis 15 mm oder mehr frei; so liegen die
+    Marken oben rund 2 cm und unten rund 3 cm vom Papierrand
+    entfernt und werden mitgedruckt.
     """
     page_w, page_h = 2100, 2970
     slot_h = page_h / 2
@@ -126,7 +127,9 @@ def a5_sheet_svg():
     groups = []
     for card_set in range(2):
         inner = "\n    ".join(card_parts(card_set))
-        offset_y = card_set * slot_h + slot_pad
+        # Die untere Karte sitzt direkt an der Schnittlinie, so
+        # bleiben unter ihren Marken rund 3 cm Papier.
+        offset_y = slot_h if card_set else slot_pad
         groups.append(
             f'<g transform="translate({offset_x:.1f} {offset_y:.1f}) '
             f'scale({scale:.5f})">\n    {inner}\n  </g>'
