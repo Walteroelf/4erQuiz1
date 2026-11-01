@@ -635,7 +635,7 @@
      * Anordnung beim Aufdecken nicht verschiebt.
      */
     .quiz-answer.is-hidden {
-      cursor: default;
+      cursor: pointer;
     }
 
     .quiz-answer.is-hidden .answer-image-wrap {
@@ -669,6 +669,16 @@
       margin: 0;
       font-size: clamp(1.4rem, 5vh, 2.4rem);
       font-weight: 700;
+    }
+
+    /*
+     * Bei Antworten steht nur der Buchstabe über dem Bild, groß und
+     * mittig, damit man ihn auch von hinten im Raum lesen kann.
+     */
+    .answer-zoom-label.is-letter {
+      font-size: clamp(3rem, 16vh, 8rem);
+      line-height: 1;
+      text-align: center;
     }
 
     .answer-zoom.correct .answer-zoom-label {
@@ -1056,7 +1066,7 @@
           <strong>Antworten einzeln aufdecken</strong>
           <small>
             Erst nur die Frage, dann Antwort A, B, C und D nacheinander
-            per Knopf.
+            per Knopf oder durch Tippen auf ein Antwortfeld.
           </small>
         </span>
       </label>
@@ -1320,7 +1330,7 @@
      * Wie viele Antworten je Frage schon aufgedeckt sind (0 bis 4).
      * Beim Zurückblättern bleibt der Stand erhalten.
      */
-    let quizRevealCounts = [];
+    let quizRevealed = [];
     const ANSWER_LETTERS = ["A", "B", "C", "D"];
     let correctLetter = null;
     let isProcessing = false;
@@ -2926,8 +2936,8 @@
           ? shuffleArray(answerKeys)
           : shuffleArray(answerKeys, seededRandom(item.id))
       );
-      quizRevealCounts = quizItems.map(() =>
-        settings.stepReveal ? 0 : 4
+      quizRevealed = quizItems.map(() =>
+        ANSWER_LETTERS.map(() => !settings.stepReveal)
       );
 
       quizEnd.hidden = true;
@@ -2997,26 +3007,33 @@
     }
 
     /*
-     * Verdeckte Antworten zeigen nur ihren Buchstaben. Der Knopf
-     * deckt zuerst eine Antwort nach der anderen auf und zeigt erst
-     * danach die richtige.
+     * Verdeckte Antworten zeigen nur ihren Buchstaben. Ein Tipp auf
+     * das Feld deckt diese Antwort auf; der Knopf deckt die nächste
+     * verdeckte auf und zeigt erst danach die richtige.
      */
     function updateAnswerVisibility() {
-      const shown = quizRevealCounts[currentQuizIndex];
+      const revealed = quizRevealed[currentQuizIndex];
+      const nextHidden = revealed.indexOf(false);
 
       answerBoxes().forEach((box, position) => {
-        box.classList.toggle("is-hidden", position >= shown);
+        box.classList.toggle("is-hidden", !revealed[position]);
       });
 
-      revealButton.textContent = shown < 4
-        ? `Antwort ${ANSWER_LETTERS[shown]} zeigen`
+      revealButton.textContent = nextHidden !== -1
+        ? `Antwort ${ANSWER_LETTERS[nextHidden]} zeigen`
         : "Richtige Antwort zeigen";
     }
 
+    function revealAnswer(position) {
+      quizRevealed[currentQuizIndex][position] = true;
+      updateAnswerVisibility();
+    }
+
     function handleRevealButton() {
-      if (quizRevealCounts[currentQuizIndex] < 4) {
-        quizRevealCounts[currentQuizIndex]++;
-        updateAnswerVisibility();
+      const nextHidden = quizRevealed[currentQuizIndex].indexOf(false);
+
+      if (nextHidden !== -1) {
+        revealAnswer(nextHidden);
         return;
       }
 
@@ -3031,6 +3048,7 @@
       const box = answerBoxes()[position];
 
       if (box.classList.contains("is-hidden")) {
+        revealAnswer(position);
         return;
       }
 
@@ -3040,7 +3058,8 @@
       openZoom(
         isCorrect ? `Antwort ${letter} · ✓ Richtig` : `Antwort ${letter}`,
         box.querySelector("img").src,
-        isCorrect
+        isCorrect,
+        isCorrect ? `✓ ${letter}` : letter
       );
     }
 
@@ -3048,8 +3067,9 @@
      * Zeigt eine Antwort oder die Frage bildschirmfüllend. Ein Tipp
      * irgendwohin (oder Esc) schließt die Ansicht wieder.
      */
-    function openZoom(label, src, isCorrect = false) {
-      answerZoomLabel.textContent = label;
+    function openZoom(label, src, isCorrect = false, letter = null) {
+      answerZoomLabel.textContent = letter || label;
+      answerZoomLabel.classList.toggle("is-letter", letter !== null);
       answerZoomImage.src = src;
       answerZoomImage.alt = label;
       answerZoom.classList.toggle("correct", isCorrect);
