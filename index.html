@@ -317,8 +317,25 @@
     }
 
     .modal-backdrop[hidden],
-    .quiz-end[hidden] {
+    .quiz-end[hidden],
+    .answer-zoom[hidden] {
       display: none;
+    }
+
+    .setting {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 4px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .setting input {
+      width: 28px;
+      height: 28px;
+      margin: 0;
+      accent-color: var(--accent);
     }
 
     /*
@@ -534,6 +551,77 @@
       object-fit: contain;
     }
 
+    .quiz-answer,
+    .quiz-question img {
+      cursor: zoom-in;
+    }
+
+    /*
+     * Noch verdeckte Antwort: nur der Buchstabe, das Antwortfeld
+     * bleibt als ruhige graue Fläche stehen, damit sich die
+     * Anordnung beim Aufdecken nicht verschiebt.
+     */
+    .quiz-answer.is-hidden {
+      cursor: default;
+    }
+
+    .quiz-answer.is-hidden .answer-image-wrap {
+      background: var(--bg);
+    }
+
+    .quiz-answer.is-hidden .answer-image-wrap img {
+      visibility: hidden;
+    }
+
+    /*
+     * Großansicht einer Antwort oder der Frage im Quiz.
+     */
+    .answer-zoom {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding:
+        max(12px, env(safe-area-inset-top))
+        max(16px, env(safe-area-inset-right))
+        max(12px, env(safe-area-inset-bottom))
+        max(16px, env(safe-area-inset-left));
+      background: var(--bg);
+      cursor: zoom-out;
+    }
+
+    .answer-zoom-label {
+      margin: 0;
+      font-size: clamp(1.4rem, 5vh, 2.4rem);
+      font-weight: 700;
+    }
+
+    .answer-zoom.correct .answer-zoom-label {
+      color: var(--correct);
+    }
+
+    .answer-zoom img {
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      object-fit: contain;
+      background: #ffffff;
+      border: 3px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .answer-zoom.correct img {
+      border: 6px solid var(--correct);
+    }
+
+    .answer-zoom-hint {
+      margin: 0;
+      text-align: center;
+      color: var(--muted);
+    }
+
     /*
      * Auflösung: Die richtige Antwort bekommt einen dicken grünen
      * Rahmen, ein Häkchen statt des Buchstabens und das Wort
@@ -689,12 +777,20 @@
         <a href="vorlage/quiz-vorlage.pdf" target="_blank">
           Neue Quiz-Vorlage zum Ausdrucken (PDF)
         </a>
+        <br>
+        <a href="vorlage/quiz-vorlage-a5.pdf" target="_blank">
+          Zwei Karten pro Blatt, A5 (PDF)
+        </a>
       </p>
 
       <ul>
         <li>Alle vier Eckmarken müssen sichtbar sein.</li>
         <li>Der weiße Rand um die Eckmarken darf nicht verdeckt sein.</li>
         <li>Das Foto darf schräg aufgenommen sein.</li>
+        <li>
+          Beim A5-Blatt können beide Karten auf ein Foto. Schärfer
+          wird es, wenn du jede Karte einzeln fotografierst.
+        </li>
         <li>Die Karte darf auch auf dem Kopf stehen.</li>
         <li>Nicht erkannte Fotos werden mit Grund gemeldet.</li>
         <li>
@@ -743,6 +839,11 @@
         </figure>
 
         <div class="controls">
+          <label class="setting">
+            <input id="stepRevealToggle" type="checkbox">
+            Antworten einzeln aufdecken
+          </label>
+
           <button id="startQuizButton" class="success" disabled>
             Quiz starten
           </button>
@@ -832,6 +933,19 @@
           Nächste Frage
         </button>
       </div>
+    </div>
+
+    <div
+      id="answerZoom"
+      class="answer-zoom"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="answerZoomLabel"
+      hidden
+    >
+      <p id="answerZoomLabel" class="answer-zoom-label"></p>
+      <img id="answerZoomImage" alt="">
+      <p class="answer-zoom-hint">Tippen zum Schließen</p>
     </div>
 
     <div id="quizEnd" class="quiz-end" hidden>
@@ -972,6 +1086,12 @@
     const answerBoxD = document.getElementById("answerBoxD");
     const quizAnswers = document.querySelector(".quiz-answers");
 
+    const stepRevealToggle = document.getElementById("stepRevealToggle");
+
+    const answerZoom = document.getElementById("answerZoom");
+    const answerZoomLabel = document.getElementById("answerZoomLabel");
+    const answerZoomImage = document.getElementById("answerZoomImage");
+
     const quizEnd = document.getElementById("quizEnd");
     const quizEndText = document.getElementById("quizEndText");
     const quizEndToCollectionButton =
@@ -1012,6 +1132,13 @@
      * demselben Buchstaben.
      */
     let quizAnswerOrders = [];
+
+    /*
+     * Wie viele Antworten je Frage schon aufgedeckt sind (0 bis 4).
+     * Beim Zurückblättern bleibt der Stand erhalten.
+     */
+    let quizRevealCounts = [];
+    const ANSWER_LETTERS = ["A", "B", "C", "D"];
     let correctLetter = null;
     let isProcessing = false;
 
@@ -1188,6 +1315,11 @@
       }
     });
     document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && !answerZoom.hidden) {
+        closeZoom();
+        return;
+      }
+
       if (event.key === "Escape" && !detailModal.hidden) {
         closeQuestionDetail();
       }
@@ -1196,7 +1328,17 @@
     imageInput.addEventListener("change", handleFileSelection);
     startQuizButton.addEventListener("click", startQuiz);
     clearAllButton.addEventListener("click", clearEverything);
-    revealButton.addEventListener("click", revealCorrectAnswer);
+    revealButton.addEventListener("click", handleRevealButton);
+
+    [answerBoxA, answerBoxB, answerBoxC, answerBoxD].forEach(
+      (box, position) => {
+        box.addEventListener("click", () => zoomAnswer(position));
+      }
+    );
+    quizQuestionImage.addEventListener("click", () => {
+      openZoom("Frage", quizQuestionImage.src);
+    });
+    answerZoom.addEventListener("click", closeZoom);
     backButton.addEventListener("click", confirmBackToEditor);
     fullscreenButton.addEventListener("click", toggleFullscreen);
     prevQuestionButton.addEventListener("click", showPreviousQuestion);
@@ -1391,6 +1533,32 @@
     loadSavedQuestions();
 
     /*
+     * Schalter "Antworten einzeln aufdecken". Gemerkt wird er nur
+     * auf diesem Gerät; Testumgebung und 4erQuiz1 getrennt.
+     */
+    const STEP_REVEAL_KEY = IS_TEST_ENVIRONMENT
+      ? "4er-quiz-testumgebung:einzeln-aufdecken"
+      : "4er-quiz:einzeln-aufdecken";
+
+    try {
+      stepRevealToggle.checked =
+        localStorage.getItem(STEP_REVEAL_KEY) === "1";
+    } catch (error) {
+      // Ohne Speicher bleibt der Schalter einfach aus.
+    }
+
+    stepRevealToggle.addEventListener("change", () => {
+      try {
+        localStorage.setItem(
+          STEP_REVEAL_KEY,
+          stepRevealToggle.checked ? "1" : "0"
+        );
+      } catch (error) {
+        // Ohne Speicher gilt die Einstellung nur bis zum Neuladen.
+      }
+    });
+
+    /*
      * Offline-Betrieb: sw.js speichert die App beim ersten Öffnen,
      * danach startet sie auch ohne Internet.
      */
@@ -1469,35 +1637,21 @@
           if (!detection.ok) {
             addStatus("error", `✗ ${label}: ${detection.reason}`);
           } else {
-            const { crops, edgeWidth } = rectifyAndCrop();
+            detection.cards.forEach((card, cardIndex) => {
+              const cardLabel = detection.cards.length > 1
+                ? `${label}, Karte ${cardIndex + 1}`
+                : label;
 
-            const question = {
-              id: createQuestionId(),
-              ...crops,
-              createdAt: Date.now()
-            };
+              markerPoints = card.points;
+              activeLayout = card.layout;
+              addQuestionFromCard(cardLabel);
+            });
 
-            questions.push(question);
-            saveQuestion(question);
-            saveQuestionOrder();
-
-            showLatestCrops(crops);
-            showCardPreview();
-            updateQuestionCollectionView();
-
-            const number = questions.length;
-
-            if (edgeWidth > MAX_EDGE_WIDTH) {
+            if (detection.partial > 0) {
               addStatus(
                 "warn",
-                `⚠ ${label}: als Frage ${number} übernommen, ` +
-                "aber das Foto ist unscharf. Prüfe die Vorschau " +
-                "und fotografiere die Karte sonst neu."
-              );
-            } else {
-              addStatus(
-                "ok",
-                `✓ ${label}: als Frage ${number} übernommen.`
+                `⚠ ${label}: Eine weitere Karte war nur teilweise ` +
+                "im Bild und wurde übersprungen."
               );
             }
           }
@@ -1519,6 +1673,44 @@
       updateButtonStates();
 
       setTimeout(() => setProgress(0, 0), 900);
+    }
+
+    /*
+     * Entzerrt die Karte zu markerPoints/activeLayout, speichert sie
+     * als neue Frage und meldet das Ergebnis.
+     */
+    function addQuestionFromCard(label) {
+      const { crops, edgeWidth } = rectifyAndCrop();
+
+      const question = {
+        id: createQuestionId(),
+        ...crops,
+        createdAt: Date.now()
+      };
+
+      questions.push(question);
+      saveQuestion(question);
+      saveQuestionOrder();
+
+      showLatestCrops(crops);
+      showCardPreview();
+      updateQuestionCollectionView();
+
+      const number = questions.length;
+
+      if (edgeWidth > MAX_EDGE_WIDTH) {
+        addStatus(
+          "warn",
+          `⚠ ${label}: als Frage ${number} übernommen, ` +
+          "aber das Foto ist unscharf. Prüfe die Vorschau " +
+          "und fotografiere die Karte sonst neu."
+        );
+      } else {
+        addStatus(
+          "ok",
+          `✓ ${label}: als Frage ${number} übernommen.`
+        );
+      }
     }
 
     function loadImageFromFile(file) {
@@ -1597,22 +1789,28 @@
       activeLayout = null;
       markerPoints = null;
 
-      const arucoCount = detectArucoMarkers();
+      const aruco = detectArucoMarkers();
 
-      if (arucoCount === 4) {
-        activeLayout = LAYOUTS.aruco;
-        return { ok: true };
+      if (aruco.cards.length > 0) {
+        return {
+          ok: true,
+          cards: aruco.cards.map(points => ({
+            layout: LAYOUTS.aruco,
+            points
+          })),
+          partial: aruco.partial
+        };
       }
 
       /*
        * Teilweise gefundene ArUco-Marken: Es ist die neue Vorlage,
        * aber Ecken fehlen oder sind verdeckt.
        */
-      if (arucoCount > 0) {
+      if (aruco.partial > 0) {
         return {
           ok: false,
           reason:
-            `Nur ${arucoCount} von 4 Eckmarken erkannt. ` +
+            `Nur ${aruco.partial} von 4 Eckmarken erkannt. ` +
             "Sind alle Ecken im Bild und nicht verdeckt?"
         };
       }
@@ -1620,8 +1818,11 @@
       const classicResult = detectClassicMarkers();
 
       if (classicResult === "ok") {
-        activeLayout = LAYOUTS.classic;
-        return { ok: true };
+        return {
+          ok: true,
+          cards: [{ layout: LAYOUTS.classic, points: markerPoints }],
+          partial: 0
+        };
       }
 
       if (classicResult === "no-triangle") {
@@ -1640,8 +1841,18 @@
     }
 
     /*
-     * Liefert die Anzahl der gefundenen Marken (0 bis 4). Bei allen
-     * vier wird markerPoints gesetzt.
+     * Jede Karte hat vier Marken mit fortlaufenden Nummern: die
+     * einzelne Karte und die obere auf dem A5-Blatt 0 bis 3, die
+     * untere auf dem A5-Blatt 4 bis 7. So lassen sich beide Karten
+     * eines Blatts in einem Foto erkennen.
+     */
+    const ARUCO_CARD_SETS = 2;
+
+    /*
+     * Liefert { cards, partial }: cards enthält für jede vollständig
+     * erkannte Karte ihre vier Eckpunkte (oben links, oben rechts,
+     * unten rechts, unten links), partial die größte Anzahl Marken
+     * einer nur teilweise sichtbaren Karte.
      */
     function detectArucoMarkers() {
       let src = null;
@@ -1675,37 +1886,47 @@
         detector.detectMarkers(gray, corners, ids, rejected);
 
         /*
-         * Marke n liefert ihre Ecken in der Reihenfolge oben links,
-         * oben rechts, unten rechts, unten links. Ecke n ist damit
-         * genau die Ecke, die zur Kartenecke zeigt.
+         * Jede Marke liefert ihre Ecken in der Reihenfolge oben
+         * links, oben rechts, unten rechts, unten links. Für die
+         * Marke an Kartenecke n (Nummer modulo 4) ist Ecke n genau
+         * die Ecke, die zur Kartenecke zeigt.
          */
         const found = [];
 
         for (let i = 0; i < corners.size(); i++) {
           const id = ids.data32S[i];
 
-          if (id < 0 || id > 3 || found[id]) {
+          if (id < 0 || id >= ARUCO_CARD_SETS * 4 || found[id]) {
             continue;
           }
 
+          const corner = id % 4;
           const data = corners.get(i).data32F;
 
           found[id] = {
-            x: data[id * 2],
-            y: data[id * 2 + 1]
+            x: data[corner * 2],
+            y: data[corner * 2 + 1]
           };
         }
 
-        const count = [0, 1, 2, 3].filter(id => found[id]).length;
+        const cards = [];
+        let partial = 0;
 
-        if (count === 4) {
-          markerPoints = found;
+        for (let set = 0; set < ARUCO_CARD_SETS; set++) {
+          const points = [0, 1, 2, 3].map(corner => found[set * 4 + corner]);
+          const count = points.filter(Boolean).length;
+
+          if (count === 4) {
+            cards.push(points);
+          } else {
+            partial = Math.max(partial, count);
+          }
         }
 
-        return count;
+        return { cards, partial };
       } catch (error) {
         console.error(error);
-        return 0;
+        return { cards: [], partial: 0 };
       } finally {
         [
           src,
@@ -2046,66 +2267,99 @@
 
     /*
      * Macht Papier reinweiß und Schrift kräftig, direkt im Bild:
-     * 1. Hintergrund schätzen: Das verkleinerte Bild wird so stark
-     *    "aufgehellt" (Dilatation), dass die dünnen Schriftstriche
-     *    verschwinden. Übrig bleibt das Papier mit Schatten und
-     *    Farbstich.
-     * 2. Bild durch diesen Hintergrund teilen: Papier wird überall
-     *    weiß, Schatten und Graustich verschwinden, die Farbe der
-     *    Tinte bleibt erhalten.
-     * 3. Kontrast anheben, damit blasse Schrift dunkel wird.
-     * Der Mindestwert für den Hintergrund verhindert, dass große
-     * dunkle Flächen (z. B. ausgemalte Zeichnungen) weiß werden.
+     * 1. Helligkeit des Papiers schätzen: Das verkleinerte
+     *    Graustufenbild wird so stark "aufgehellt" (Dilatation),
+     *    dass Schrift und kleinere Zeichnungen verschwinden. Übrig
+     *    bleibt das Papier mit seinen Schatten.
+     * 2. Papierfarbe bestimmen (Mittel aller Papierpixel) und daraus
+     *    eine Farbkorrektur je Kanal, die den Graustich entfernt.
+     * 3. Jeden Farbkanal durch die Papierhelligkeit teilen und
+     *    farbkorrigieren: Papier wird überall weiß, Schatten
+     *    verschwinden. Weil alle Kanäle durch denselben Wert geteilt
+     *    werden, behalten Tinte und Zeichnungen ihre Farbe.
+     * 4. Kontrast anheben, damit blasse Schrift dunkel wird.
+     * Der Mindestwert für die Papierhelligkeit verhindert, dass
+     * große dunkle Flächen weiß werden.
      */
     const ENHANCE_DOWNSCALE = 4;
-    const ENHANCE_KERNEL = 11;
+    const ENHANCE_KERNEL = 31;
     const ENHANCE_MIN_BACKGROUND = 110;
     const ENHANCE_CONTRAST = 1.8;
 
     function enhanceHandwriting(image) {
+      const gray = new cv.Mat();
       const small = new cv.Mat();
       const background = new cv.Mat();
-      const minimum = new cv.Mat(
-        image.rows,
-        image.cols,
-        image.type(),
-        new cv.Scalar(
-          ENHANCE_MIN_BACKGROUND,
-          ENHANCE_MIN_BACKGROUND,
-          ENHANCE_MIN_BACKGROUND,
-          255
-        )
-      );
+      const ratio = new cv.Mat();
+      const paperMask = new cv.Mat();
+      const channels = new cv.MatVector();
+      const corrected = new cv.MatVector();
       const kernel = cv.getStructuringElement(
         cv.MORPH_RECT,
         new cv.Size(ENHANCE_KERNEL, ENHANCE_KERNEL)
       );
 
       try {
+        cv.cvtColor(image, gray, cv.COLOR_RGBA2GRAY);
+
         cv.resize(
-          image,
+          gray,
           small,
           new cv.Size(
-            Math.round(image.cols / ENHANCE_DOWNSCALE),
-            Math.round(image.rows / ENHANCE_DOWNSCALE)
+            Math.round(gray.cols / ENHANCE_DOWNSCALE),
+            Math.round(gray.rows / ENHANCE_DOWNSCALE)
           ),
           0,
           0,
           cv.INTER_AREA
         );
         cv.dilate(small, small, kernel);
-        cv.GaussianBlur(small, small, new cv.Size(15, 15), 0);
+        cv.GaussianBlur(small, small, new cv.Size(21, 21), 0);
         cv.resize(
           small,
           background,
-          new cv.Size(image.cols, image.rows),
+          new cv.Size(gray.cols, gray.rows),
           0,
           0,
           cv.INTER_LINEAR
         );
+        const minimum = new cv.Mat(
+          background.rows,
+          background.cols,
+          background.type(),
+          new cv.Scalar(ENHANCE_MIN_BACKGROUND)
+        );
         cv.max(background, minimum, background);
+        minimum.delete();
 
-        cv.divide(image, background, image, 255);
+        /*
+         * Papierpixel: höchstens 8 % dunkler als die geschätzte
+         * Papierhelligkeit an dieser Stelle.
+         */
+        cv.divide(gray, background, ratio, 255);
+        cv.threshold(ratio, paperMask, 234, 255, cv.THRESH_BINARY);
+
+        const paper = cv.mean(image, paperMask);
+        const paperGray = cv.mean(gray, paperMask)[0];
+
+        cv.split(image, channels);
+
+        for (let c = 0; c < 4; c++) {
+          const channel = channels.get(c);
+
+          if (c < 3) {
+            const gain = paper[c] > 0
+              ? Math.min(1.25, Math.max(0.8, paperGray / paper[c]))
+              : 1;
+
+            cv.divide(channel, background, channel, 255 * gain);
+          }
+
+          corrected.push_back(channel);
+          channel.delete();
+        }
+
+        cv.merge(corrected, image);
 
         /*
          * Weiß bleibt weiß (255), dunklere Werte werden dunkler:
@@ -2118,9 +2372,13 @@
           -(ENHANCE_CONTRAST - 1) * 255
         );
       } finally {
+        gray.delete();
         small.delete();
         background.delete();
-        minimum.delete();
+        ratio.delete();
+        paperMask.delete();
+        channels.delete();
+        corrected.delete();
         kernel.delete();
       }
     }
@@ -2411,8 +2669,12 @@
       quizAnswerOrders = questions.map(() =>
         shuffleArray(["correct", "wrong1", "wrong2", "wrong3"])
       );
+      quizRevealCounts = questions.map(() =>
+        stepRevealToggle.checked ? 0 : 4
+      );
 
       quizEnd.hidden = true;
+      answerZoom.hidden = true;
       editorView.style.display = "none";
       quizView.style.display = "block";
       showQuizQuestion(currentQuizIndex);
@@ -2429,7 +2691,7 @@
       quizQuestionImage.src = item.question;
 
       const order = quizAnswerOrders[index];
-      const letters = ["A", "B", "C", "D"];
+      const letters = ANSWER_LETTERS;
 
       const elements = {
         A: quizAnswerA,
@@ -2448,6 +2710,9 @@
           correctLetter = letter;
         }
       });
+
+      closeZoom();
+      updateAnswerVisibility();
 
       prevQuestionButton.disabled = index === 0;
 
@@ -2468,6 +2733,70 @@
       }
 
       return copy;
+    }
+
+    function answerBoxes() {
+      return [answerBoxA, answerBoxB, answerBoxC, answerBoxD];
+    }
+
+    /*
+     * Verdeckte Antworten zeigen nur ihren Buchstaben. Der Knopf
+     * deckt zuerst eine Antwort nach der anderen auf und zeigt erst
+     * danach die richtige.
+     */
+    function updateAnswerVisibility() {
+      const shown = quizRevealCounts[currentQuizIndex];
+
+      answerBoxes().forEach((box, position) => {
+        box.classList.toggle("is-hidden", position >= shown);
+      });
+
+      revealButton.textContent = shown < 4
+        ? `Antwort ${ANSWER_LETTERS[shown]} zeigen`
+        : "Richtige Antwort zeigen";
+    }
+
+    function handleRevealButton() {
+      if (quizRevealCounts[currentQuizIndex] < 4) {
+        quizRevealCounts[currentQuizIndex]++;
+        updateAnswerVisibility();
+        return;
+      }
+
+      revealCorrectAnswer();
+    }
+
+    function zoomAnswer(position) {
+      const box = answerBoxes()[position];
+
+      if (box.classList.contains("is-hidden")) {
+        return;
+      }
+
+      const letter = ANSWER_LETTERS[position];
+      const isCorrect = box.classList.contains("correct");
+
+      openZoom(
+        isCorrect ? `Antwort ${letter} · ✓ Richtig` : `Antwort ${letter}`,
+        box.querySelector("img").src,
+        isCorrect
+      );
+    }
+
+    /*
+     * Zeigt eine Antwort oder die Frage bildschirmfüllend. Ein Tipp
+     * irgendwohin (oder Esc) schließt die Ansicht wieder.
+     */
+    function openZoom(label, src, isCorrect = false) {
+      answerZoomLabel.textContent = label;
+      answerZoomImage.src = src;
+      answerZoomImage.alt = label;
+      answerZoom.classList.toggle("correct", isCorrect);
+      answerZoom.hidden = false;
+    }
+
+    function closeZoom() {
+      answerZoom.hidden = true;
     }
 
     function revealCorrectAnswer() {
@@ -2514,6 +2843,7 @@
 
     function showQuizEnd() {
       removeCorrectHighlight();
+      closeZoom();
 
       const count = questions.length;
       quizEndText.textContent =

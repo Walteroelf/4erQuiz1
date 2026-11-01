@@ -1,0 +1,31 @@
+<!doctype html>
+<!--
+  Druckseite für quiz-vorlage-a5.pdf (siehe make_vorlage.py):
+  A4 hochkant ohne Rand, die SVG füllt die ganze Seite.
+-->
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Quiz-Vorlage A5</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    html,
+    body {
+      margin: 0;
+    }
+
+    img {
+      display: block;
+      width: 210mm;
+      height: 297mm;
+    }
+  </style>
+</head>
+<body>
+  <img src="quiz-vorlage-a5.svg" alt="Zwei Quiz-Karten im A5-Format">
+</body>
+</html>
