@@ -1141,6 +1141,17 @@
       </label>
 
       <label class="setting">
+        <input id="settingCountdownVoice" type="checkbox">
+        <span>
+          <strong>Countdown mit Stimme</strong>
+          <small>
+            Der Knopf „3-2-1“ spricht die Zahlen laut. Dafür nutzt
+            das Gerät seine eingebaute deutsche Stimme.
+          </small>
+        </span>
+      </label>
+
+      <label class="setting">
         <input id="settingShuffleQuestions" type="checkbox">
         <span>
           <strong>Fragen mischen</strong>
@@ -1329,6 +1340,7 @@
     const settingInputs = {
       stepReveal: document.getElementById("settingStepReveal"),
       zoomCorrect: document.getElementById("settingZoomCorrect"),
+      countdownVoice: document.getElementById("settingCountdownVoice"),
       shuffleQuestions: document.getElementById("settingShuffleQuestions"),
       shuffleAnswers: document.getElementById("settingShuffleAnswers"),
       enhanceHandwriting: document.getElementById("settingEnhance")
@@ -1811,6 +1823,7 @@
     const DEFAULT_SETTINGS = {
       stepReveal: false,
       zoomCorrect: false,
+      countdownVoice: false,
       shuffleQuestions: false,
       shuffleAnswers: true,
       enhanceHandwriting: true
@@ -3106,7 +3119,65 @@
      * zweiter Tipp auf den Knopf oder die Zahl bricht ab.
      */
     const COUNTDOWN_START = 3;
+    const COUNTDOWN_WORDS = { 3: "Drei", 2: "Zwei", 1: "Eins" };
     let countdownTimer = null;
+
+    /*
+     * Sucht die schönste deutsche Stimme des Geräts: erweiterte
+     * ("Enhanced", "Premium") zuerst, dann bekannte natürliche
+     * Stimmen, dann irgendeine deutsche.
+     */
+    function pickGermanVoice() {
+      if (!("speechSynthesis" in window)) {
+        return null;
+      }
+
+      const german = speechSynthesis.getVoices()
+        .filter(voice => voice.lang.toLowerCase().startsWith("de"));
+      const score = voice => {
+        let points = 0;
+
+        if (/premium|enhanced|erweitert|neural|natural/i.test(voice.name)) {
+          points += 4;
+        }
+
+        if (/anna|petra|helena|marlene|vicki|katja|google/i.test(voice.name)) {
+          points += 2;
+        }
+
+        if (voice.lang.toLowerCase() === "de-de") {
+          points += 1;
+        }
+
+        return points;
+      };
+
+      return german.sort((a, b) => score(b) - score(a))[0] || null;
+    }
+
+    function speak(text) {
+      if (!settings.countdownVoice || !("speechSynthesis" in window)) {
+        return;
+      }
+
+      speechSynthesis.cancel();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voice = pickGermanVoice();
+
+      utterance.lang = "de-DE";
+      utterance.rate = 0.9;
+
+      if (voice) {
+        utterance.voice = voice;
+      }
+
+      speechSynthesis.speak(utterance);
+    }
+
+    if ("speechSynthesis" in window) {
+      speechSynthesis.getVoices();
+    }
 
     function startCountdown() {
       if (countdownTimer !== null) {
@@ -3117,16 +3188,21 @@
       let remaining = COUNTDOWN_START;
       countdownOverlay.textContent = remaining;
       countdownOverlay.hidden = false;
+      speak(COUNTDOWN_WORDS[remaining]);
 
       countdownTimer = setInterval(() => {
         remaining--;
 
         if (remaining > 0) {
           countdownOverlay.textContent = remaining;
+          speak(COUNTDOWN_WORDS[remaining]);
           return;
         }
 
-        cancelCountdown();
+        // Nicht abbrechen: "Eins" soll noch ausgesprochen werden.
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+        countdownOverlay.hidden = true;
         quizRevealed[currentQuizIndex].fill(true);
         updateAnswerVisibility();
         revealCorrectAnswer();
@@ -3138,6 +3214,10 @@
     }
 
     function cancelCountdown() {
+      if (countdownTimer !== null && "speechSynthesis" in window) {
+        speechSynthesis.cancel();
+      }
+
       clearInterval(countdownTimer);
       countdownTimer = null;
       countdownOverlay.hidden = true;
