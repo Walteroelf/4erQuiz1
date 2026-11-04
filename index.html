@@ -672,17 +672,40 @@
     }
 
     /*
-     * Bei Antworten steht nur der Buchstabe über dem Bild, groß und
-     * mittig, damit man ihn auch von hinten im Raum lesen kann.
+     * Bei Antworten stehen Buchstabe und Bild untereinander und sind
+     * gleich groß (Maße setzt sizeAnswerZoom), damit man den
+     * Buchstaben auch von hinten im Raum lesen kann.
      */
-    .answer-zoom-label.is-letter {
-      font-size: clamp(3rem, 16vh, 8rem);
+    .answer-zoom.is-answer {
+      align-items: center;
+      justify-content: center;
+    }
+
+    .answer-zoom.is-answer .answer-zoom-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--zoom-w);
+      height: var(--zoom-h);
+      font-size: calc(var(--zoom-h) * .8);
       line-height: 1;
-      text-align: center;
+      background: #ffffff;
+      border: 3px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .answer-zoom.is-answer img {
+      flex: none;
+      width: var(--zoom-w);
+      height: var(--zoom-h);
     }
 
     .answer-zoom.correct .answer-zoom-label {
       color: var(--correct);
+    }
+
+    .answer-zoom.correct.is-answer .answer-zoom-label {
+      border: 6px solid var(--correct);
     }
 
     .answer-zoom img {
@@ -1314,6 +1337,7 @@
     const answerZoom = document.getElementById("answerZoom");
     const answerZoomLabel = document.getElementById("answerZoomLabel");
     const answerZoomImage = document.getElementById("answerZoomImage");
+    const answerZoomHint = document.querySelector(".answer-zoom-hint");
 
     const quizEnd = document.getElementById("quizEnd");
     const quizEndText = document.getElementById("quizEndText");
@@ -1581,6 +1605,8 @@
       openZoom("Frage", quizQuestionImage.src);
     });
     answerZoom.addEventListener("click", closeZoom);
+    answerZoomImage.addEventListener("load", sizeAnswerZoom);
+    window.addEventListener("resize", sizeAnswerZoom);
     backButton.addEventListener("click", confirmBackToEditor);
     fullscreenButton.addEventListener("click", toggleFullscreen);
     prevQuestionButton.addEventListener("click", showPreviousQuestion);
@@ -3157,11 +3183,38 @@
      */
     function openZoom(label, src, isCorrect = false, letter = null) {
       answerZoomLabel.textContent = letter || label;
-      answerZoomLabel.classList.toggle("is-letter", letter !== null);
+      answerZoom.classList.toggle("is-answer", letter !== null);
       answerZoomImage.src = src;
       answerZoomImage.alt = label;
       answerZoom.classList.toggle("correct", isCorrect);
       answerZoom.hidden = false;
+      sizeAnswerZoom();
+    }
+
+    /*
+     * Buchstabe und Antwortbild bekommen dieselbe Größe: so groß wie
+     * möglich, mit dem Seitenverhältnis des Bildes, beide
+     * untereinander im Bildschirm.
+     */
+    function sizeAnswerZoom() {
+      if (answerZoom.hidden || !answerZoom.classList.contains("is-answer")) {
+        return;
+      }
+
+      const style = getComputedStyle(answerZoom);
+      const gap = parseFloat(style.rowGap) || 10;
+      const availW = answerZoom.clientWidth -
+        parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+      const availH = answerZoom.clientHeight -
+        parseFloat(style.paddingTop) - parseFloat(style.paddingBottom) -
+        answerZoomHint.offsetHeight - 2 * gap;
+      const ratio = answerZoomImage.naturalWidth > 0
+        ? answerZoomImage.naturalWidth / answerZoomImage.naturalHeight
+        : 3.5;
+      const height = Math.max(40, Math.min(availW / ratio, availH / 2));
+
+      answerZoom.style.setProperty("--zoom-h", `${height}px`);
+      answerZoom.style.setProperty("--zoom-w", `${height * ratio}px`);
     }
 
     function closeZoom() {
