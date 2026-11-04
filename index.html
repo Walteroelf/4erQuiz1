@@ -744,7 +744,7 @@
 
     .quiz-controls {
       display: grid;
-      grid-template-columns: repeat(3, auto);
+      grid-template-columns: repeat(4, auto);
       justify-content: center;
       gap: 12px;
     }
@@ -761,6 +761,29 @@
     }
 
     .hidden-work-area {
+      display: none;
+    }
+
+    /*
+     * Countdown vor der Auflösung: nur eine große Zahl auf ruhigem
+     * Grund. Ein Tipp bricht ab.
+     */
+    .countdown {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      color: var(--accent);
+      font-size: 45vh;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .countdown[hidden] {
       display: none;
     }
 
@@ -833,7 +856,7 @@
       }
 
       .quiz-controls {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 8px;
       }
 
@@ -1015,11 +1038,23 @@
           Richtige Antwort zeigen
         </button>
 
+        <button id="countdownButton" class="secondary">
+          ⏱ 3-2-1
+        </button>
+
         <button id="nextQuestionButton">
           Nächste Frage
         </button>
       </div>
     </div>
+
+    <div
+      id="countdownOverlay"
+      class="countdown"
+      role="timer"
+      aria-live="assertive"
+      hidden
+    ></div>
 
     <div
       id="answerZoom"
@@ -1300,6 +1335,8 @@
     };
 
     const revealButton = document.getElementById("revealButton");
+    const countdownButton = document.getElementById("countdownButton");
+    const countdownOverlay = document.getElementById("countdownOverlay");
     const backButton = document.getElementById("backButton");
     const fullscreenButton =
       document.getElementById("fullscreenButton");
@@ -1508,6 +1545,11 @@
       }
     });
     document.addEventListener("keydown", event => {
+      if (event.key === "Escape" && !countdownOverlay.hidden) {
+        cancelCountdown();
+        return;
+      }
+
       if (event.key === "Escape" && !answerZoom.hidden) {
         closeZoom();
         return;
@@ -1527,6 +1569,8 @@
     startQuizButton.addEventListener("click", startQuiz);
     clearAllButton.addEventListener("click", clearEverything);
     revealButton.addEventListener("click", handleRevealButton);
+    countdownButton.addEventListener("click", startCountdown);
+    countdownOverlay.addEventListener("click", cancelCountdown);
 
     [answerBoxA, answerBoxB, answerBoxC, answerBoxD].forEach(
       (box, position) => {
@@ -2978,6 +3022,7 @@
         }
       });
 
+      cancelCountdown();
       closeZoom();
       updateAnswerVisibility();
 
@@ -3027,6 +3072,49 @@
     function revealAnswer(position) {
       quizRevealed[currentQuizIndex][position] = true;
       updateAnswerVisibility();
+    }
+
+    /*
+     * Zählt 3, 2, 1 herunter und zeigt dann die richtige Antwort.
+     * Noch verdeckte Antworten werden dabei mit aufgedeckt. Ein
+     * zweiter Tipp auf den Knopf oder die Zahl bricht ab.
+     */
+    const COUNTDOWN_START = 3;
+    let countdownTimer = null;
+
+    function startCountdown() {
+      if (countdownTimer !== null) {
+        cancelCountdown();
+        return;
+      }
+
+      let remaining = COUNTDOWN_START;
+      countdownOverlay.textContent = remaining;
+      countdownOverlay.hidden = false;
+
+      countdownTimer = setInterval(() => {
+        remaining--;
+
+        if (remaining > 0) {
+          countdownOverlay.textContent = remaining;
+          return;
+        }
+
+        cancelCountdown();
+        quizRevealed[currentQuizIndex].fill(true);
+        updateAnswerVisibility();
+        revealCorrectAnswer();
+
+        if (settings.zoomCorrect && correctLetter) {
+          zoomAnswer(ANSWER_LETTERS.indexOf(correctLetter));
+        }
+      }, 1000);
+    }
+
+    function cancelCountdown() {
+      clearInterval(countdownTimer);
+      countdownTimer = null;
+      countdownOverlay.hidden = true;
     }
 
     function handleRevealButton() {
@@ -3144,6 +3232,7 @@
 
     function showQuizEnd() {
       removeCorrectHighlight();
+      cancelCountdown();
       closeZoom();
 
       const count = quizItems.length;
@@ -3166,6 +3255,7 @@
         exitFullscreen();
       }
 
+      cancelCountdown();
       quizView.style.display = "none";
       quizEnd.hidden = true;
       editorView.style.display = "block";
