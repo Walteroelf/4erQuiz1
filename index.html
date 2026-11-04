@@ -1145,8 +1145,8 @@
         <span>
           <strong>Countdown mit Stimme</strong>
           <small>
-            Der Knopf „3-2-1“ spricht die Zahlen laut. Dafür nutzt
-            das Gerät seine eingebaute deutsche Stimme.
+            Der Knopf „3-2-1“ spricht die Zahlen laut, mit der Stimme
+            „Thorsten“. Funktioniert auch ohne Internet.
           </small>
         </span>
       </label>
@@ -1876,6 +1876,12 @@
         settings[key] = input.checked;
         saveSettings();
       });
+    });
+
+    settingInputs.countdownVoice.addEventListener("change", () => {
+      if (settingInputs.countdownVoice.checked) {
+        loadCountdownSounds();
+      }
     });
 
     function openSettings() {
@@ -3008,6 +3014,10 @@
         return;
       }
 
+      if (settings.countdownVoice) {
+        loadCountdownSounds();
+      }
+
       currentQuizIndex = 0;
       quizItems = settings.shuffleQuestions
         ? shuffleArray(questions)
@@ -3179,6 +3189,76 @@
       speechSynthesis.getVoices();
     }
 
+    /*
+     * Die Stimme "Thorsten" (Piper, CC0) liegt als drei kleine
+     * Dateien in ton/. Sie werden über Web Audio auf die Sekunden
+     * des Countdowns gelegt; so klappt es auch auf dem iPad, wo
+     * Töne sonst nur direkt nach einem Tipp starten dürfen.
+     * Fehlt etwas, spricht die Stimme des Geräts.
+     */
+    const COUNTDOWN_SOUNDS = ["Drei", "Zwei", "Eins"];
+    let countdownAudio = null;
+    let countdownSources = [];
+
+    function loadCountdownSounds() {
+      const Context = window.AudioContext || window.webkitAudioContext;
+
+      if (countdownAudio || !Context) {
+        return;
+      }
+
+      const context = new Context();
+      countdownAudio = { context, buffers: null };
+
+      Promise.all(COUNTDOWN_SOUNDS.map(name =>
+        fetch(`ton/${name}.m4a`)
+          .then(response => response.arrayBuffer())
+          .then(data => new Promise((resolve, reject) => {
+            context.decodeAudioData(data, resolve, reject);
+          }))
+      ))
+        .then(buffers => {
+          countdownAudio.buffers = buffers;
+        })
+        .catch(() => {
+          countdownAudio = null;
+        });
+    }
+
+    /*
+     * Legt "Drei, Zwei, Eins" im Sekundentakt los. Gibt false
+     * zurück, wenn die Töne nicht bereit sind.
+     */
+    function scheduleCountdownSounds() {
+      if (!countdownAudio || !countdownAudio.buffers) {
+        return false;
+      }
+
+      const { context, buffers } = countdownAudio;
+      context.resume();
+
+      buffers.forEach((buffer, index) => {
+        const source = context.createBufferSource();
+        source.buffer = buffer;
+        source.connect(context.destination);
+        source.start(context.currentTime + 0.05 + index);
+        countdownSources.push(source);
+      });
+
+      return true;
+    }
+
+    function stopCountdownSounds() {
+      countdownSources.forEach(source => {
+        try {
+          source.stop();
+        } catch (error) {
+          // Schon zu Ende.
+        }
+      });
+      countdownSources = [];
+    }
+
     function startCountdown() {
       if (countdownTimer !== null) {
         cancelCountdown();
@@ -3186,16 +3266,26 @@
       }
 
       let remaining = COUNTDOWN_START;
+      const soundsScheduled =
+        settings.countdownVoice && scheduleCountdownSounds();
+
       countdownOverlay.textContent = remaining;
       countdownOverlay.hidden = false;
-      speak(COUNTDOWN_WORDS[remaining]);
+
+      if (settings.countdownVoice && !soundsScheduled) {
+        speak(COUNTDOWN_WORDS[remaining]);
+      }
 
       countdownTimer = setInterval(() => {
         remaining--;
 
         if (remaining > 0) {
           countdownOverlay.textContent = remaining;
-          speak(COUNTDOWN_WORDS[remaining]);
+
+          if (settings.countdownVoice && !soundsScheduled) {
+            speak(COUNTDOWN_WORDS[remaining]);
+          }
+
           return;
         }
 
@@ -3214,8 +3304,12 @@
     }
 
     function cancelCountdown() {
-      if (countdownTimer !== null && "speechSynthesis" in window) {
-        speechSynthesis.cancel();
+      if (countdownTimer !== null) {
+        stopCountdownSounds();
+
+        if ("speechSynthesis" in window) {
+          speechSynthesis.cancel();
+        }
       }
 
       clearInterval(countdownTimer);
