@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" font-family="Arial, Helvetica, sans-serif">
+  <rect width="1024" height="1024" fill="#1f4e8c"/>
+  <!-- vier Antwortfelder, eines davon richtig -->
+  <rect x="150" y="150" width="340" height="340" rx="64" fill="#ffffff"/>
+  <rect x="534" y="150" width="340" height="340" rx="64" fill="#2f8f55"/>
+  <rect x="150" y="534" width="340" height="340" rx="64" fill="#ffffff"/>
+  <rect x="534" y="534" width="340" height="340" rx="64" fill="#ffffff"/>
+  <g font-weight="700" font-size="250" text-anchor="middle" fill="#1f4e8c">
+    <text x="320" y="406">A</text>
+    <text x="320" y="790">C</text>
+    <text x="704" y="790">D</text>
+  </g>
+  <path d="M628 330 L688 392 L784 262" fill="none" stroke="#ffffff" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
