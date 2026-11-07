@@ -19,4 +19,4 @@ Dieses Werk steht unter der Lizenz **Creative Commons Namensnennung – Nicht ko
 Diese Bestandteile stammen nicht von Walteroelf und behalten ihre eigene Lizenz:
 
 - **OpenCV.js** (`opencv.js`): OpenCV, Apache License 2.0 bzw. BSD-Lizenz je nach Version (https://opencv.org/license/)
-- **Schrift**: Atkinson Hyperlegible (Braille Institute of America), SIL Open Font License 1.1
+- **Schrift** (`schriften/`): Atkinson Hyperlegible (Braille Institute of America), SIL Open Font License 1.1
