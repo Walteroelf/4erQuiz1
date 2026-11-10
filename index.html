@@ -797,16 +797,17 @@
     }
 
     /*
-     * Antwortkarte für Schüler ohne gedruckte Karten: rein schwarz
-     * und weiß. Vier Seiten A bis D zum Durchwischen; die sichtbare
-     * Seite ist die Antwort, gut von hinten zu lesen.
+     * Antwortkarte für Schüler ohne gedruckte Karten: wie die
+     * gedruckten Karten rein schwarz-weiß, weißer Grund, schwarzer
+     * Rahmen und Buchstabe. Vier Seiten A bis D zum Durchwischen;
+     * die sichtbare Seite ist die Antwort, gut von hinten zu lesen.
      */
     .answer-card-view {
       position: fixed;
       inset: 0;
       z-index: 50;
-      background: #000000;
-      color: #ffffff;
+      background: #ffffff;
+      color: #000000;
     }
 
     .answer-card-view[hidden] {
@@ -829,12 +830,26 @@
 
     .answer-card-page {
       flex: 0 0 100%;
+      box-sizing: border-box;
       scroll-snap-align: start;
       scroll-snap-stop: always;
+      padding:
+        max(16px, env(safe-area-inset-top))
+        max(16px, env(safe-area-inset-right))
+        max(56px, calc(env(safe-area-inset-bottom) + 44px))
+        max(16px, env(safe-area-inset-left));
+    }
+
+    .answer-card-frame {
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: min(80vh, 80vw);
+      border: min(3vmin, 28px) solid #000000;
+      border-radius: min(7vmin, 60px);
+      font-size: min(70vh, 70vw);
       font-weight: 700;
       line-height: 1;
     }
@@ -858,12 +873,12 @@
     .answer-card-dots span {
       width: 14px;
       height: 14px;
-      border: 3px solid #ffffff;
+      border: 3px solid #000000;
       border-radius: 50%;
     }
 
     .answer-card-dots span.is-current {
-      background: #ffffff;
+      background: #000000;
     }
 
     /*
@@ -1368,10 +1383,10 @@
 
   <div id="answerCardView" class="answer-card-view" hidden>
     <div id="answerCardTrack" class="answer-card-track">
-      <div class="answer-card-page">A</div>
-      <div class="answer-card-page">B</div>
-      <div class="answer-card-page">C</div>
-      <div class="answer-card-page">D</div>
+      <div class="answer-card-page"><div class="answer-card-frame">A</div></div>
+      <div class="answer-card-page"><div class="answer-card-frame">B</div></div>
+      <div class="answer-card-page"><div class="answer-card-frame">C</div></div>
+      <div class="answer-card-page"><div class="answer-card-frame">D</div></div>
     </div>
 
     <div class="answer-card-bar">
