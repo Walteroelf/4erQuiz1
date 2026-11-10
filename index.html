@@ -26,14 +26,13 @@
 
   <!--
     Atkinson Hyperlegible: Schrift mit besonders gut unterscheidbaren
-    Buchstaben. Ohne Internet greift die Systemschrift.
+    Buchstaben. Lokal eingebunden, keine Verbindung zu Google.
   -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap"
-  >
+
+  <style>
+    @font-face { font-family: "Atkinson Hyperlegible"; font-weight: 400; font-display: swap; src: url("schriften/atkinson-400.woff2") format("woff2"); }
+    @font-face { font-family: "Atkinson Hyperlegible"; font-weight: 700; font-display: swap; src: url("schriften/atkinson-700.woff2") format("woff2"); }
+  </style>
 
   <style>
     /*
@@ -1312,6 +1311,8 @@
       <button id="showHelpButton" class="secondary">
         Anleitung anzeigen
       </button>
+
+      <p class="copyright-line" style="margin:16px 0 0;font-size:.8rem;opacity:.75;text-align:center;line-height:1.4">© 2026 Walteroelf · Work in Progress · <a href="https://github.com/Walteroelf/4erQuiz1/blob/main/LICENSE.md" target="_blank" rel="noopener" style="color:inherit">CC BY-NC-SA 4.0</a></p>
 
       <button id="closeSettingsButton" class="modal-ok">Fertig</button>
     </div>
