@@ -160,6 +160,7 @@ def abcd_sheet_svg():
     """A4 hochkant (Einheit 0,1 mm), vier große Antwortkarten A bis D.
 
     Die Karten liegen im Raster 2 x 2, jede mit 8 mm weißem Rand.
+    Weißer Grund mit farbigem Rahmen und Buchstaben spart Tinte.
     Entlang der gestrichelten Linien ausschneiden; so bleibt rund
     um jede Karte Rand zum Laminieren.
     """
@@ -174,14 +175,16 @@ def abcd_sheet_svg():
         col, row = index % 2, index // 2
         x, y = col * cell_w + pad, row * cell_h + pad
         w, h = cell_w - 2 * pad, cell_h - 2 * pad
+        stroke = 36
         parts.append(
-            f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="60" '
-            f'fill="{color}"/>'
+            f'<rect x="{x + stroke / 2}" y="{y + stroke / 2}" '
+            f'width="{w - stroke}" height="{h - stroke}" rx="50" '
+            f'fill="#fff" stroke="{color}" stroke-width="{stroke}"/>'
         )
         parts.append(
             f'<text x="{x + w / 2}" y="{y + h / 2 + font_size * 0.358}" '
             f'font-size="{font_size}" font-weight="700" '
-            f'text-anchor="middle" fill="#fff">{letter}</text>'
+            f'text-anchor="middle" fill="{color}">{letter}</text>'
         )
 
     parts.append(
