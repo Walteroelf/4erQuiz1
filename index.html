@@ -791,6 +791,100 @@
       display: none;
     }
 
+    .settings-hint {
+      margin: 0;
+      color: var(--muted);
+      font-size: .95rem;
+    }
+
+    /*
+     * Antwortkarte für Schüler ohne gedruckte Karten: rein schwarz
+     * und weiß. Erst A bis D antippen, dann steht der Buchstabe
+     * riesig auf schwarzem Grund, gut von hinten zu lesen.
+     */
+    .answer-card-view {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: #ffffff;
+      color: #000000;
+    }
+
+    .answer-card-view[hidden],
+    .answer-card-pick[hidden],
+    .answer-card-chosen[hidden] {
+      display: none;
+    }
+
+    .answer-card-pick,
+    .answer-card-chosen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding:
+        max(16px, env(safe-area-inset-top))
+        max(16px, env(safe-area-inset-right))
+        max(12px, env(safe-area-inset-bottom))
+        max(16px, env(safe-area-inset-left));
+    }
+
+    .answer-card-grid {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .answer-card-choice {
+      border: 8px solid #000000;
+      border-radius: 28px;
+      background: #ffffff;
+      color: #000000;
+      font-size: min(34vh, 34vw);
+      font-weight: 700;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .answer-card-choice:active {
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .answer-card-chosen {
+      background: #000000;
+      color: #ffffff;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .answer-card-letter {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: min(80vh, 80vw);
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .answer-card-small {
+      align-self: center;
+      padding: 8px 20px;
+      font-size: 1rem;
+      background: #ffffff;
+      color: #000000;
+      border: 3px solid #000000;
+    }
+
+    .answer-card-chosen .answer-card-small {
+      border-color: #ffffff;
+    }
+
     /*
      * Countdown vor der Auflösung: nur eine große Zahl auf ruhigem
      * Grund. Ein Tipp bricht ab.
@@ -1209,11 +1303,46 @@
         </li>
       </ul>
 
+      <button id="openAnswerCardButton" class="secondary">
+        Antwortkarte für Schüler öffnen
+      </button>
+
+      <p class="settings-hint">
+        Für Schüler ohne gedruckte Karten: Auf ihrem iPad die Adresse
+        mit <strong>?karte</strong> am Ende öffnen. Sie tippen
+        A, B, C oder D und zeigen den Buchstaben groß in die Klasse.
+      </p>
+
       <button id="showHelpButton" class="secondary">
         Anleitung anzeigen
       </button>
 
       <button id="closeSettingsButton" class="modal-ok">Fertig</button>
+    </div>
+  </div>
+
+  <div id="answerCardView" class="answer-card-view" hidden>
+    <div id="answerCardPick" class="answer-card-pick">
+      <div class="answer-card-grid">
+        <button class="answer-card-choice" data-letter="A">A</button>
+        <button class="answer-card-choice" data-letter="B">B</button>
+        <button class="answer-card-choice" data-letter="C">C</button>
+        <button class="answer-card-choice" data-letter="D">D</button>
+      </div>
+      <button id="answerCardClose" class="answer-card-small">
+        Schließen
+      </button>
+    </div>
+
+    <div id="answerCardChosen" class="answer-card-chosen" hidden>
+      <div
+        id="answerCardLetter"
+        class="answer-card-letter"
+        aria-live="polite"
+      ></div>
+      <button id="answerCardChange" class="answer-card-small">
+        Ändern
+      </button>
     </div>
   </div>
 
@@ -1892,6 +2021,79 @@
         loadCountdownSounds();
       }
     });
+
+    /*
+     * Antwortkarte: Schüler ohne gedruckte Karten tippen A bis D und
+     * zeigen den Buchstaben groß in die Klasse. Der Bildschirm
+     * bleibt dabei an.
+     */
+    const answerCardView = document.getElementById("answerCardView");
+    const answerCardPick = document.getElementById("answerCardPick");
+    const answerCardChosen = document.getElementById("answerCardChosen");
+    const answerCardLetter = document.getElementById("answerCardLetter");
+    let answerCardWakeLock = null;
+
+    function requestAnswerCardWakeLock() {
+      if (!("wakeLock" in navigator)) {
+        return;
+      }
+
+      navigator.wakeLock.request("screen")
+        .then(lock => {
+          answerCardWakeLock = lock;
+        })
+        .catch(() => {
+          // Ohne Wachhalten dunkelt das Gerät eben irgendwann ab.
+        });
+    }
+
+    function openAnswerCard() {
+      closeSettings();
+      answerCardChosen.hidden = true;
+      answerCardPick.hidden = false;
+      answerCardView.hidden = false;
+      requestAnswerCardWakeLock();
+    }
+
+    function closeAnswerCard() {
+      answerCardView.hidden = true;
+
+      if (answerCardWakeLock) {
+        answerCardWakeLock.release().catch(() => {});
+        answerCardWakeLock = null;
+      }
+    }
+
+    function chooseAnswerCard(letter) {
+      answerCardLetter.textContent = letter;
+      answerCardPick.hidden = true;
+      answerCardChosen.hidden = false;
+    }
+
+    document.querySelectorAll(".answer-card-choice").forEach(button => {
+      button.addEventListener("click", () => {
+        chooseAnswerCard(button.dataset.letter);
+      });
+    });
+    document.getElementById("answerCardChange")
+      .addEventListener("click", () => {
+        answerCardChosen.hidden = true;
+        answerCardPick.hidden = false;
+      });
+    document.getElementById("answerCardClose")
+      .addEventListener("click", closeAnswerCard);
+    document.getElementById("openAnswerCardButton")
+      .addEventListener("click", openAnswerCard);
+    document.addEventListener("visibilitychange", () => {
+      if (!answerCardView.hidden && document.visibilityState === "visible") {
+        requestAnswerCardWakeLock();
+      }
+    });
+
+    if (new URLSearchParams(location.search).has("karte")) {
+      introModal.style.display = "none";
+      openAnswerCard();
+    }
 
     function openSettings() {
       settingsModal.hidden = false;

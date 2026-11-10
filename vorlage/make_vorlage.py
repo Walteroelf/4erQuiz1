@@ -151,16 +151,16 @@ def a5_sheet_svg():
 '''
 
 
-# Farben der Antwortkarten: ruhig, gut unterscheidbar, auch in
-# Graustufen; Grün bleibt der richtigen Antwort im Quiz vorbehalten.
-ABCD_COLORS = {"A": "#1f4e8c", "B": "#a8480b", "C": "#6b3a8c", "D": "#0f6b6b"}
+# Antwortkarten rein schwarz-weiß: druckt überall, spart Farbe und
+# bleibt für alle gut lesbar.
+ABCD_COLORS = {"A": "#000", "B": "#000", "C": "#000", "D": "#000"}
 
 
 def abcd_sheet_svg():
     """A4 hochkant (Einheit 0,1 mm), vier große Antwortkarten A bis D.
 
     Die Karten liegen im Raster 2 x 2, jede mit 8 mm weißem Rand.
-    Weißer Grund mit farbigem Rahmen und Buchstaben spart Tinte.
+    Weißer Grund mit schwarzem Rahmen und Buchstaben spart Tinte.
     Entlang der gestrichelten Linien ausschneiden; so bleibt rund
     um jede Karte Rand zum Laminieren.
     """
