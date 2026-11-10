@@ -1,12 +1,12 @@
 <!doctype html>
 <!--
-  Schülerseite mit den QR-Codes zur Antwortkarte (siehe make_qr.py):
+  Schülerseite mit dem QR-Code zur Antwortkarte (siehe make_qr.py):
   A4 hochkant, rein schwarz-weiß.
 -->
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <title>Antwortkarte – QR-Codes</title>
+  <title>Antwortkarte – QR-Code</title>
   <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
   <style>
     @page { size: A4 portrait; margin: 0; }
@@ -19,44 +19,35 @@
       color: #000;
       background: #fff;
       font-family: "Atkinson Hyperlegible", "Helvetica Neue", Arial, sans-serif;
-      font-size: 14pt;
+      font-size: 16pt;
       line-height: 1.4;
     }
 
     .page {
       height: 100%;
-      padding: 18mm 18mm 14mm;
+      padding: 20mm 20mm 14mm;
       display: flex;
       flex-direction: column;
-      gap: 14mm;
+      align-items: center;
+      gap: 12mm;
+      text-align: center;
     }
 
     h1 {
       margin: 0;
-      font-size: 44pt;
+      font-size: 48pt;
       line-height: 1;
     }
 
-    .lead { margin: 3mm 0 0; font-size: 16pt; }
-
-    .codes {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10mm;
-    }
+    .lead { margin: 0; font-size: 18pt; }
 
     .code {
       border: 3px solid #000;
-      border-radius: 6mm;
+      border-radius: 8mm;
       padding: 8mm;
-      text-align: center;
     }
 
-    .code img { width: 100%; display: block; }
-
-    .code h2 { margin: 4mm 0 1mm; font-size: 20pt; }
-
-    .code p { margin: 0; font-size: 12pt; }
+    .code img { width: 110mm; display: block; }
 
     ol {
       margin: 0;
@@ -64,41 +55,28 @@
       display: flex;
       flex-direction: column;
       gap: 3mm;
-      font-size: 15pt;
+      font-size: 17pt;
+      text-align: left;
     }
 
-    footer {
-      font-size: 11pt;
-      text-align: center;
-    }
+    footer { margin-top: auto; font-size: 11pt; }
   </style>
 </head>
 <body>
   <div class="page">
-    <header>
-      <h1>Antwortkarte</h1>
-      <p class="lead">
-        Dein iPad wird zur Antwortkarte: A, B, C oder D hochhalten.
-      </p>
-    </header>
+    <h1>Antwortkarte</h1>
+    <p class="lead">
+      Dein iPad wird zur Antwortkarte: A, B, C oder D hochhalten.
+    </p>
 
-    <section class="codes">
-      <div class="code">
-        <img src="qr-karte-antippen.svg" alt="QR-Code: Antippen">
-        <h2>Antippen</h2>
-        <p>A, B, C oder D antippen.</p>
-      </div>
-      <div class="code">
-        <img src="qr-karte-wischen.svg" alt="QR-Code: Durchwischen">
-        <h2>Durchwischen</h2>
-        <p>Zum Buchstaben wischen.</p>
-      </div>
-    </section>
+    <div class="code">
+      <img src="qr-karte.svg" alt="QR-Code zur Antwortkarte">
+    </div>
 
     <ol>
       <li>Kamera-App öffnen und auf den QR-Code halten.</li>
       <li>Auf den Link tippen.</li>
-      <li>Frage lesen, Antwort wählen, iPad hochhalten.</li>
+      <li>Zu A, B, C oder D wischen und das iPad hochhalten.</li>
     </ol>
 
     <footer>4er-Quiz · walteroelf.github.io/4erQuiz1</footer>
