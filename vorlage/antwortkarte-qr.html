@@ -1,0 +1,107 @@
+<!doctype html>
+<!--
+  Schülerseite mit den QR-Codes zur Antwortkarte (siehe make_qr.py):
+  A4 hochkant, rein schwarz-weiß.
+-->
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Antwortkarte – QR-Codes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    @page { size: A4 portrait; margin: 0; }
+
+    html, body { margin: 0; height: 297mm; overflow: hidden; }
+
+    body {
+      width: 210mm;
+      height: 297mm;
+      color: #000;
+      background: #fff;
+      font-family: "Atkinson Hyperlegible", "Helvetica Neue", Arial, sans-serif;
+      font-size: 14pt;
+      line-height: 1.4;
+    }
+
+    .page {
+      height: 100%;
+      padding: 18mm 18mm 14mm;
+      display: flex;
+      flex-direction: column;
+      gap: 14mm;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 44pt;
+      line-height: 1;
+    }
+
+    .lead { margin: 3mm 0 0; font-size: 16pt; }
+
+    .codes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10mm;
+    }
+
+    .code {
+      border: 3px solid #000;
+      border-radius: 6mm;
+      padding: 8mm;
+      text-align: center;
+    }
+
+    .code img { width: 100%; display: block; }
+
+    .code h2 { margin: 4mm 0 1mm; font-size: 20pt; }
+
+    .code p { margin: 0; font-size: 12pt; }
+
+    ol {
+      margin: 0;
+      padding-left: 9mm;
+      display: flex;
+      flex-direction: column;
+      gap: 3mm;
+      font-size: 15pt;
+    }
+
+    footer {
+      font-size: 11pt;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Antwortkarte</h1>
+      <p class="lead">
+        Dein iPad wird zur Antwortkarte: A, B, C oder D hochhalten.
+      </p>
+    </header>
+
+    <section class="codes">
+      <div class="code">
+        <img src="qr-karte-antippen.svg" alt="QR-Code: Antippen">
+        <h2>Antippen</h2>
+        <p>A, B, C oder D antippen.</p>
+      </div>
+      <div class="code">
+        <img src="qr-karte-wischen.svg" alt="QR-Code: Durchwischen">
+        <h2>Durchwischen</h2>
+        <p>Zum Buchstaben wischen.</p>
+      </div>
+    </section>
+
+    <ol>
+      <li>Kamera-App öffnen und auf den QR-Code halten.</li>
+      <li>Auf den Link tippen.</li>
+      <li>Frage lesen, Antwort wählen, iPad hochhalten.</li>
+    </ol>
+
+    <footer>4er-Quiz · walteroelf.github.io/4erQuiz1</footer>
+  </div>
+</body>
+</html>
