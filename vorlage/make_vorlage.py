@@ -7,6 +7,8 @@ schreibt in diesen Ordner:
 - quiz-vorlage.svg     eine Karte (2000 x 1563), Marken 0 bis 3
 - quiz-vorlage-a5.svg  A4 hochkant mit zwei Karten im A5-Format,
                        oben Marken 0 bis 3, unten Marken 4 bis 7
+- abcd-karten.svg      A4 hochkant mit vier großen Antwortkarten A bis D
+                       zum Ausschneiden und Laminieren
 
 Die Maße der Karte müssen zu LAYOUTS.aruco in index.html passen.
 
@@ -149,8 +151,61 @@ def a5_sheet_svg():
 '''
 
 
+# Farben der Antwortkarten: ruhig, gut unterscheidbar, auch in
+# Graustufen; Grün bleibt der richtigen Antwort im Quiz vorbehalten.
+ABCD_COLORS = {"A": "#1f4e8c", "B": "#a8480b", "C": "#6b3a8c", "D": "#0f6b6b"}
+
+
+def abcd_sheet_svg():
+    """A4 hochkant (Einheit 0,1 mm), vier große Antwortkarten A bis D.
+
+    Die Karten liegen im Raster 2 x 2, jede mit 8 mm weißem Rand.
+    Entlang der gestrichelten Linien ausschneiden; so bleibt rund
+    um jede Karte Rand zum Laminieren.
+    """
+    page_w, page_h = 2100, 2970
+    cell_w, cell_h = page_w / 2, page_h / 2
+    pad = 80
+    font_size = 900
+
+    parts = [f'<rect width="{page_w}" height="{page_h}" fill="#fff"/>']
+
+    for index, (letter, color) in enumerate(ABCD_COLORS.items()):
+        col, row = index % 2, index // 2
+        x, y = col * cell_w + pad, row * cell_h + pad
+        w, h = cell_w - 2 * pad, cell_h - 2 * pad
+        parts.append(
+            f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="60" '
+            f'fill="{color}"/>'
+        )
+        parts.append(
+            f'<text x="{x + w / 2}" y="{y + h / 2 + font_size * 0.358}" '
+            f'font-size="{font_size}" font-weight="700" '
+            f'text-anchor="middle" fill="#fff">{letter}</text>'
+        )
+
+    parts.append(
+        f'<line x1="{cell_w}" y1="0" x2="{cell_w}" y2="{page_h}" '
+        'stroke="#999" stroke-width="3" stroke-dasharray="25 20"/>'
+    )
+    parts.append(
+        f'<line x1="0" y1="{cell_h}" x2="{page_w}" y2="{cell_h}" '
+        'stroke="#999" stroke-width="3" stroke-dasharray="25 20"/>'
+    )
+
+    body = "\n  ".join(parts)
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {page_w} {page_h}" width="210mm" height="297mm" font-family="{FONT}">
+  {body}
+</svg>
+'''
+
+
 if __name__ == "__main__":
     here = os.path.dirname(os.path.abspath(__file__))
+
+    with open(os.path.join(here, "abcd-karten.svg"), "w",
+              encoding="utf-8") as f:
+        f.write(abcd_sheet_svg())
 
     with open(os.path.join(here, "quiz-vorlage.svg"), "w",
               encoding="utf-8") as f:

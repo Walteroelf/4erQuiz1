@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2100 2970" width="210mm" height="297mm" font-family="Arial, Helvetica, sans-serif">
+  <rect width="2100" height="2970" fill="#fff"/>
+  <rect x="80.0" y="80.0" width="890.0" height="1325.0" rx="60" fill="#1f4e8c"/>
+  <text x="525.0" y="1064.7" font-size="900" font-weight="700" text-anchor="middle" fill="#fff">A</text>
+  <rect x="1130.0" y="80.0" width="890.0" height="1325.0" rx="60" fill="#a8480b"/>
+  <text x="1575.0" y="1064.7" font-size="900" font-weight="700" text-anchor="middle" fill="#fff">B</text>
+  <rect x="80.0" y="1565.0" width="890.0" height="1325.0" rx="60" fill="#6b3a8c"/>
+  <text x="525.0" y="2549.7" font-size="900" font-weight="700" text-anchor="middle" fill="#fff">C</text>
+  <rect x="1130.0" y="1565.0" width="890.0" height="1325.0" rx="60" fill="#0f6b6b"/>
+  <text x="1575.0" y="2549.7" font-size="900" font-weight="700" text-anchor="middle" fill="#fff">D</text>
+  <line x1="1050.0" y1="0" x2="1050.0" y2="2970" stroke="#999" stroke-width="3" stroke-dasharray="25 20"/>
+  <line x1="0" y1="1485.0" x2="2100" y2="1485.0" stroke="#999" stroke-width="3" stroke-dasharray="25 20"/>
+</svg>
