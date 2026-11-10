@@ -866,12 +866,53 @@
       background: #ffffff;
     }
 
-    .answer-card-close {
-      padding: 8px 20px;
-      font-size: 1rem;
+    /*
+     * QR-Code für die Tafel: schwarz auf weiß, so groß wie möglich.
+     */
+    .qr-view {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2vh;
+      padding: 2vh 4vw;
       background: #ffffff;
       color: #000000;
-      border: 3px solid #ffffff;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .qr-view[hidden] {
+      display: none;
+    }
+
+    .qr-title {
+      margin: 0;
+      font-size: clamp(2rem, 7vh, 4rem);
+    }
+
+    .qr-image {
+      width: min(62vh, 80vw);
+      height: min(62vh, 80vw);
+      border: 4px solid #000000;
+      border-radius: 20px;
+      padding: 12px;
+      background: #ffffff;
+    }
+
+    .qr-text {
+      margin: 0;
+      font-size: clamp(1.1rem, 3.4vh, 2rem);
+      max-width: 40ch;
+    }
+
+    .qr-hint {
+      margin: 0;
+      font-size: 1rem;
+      color: #555555;
     }
 
     /*
@@ -1302,10 +1343,9 @@
       </button>
 
       <p class="settings-hint">
-        Für Schüler ohne gedruckte Karten: Auf ihrem iPad die Adresse
-        mit <strong>?karte</strong> am Ende öffnen (oder den QR-Code
-        scannen). Sie wischen zu A, B, C oder D und halten das iPad
-        hoch.
+        Zeigt einen QR-Code für die Tafel. Die Schüler scannen ihn mit
+        dem iPad und sehen dann nur die Seiten A, B, C und D zum
+        Durchwischen.
       </p>
 
       <button id="showHelpButton" class="secondary">
@@ -1330,10 +1370,21 @@
       <div id="answerCardDots" class="answer-card-dots">
         <span></span><span></span><span></span><span></span>
       </div>
-      <button id="answerCardClose" class="answer-card-close">
-        Schließen
-      </button>
     </div>
+  </div>
+
+  <div id="qrView" class="qr-view" hidden>
+    <h2 class="qr-title">Antwortkarte</h2>
+    <img
+      class="qr-image"
+      src="vorlage/qr-karte.svg"
+      alt="QR-Code zur Antwortkarte"
+    >
+    <p class="qr-text">
+      Mit der Kamera scannen, dann zu A, B, C oder D wischen und das
+      iPad hochhalten.
+    </p>
+    <p class="qr-hint">Tippen zum Schließen</p>
   </div>
 
   <div id="detailModal" class="modal-backdrop" hidden>
@@ -2013,8 +2064,10 @@
     });
 
     /*
-     * Antwortkarte: Schüler ohne gedruckte Karten wischen zu A, B, C
-     * oder D und halten das iPad hoch. Der Bildschirm bleibt dabei an.
+     * Antwortkarte: Schüler ohne gedruckte Karten scannen den QR-Code
+     * (?karte) und sehen nur die Wischseiten A bis D; es gibt nichts
+     * sonst und keinen Weg zurück in die App. Der Bildschirm bleibt
+     * dabei an.
      */
     const answerCardView = document.getElementById("answerCardView");
     const answerCardTrack = document.getElementById("answerCardTrack");
@@ -2047,20 +2100,10 @@
     }
 
     function openAnswerCard() {
-      closeSettings();
       answerCardView.hidden = false;
       answerCardTrack.scrollLeft = 0;
       updateAnswerCardDots();
       requestAnswerCardWakeLock();
-    }
-
-    function closeAnswerCard() {
-      answerCardView.hidden = true;
-
-      if (answerCardWakeLock) {
-        answerCardWakeLock.release().catch(() => {});
-        answerCardWakeLock = null;
-      }
     }
 
     answerCardTrack.addEventListener("scroll", updateAnswerCardDots);
@@ -2090,10 +2133,16 @@
       });
     }
 
-    document.getElementById("answerCardClose")
-      .addEventListener("click", closeAnswerCard);
+    const qrView = document.getElementById("qrView");
+
     document.getElementById("openAnswerCardButton")
-      .addEventListener("click", openAnswerCard);
+      .addEventListener("click", () => {
+        closeSettings();
+        qrView.hidden = false;
+      });
+    qrView.addEventListener("click", () => {
+      qrView.hidden = true;
+    });
     document.addEventListener("visibilitychange", () => {
       if (!answerCardView.hidden && document.visibilityState === "visible") {
         requestAnswerCardWakeLock();
