@@ -812,8 +812,83 @@
 
     .answer-card-view[hidden],
     .answer-card-pick[hidden],
-    .answer-card-chosen[hidden] {
+    .answer-card-chosen[hidden],
+    .answer-card-swipe[hidden] {
       display: none;
+    }
+
+    .answer-card-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    /*
+     * Durchwischen: vier Seiten nebeneinander, die sichtbare ist die
+     * Antwort. Die Punkte unten zeigen, welche das gerade ist.
+     */
+    .answer-card-swipe {
+      position: absolute;
+      inset: 0;
+      background: #000000;
+      color: #ffffff;
+    }
+
+    .answer-card-track {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .answer-card-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .answer-card-page {
+      flex: 0 0 100%;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: min(80vh, 80vw);
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .answer-card-swipe-bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: max(12px, env(safe-area-inset-bottom));
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .answer-card-dots {
+      display: flex;
+      gap: 14px;
+    }
+
+    .answer-card-dots span {
+      width: 14px;
+      height: 14px;
+      border: 3px solid #ffffff;
+      border-radius: 50%;
+    }
+
+    .answer-card-dots span.is-current {
+      background: #ffffff;
+    }
+
+    .answer-card-swipe .answer-card-small {
+      border-color: #ffffff;
     }
 
     .answer-card-pick,
@@ -1310,7 +1385,9 @@
       <p class="settings-hint">
         Für Schüler ohne gedruckte Karten: Auf ihrem iPad die Adresse
         mit <strong>?karte</strong> am Ende öffnen. Sie tippen
-        A, B, C oder D und zeigen den Buchstaben groß in die Klasse.
+        A, B, C oder D oder wischen zum Buchstaben und zeigen ihn groß
+        in die Klasse. Mit <strong>?karte=wischen</strong> startet
+        gleich das Durchwischen.
       </p>
 
       <button id="showHelpButton" class="secondary">
@@ -1329,9 +1406,31 @@
         <button class="answer-card-choice" data-letter="C">C</button>
         <button class="answer-card-choice" data-letter="D">D</button>
       </div>
-      <button id="answerCardClose" class="answer-card-small">
-        Schließen
-      </button>
+      <div class="answer-card-actions">
+        <button id="answerCardToSwipe" class="answer-card-small">
+          Durchwischen statt antippen
+        </button>
+        <button id="answerCardClose" class="answer-card-small">
+          Schließen
+        </button>
+      </div>
+    </div>
+
+    <div id="answerCardSwipe" class="answer-card-swipe" hidden>
+      <div id="answerCardTrack" class="answer-card-track">
+        <div class="answer-card-page">A</div>
+        <div class="answer-card-page">B</div>
+        <div class="answer-card-page">C</div>
+        <div class="answer-card-page">D</div>
+      </div>
+      <div class="answer-card-swipe-bar">
+        <div id="answerCardDots" class="answer-card-dots">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <button id="answerCardToTap" class="answer-card-small">
+          Antippen statt durchwischen
+        </button>
+      </div>
     </div>
 
     <div id="answerCardChosen" class="answer-card-chosen" hidden>
@@ -2047,11 +2146,16 @@
         });
     }
 
-    function openAnswerCard() {
+    function openAnswerCard(mode) {
       closeSettings();
-      answerCardChosen.hidden = true;
-      answerCardPick.hidden = false;
       answerCardView.hidden = false;
+
+      if (mode === "wischen") {
+        showAnswerCardSwipe();
+      } else {
+        showAnswerCardTap();
+      }
+
       requestAnswerCardWakeLock();
     }
 
@@ -2063,6 +2167,66 @@
         answerCardWakeLock = null;
       }
     }
+
+    const answerCardSwipe = document.getElementById("answerCardSwipe");
+    const answerCardTrack = document.getElementById("answerCardTrack");
+    const answerCardDots =
+      [...document.querySelectorAll("#answerCardDots span")];
+
+    function updateAnswerCardDots() {
+      const index = Math.round(
+        answerCardTrack.scrollLeft / answerCardTrack.clientWidth
+      );
+
+      answerCardDots.forEach((dot, position) => {
+        dot.classList.toggle("is-current", position === index);
+      });
+    }
+
+    function showAnswerCardSwipe() {
+      answerCardPick.hidden = true;
+      answerCardChosen.hidden = true;
+      answerCardSwipe.hidden = false;
+      answerCardTrack.scrollLeft = 0;
+      updateAnswerCardDots();
+    }
+
+    function showAnswerCardTap() {
+      answerCardSwipe.hidden = true;
+      answerCardChosen.hidden = true;
+      answerCardPick.hidden = false;
+    }
+
+    answerCardTrack.addEventListener("scroll", updateAnswerCardDots);
+    answerCardTrack.addEventListener("scrollend", updateAnswerCardDots);
+
+    /*
+     * Zusätzlich beobachten, welche Seite im Bild steht; das
+     * erwischt auch Sprünge, bei denen kein Scroll-Ereignis mehr
+     * mit der Endposition ankommt.
+     */
+    if ("IntersectionObserver" in window) {
+      const pageObserver = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const position = [...answerCardTrack.children]
+              .indexOf(entry.target);
+
+            answerCardDots.forEach((dot, index) => {
+              dot.classList.toggle("is-current", index === position);
+            });
+          }
+        });
+      }, { root: answerCardTrack, threshold: 0.6 });
+
+      [...answerCardTrack.children].forEach(page => {
+        pageObserver.observe(page);
+      });
+    }
+    document.getElementById("answerCardToSwipe")
+      .addEventListener("click", showAnswerCardSwipe);
+    document.getElementById("answerCardToTap")
+      .addEventListener("click", showAnswerCardTap);
 
     function chooseAnswerCard(letter) {
       answerCardLetter.textContent = letter;
@@ -2083,16 +2247,18 @@
     document.getElementById("answerCardClose")
       .addEventListener("click", closeAnswerCard);
     document.getElementById("openAnswerCardButton")
-      .addEventListener("click", openAnswerCard);
+      .addEventListener("click", () => openAnswerCard());
     document.addEventListener("visibilitychange", () => {
       if (!answerCardView.hidden && document.visibilityState === "visible") {
         requestAnswerCardWakeLock();
       }
     });
 
-    if (new URLSearchParams(location.search).has("karte")) {
+    const cardParams = new URLSearchParams(location.search);
+
+    if (cardParams.has("karte")) {
       introModal.style.display = "none";
-      openAnswerCard();
+      openAnswerCard(cardParams.get("karte"));
     }
 
     function openSettings() {
