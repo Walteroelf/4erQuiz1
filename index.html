@@ -1143,6 +1143,14 @@
           >
             ↗
           </button>
+
+          <button
+            id="quizQrButton"
+            class="secondary"
+            title="QR-Code für die Antwortkarte zeigen"
+          >
+            QR
+          </button>
         </div>
       </div>
 
@@ -2135,11 +2143,24 @@
 
     const qrView = document.getElementById("qrView");
 
+    /*
+     * Im Vollbild ist nur das Quiz sichtbar. Läuft es, wandert die
+     * QR-Ansicht deshalb hinein, sonst liegt sie über der ganzen Seite.
+     */
+    function showQrView() {
+      const inQuiz = getComputedStyle(quizView).display !== "none";
+
+      (inQuiz ? quizView : document.body).appendChild(qrView);
+      qrView.hidden = false;
+    }
+
     document.getElementById("openAnswerCardButton")
       .addEventListener("click", () => {
         closeSettings();
-        qrView.hidden = false;
+        showQrView();
       });
+    document.getElementById("quizQrButton")
+      .addEventListener("click", showQrView);
     qrView.addEventListener("click", () => {
       qrView.hidden = true;
     });
