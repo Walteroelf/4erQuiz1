@@ -3651,6 +3651,13 @@
      * Fehlt etwas, spricht die Stimme des Geräts.
      */
     const COUNTDOWN_SOUNDS = ["Drei", "Zwei", "Eins"];
+    const ANSWER_SOUNDS = {
+      A: "Antwort-A",
+      B: "Antwort-B",
+      C: "Antwort-C",
+      D: "Antwort-D"
+    };
+    const ANSWER_SPOKEN = { A: "A", B: "Be", C: "Ze", D: "De" };
     let countdownAudio = null;
     let countdownSources = [];
 
@@ -3662,17 +3669,28 @@
       }
 
       const context = new Context();
-      countdownAudio = { context, buffers: null };
+      countdownAudio = { context, buffers: null, answers: null };
 
-      Promise.all(COUNTDOWN_SOUNDS.map(name =>
+      const load = name =>
         fetch(`ton/${name}.m4a`)
           .then(response => response.arrayBuffer())
           .then(data => new Promise((resolve, reject) => {
             context.decodeAudioData(data, resolve, reject);
-          }))
-      ))
+          }));
+      const answerLetters = Object.keys(ANSWER_SOUNDS);
+
+      Promise.all([
+        ...COUNTDOWN_SOUNDS.map(load),
+        ...answerLetters.map(letter => load(ANSWER_SOUNDS[letter]))
+      ])
         .then(buffers => {
-          countdownAudio.buffers = buffers;
+          countdownAudio.buffers = buffers.slice(0, COUNTDOWN_SOUNDS.length);
+          countdownAudio.answers = {};
+
+          answerLetters.forEach((letter, index) => {
+            countdownAudio.answers[letter] =
+              buffers[COUNTDOWN_SOUNDS.length + index];
+          });
         })
         .catch(() => {
           countdownAudio = null;
@@ -3700,6 +3718,26 @@
       });
 
       return true;
+    }
+
+    /*
+     * "Richtige Antwort: B" nach dem Countdown. Fehlen die Töne,
+     * spricht die Stimme des Geräts.
+     */
+    function announceCorrectAnswer(letter) {
+      if (countdownAudio && countdownAudio.answers) {
+        const { context, answers } = countdownAudio;
+        const source = context.createBufferSource();
+
+        context.resume();
+        source.buffer = answers[letter];
+        source.connect(context.destination);
+        source.start();
+        countdownSources.push(source);
+        return;
+      }
+
+      speak(`Richtige Antwort: ${ANSWER_SPOKEN[letter]}`);
     }
 
     function stopCountdownSounds() {
@@ -3751,6 +3789,10 @@
         updateAnswerVisibility();
         revealCorrectAnswer();
 
+        if (settings.countdownVoice && correctLetter) {
+          announceCorrectAnswer(correctLetter);
+        }
+
         if (settings.zoomCorrect && correctLetter) {
           zoomAnswer(ANSWER_LETTERS.indexOf(correctLetter));
         }
@@ -3758,12 +3800,10 @@
     }
 
     function cancelCountdown() {
-      if (countdownTimer !== null) {
-        stopCountdownSounds();
+      stopCountdownSounds();
 
-        if ("speechSynthesis" in window) {
-          speechSynthesis.cancel();
-        }
+      if (countdownTimer !== null && "speechSynthesis" in window) {
+        speechSynthesis.cancel();
       }
 
       clearInterval(countdownTimer);
