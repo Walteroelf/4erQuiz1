@@ -17,56 +17,60 @@
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#1f4e8c">
+  <meta name="theme-color" content="#0075bf">
   <meta
     name="apple-mobile-web-app-status-bar-style"
     content="black-translucent"
   >
   <title>4er-Quiz automatisch</title>
 
-  <!--
-    Atkinson Hyperlegible: Schrift mit besonders gut unterscheidbaren
-    Buchstaben. Lokal eingebunden, keine Verbindung zu Google.
-  -->
-
-  <style>
-    @font-face { font-family: "Atkinson Hyperlegible"; font-weight: 400; font-display: swap; src: url("schriften/atkinson-400.woff2") format("woff2"); }
-    @font-face { font-family: "Atkinson Hyperlegible"; font-weight: 700; font-display: swap; src: url("schriften/atkinson-700.woff2") format("woff2"); }
-  </style>
-
   <style>
     /*
-     * Ruhiges Design für die digitale Tafel und für Schülerinnen
-     * und Schüler, die schnell reizüberflutet sind:
-     * - wenige Farben, klare Kontraste (Text mindestens 7:1)
-     * - keine Muster, Verläufe, Schatten oder Bewegungen
-     * - gebrochenes Weiß statt Reinweiß, das blendet weniger
-     * - "richtig" wird nicht nur farbig, sondern auch mit Zeichen
-     *   und Text angezeigt
+     * Design im Stil der Olympischen Spiele 1972 (Otl Aicher), wie
+     * die anderen Apps: helles Blau als Grund, dunkelblaue Schrift
+     * und Linien, vier Spielefarben, Helvetica, eckige Flächen.
+     * Für die digitale Tafel und für Schülerinnen und Schüler, die
+     * schnell reizüberflutet sind, bleibt es klar:
+     * - Farbe nur dort, wo sie etwas bedeutet (Buchstaben A bis D)
+     * - klare Kontraste, keine Muster, Verläufe, Schatten oder
+     *   Bewegungen
+     * - "richtig" wird nicht nur farbig, sondern auch mit Rahmen,
+     *   Zeichen und Text angezeigt
      */
     :root {
-      --bg: #f4f3ef;
+      --bg: #f1f9fe;
       --surface: #ffffff;
-      --text: #1b1b1b;
-      --muted: #555555;
-      --line: #1b1b1b;
-      --line-soft: #c8c5bc;
+      --text: #0b2a4a;
+      --muted: #3d5873;
+      --line: #0b2a4a;
+      --line-soft: #b4d2e6;
 
-      --accent: #1f4e8c;
-      --accent-soft: #e4ebf5;
+      --accent: #0075bf;
+      --accent-soft: #dcedf8;
 
-      --correct: #1e6b3a;
-      --correct-soft: #e3f0e7;
+      --blau: #0075bf;
+      --on-blau: #ffffff;
+      --orange: #f39200;
+      --on-orange: #0b2a4a;
+      --gruen: #7ab51d;
+      --on-gruen: #0b2a4a;
+      --hellblau: #56b9e8;
+      --on-hellblau: #0b2a4a;
+      --gelb: #ffd200;
+      --on-gelb: #0b2a4a;
 
-      --warn-text: #6b4a00;
-      --warn-soft: #fbefcf;
+      --correct: #2f6d12;
+      --correct-soft: #eaf5d8;
+
+      --warn-text: #5a4300;
+      --warn-soft: #fff3b3;
 
       --error: #9b1c1c;
       --error-soft: #f8e3e3;
 
-      --radius: 12px;
-      --font: "Atkinson Hyperlegible", system-ui, -apple-system,
-        "Segoe UI", Arial, sans-serif;
+      --radius: 0;
+      --font: "Helvetica Neue", Helvetica, Arial, system-ui,
+        sans-serif;
     }
 
     * {
@@ -1062,6 +1066,239 @@
         padding: 6px;
         font-size: .9rem;
       }
+    }
+
+    /*
+     * Olympia-Stil: Feinschliff der einzelnen Bausteine.
+     */
+    h1,
+    h2,
+    h3,
+    button {
+      font-weight: 800;
+    }
+
+    header {
+      border-bottom: 4px solid var(--line);
+    }
+
+    header h1 {
+      letter-spacing: -0.02em;
+    }
+
+    button {
+      border-width: 3px;
+    }
+
+    button:focus-visible,
+    .photo-button:focus-within {
+      outline-color: var(--orange);
+    }
+
+    .quiz-title {
+      display: flex;
+      align-items: center;
+      gap: .5em;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .quiz-title::before {
+      content: "";
+      flex: none;
+      width: .8em;
+      height: .8em;
+      border-radius: 50%;
+      background: var(--blau);
+    }
+
+    .quiz-progress {
+      margin-left: 0;
+      border-width: 3px;
+      font-weight: 800;
+    }
+
+    .quiz-controls button,
+    .quiz-top-actions button {
+      text-transform: uppercase;
+      letter-spacing: .03em;
+      font-size: clamp(.8rem, 2.1vh, 1.05rem);
+    }
+
+    .quiz-top-actions .quiz-fullscreen-button {
+      font-size: 1.4rem;
+    }
+
+    .quiz-question {
+      border-width: 4px;
+    }
+
+    /*
+     * Antworten: Streifen in der Farbe des Buchstabens, daneben
+     * die Handschrift auf Weiß.
+     */
+    #answerBoxA,
+    #answerZoom[data-letter="A"],
+    .answer-card-page:nth-child(1) {
+      --c: var(--blau);
+      --on: var(--on-blau);
+    }
+
+    #answerBoxB,
+    #answerZoom[data-letter="B"],
+    .answer-card-page:nth-child(2) {
+      --c: var(--orange);
+      --on: var(--on-orange);
+    }
+
+    #answerBoxC,
+    #answerZoom[data-letter="C"],
+    .answer-card-page:nth-child(3) {
+      --c: var(--gruen);
+      --on: var(--on-gruen);
+    }
+
+    #answerBoxD,
+    #answerZoom[data-letter="D"],
+    .answer-card-page:nth-child(4) {
+      --c: var(--hellblau);
+      --on: var(--on-hellblau);
+    }
+
+    .quiz-answer {
+      padding: 0;
+      gap: 0;
+      overflow: visible;
+      border: 4px solid var(--c);
+    }
+
+    .big-letter {
+      width: clamp(56px, 12vh, 104px);
+      border-radius: 0;
+      background: var(--c);
+      color: var(--on);
+      font-size: clamp(2rem, 7vh, 3.6rem);
+      font-weight: 800;
+    }
+
+    .answer-image-wrap {
+      background: #ffffff;
+    }
+
+    .quiz-answer.is-hidden .answer-image-wrap {
+      background: var(--bg);
+    }
+
+    /*
+     * Auflösung: Die richtige Antwort bekommt einen gelben Rahmen
+     * und das Schild "Richtig"; die anderen werden blasser.
+     */
+    .quiz-answer.correct {
+      border: 4px solid var(--c);
+      background: #ffffff;
+      box-shadow: 0 0 0 5px var(--gelb);
+    }
+
+    .quiz-answer.correct .big-letter {
+      background: var(--c);
+      font-size: 0;
+    }
+
+    .quiz-answer.correct .big-letter::after {
+      content: "\2713";
+      font-size: clamp(2rem, 7vh, 3.6rem);
+    }
+
+    .quiz-answer.correct::after {
+      top: -5px;
+      right: -5px;
+      padding: 2px 10px;
+      border: 3px solid var(--on-gelb);
+      border-radius: 0;
+      background: var(--gelb);
+      color: var(--on-gelb);
+      font-size: clamp(.75rem, 2vh, 1rem);
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    /*
+     * Großansicht einer Antwort: Buchstabe und Bild in der Farbe
+     * des Buchstabens, bei der richtigen mit gelbem Rahmen.
+     */
+    .answer-zoom.is-answer {
+      gap: 16px;
+    }
+
+    .answer-zoom.is-answer .answer-zoom-label {
+      background: var(--c);
+      color: var(--on);
+      border: 4px solid var(--c);
+      font-weight: 800;
+    }
+
+    .answer-zoom.is-answer img {
+      border: 4px solid var(--c);
+    }
+
+    .answer-zoom.correct.is-answer .answer-zoom-label,
+    .answer-zoom.correct.is-answer img {
+      border-width: 4px;
+      box-shadow: 0 0 0 6px var(--gelb);
+    }
+
+    .answer-zoom.correct .answer-zoom-label {
+      color: var(--on);
+    }
+
+    /*
+     * Antwortkarte der Schüler: vier Farbflächen mit dem Buchstaben,
+     * zum Durchwischen.
+     */
+    .answer-card-view {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .answer-card-page {
+      padding: 0;
+      background: var(--c);
+      color: var(--on);
+    }
+
+    .answer-card-frame {
+      border: 0;
+      border-radius: 0;
+      font-weight: 800;
+      font-size: min(72vh, 72vw);
+    }
+
+    .answer-card-dots span {
+      width: 16px;
+      height: 16px;
+      border: 3px solid var(--text);
+      background: #ffffff;
+      opacity: .45;
+    }
+
+    .answer-card-dots span.is-current {
+      background: #ffffff;
+      opacity: 1;
+    }
+
+    .qr-view {
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .qr-image {
+      border: 4px solid var(--text);
+      border-radius: 0;
+    }
+
+    .qr-hint {
+      color: var(--muted);
     }
   </style>
 </head>
@@ -3913,6 +4150,7 @@
      */
     function openZoom(label, src, isCorrect = false, letter = null) {
       answerZoomLabel.textContent = letter || label;
+      answerZoom.dataset.letter = (letter || "").replace(/[^A-D]/g, "");
       answerZoom.classList.toggle("is-answer", letter !== null);
       answerZoomImage.src = src;
       answerZoomImage.alt = label;
