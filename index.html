@@ -1308,6 +1308,221 @@
     .qr-hint {
       color: var(--muted);
     }
+
+    /*
+     * Editor-Ansicht im Olympia-Stil: links Foto und Start, rechts
+     * die Fragensammlung; auf schmalen Bildschirmen untereinander.
+     */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      text-align: left;
+      padding-left: max(24px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+    }
+
+    header h1 {
+      display: flex;
+      align-items: center;
+      gap: .45em;
+    }
+
+    header h1::before {
+      content: "";
+      flex: none;
+      width: .75em;
+      height: .75em;
+      border-radius: 50%;
+      background: var(--blau);
+    }
+
+    .settings-button {
+      position: static;
+      transform: none;
+    }
+
+    .card h2 {
+      display: flex;
+      align-items: center;
+      gap: .5em;
+      letter-spacing: -0.01em;
+    }
+
+    .card h2::before {
+      content: "";
+      flex: none;
+      width: .8em;
+      height: .8em;
+      border-radius: 50%;
+      background: var(--orange);
+    }
+
+    .photo-button {
+      min-height: 150px;
+      border-width: 4px;
+      border-color: var(--line);
+      font-size: clamp(1.5rem, 4.5vw, 2.1rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+    }
+
+    .photo-icon {
+      flex: none;
+      width: 1.3em;
+      height: 1.3em;
+      border: .22em solid #ffffff;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .photo-icon::after {
+      content: "";
+      position: absolute;
+      inset: .2em;
+      border-radius: 50%;
+      background: var(--gelb);
+    }
+
+    .question-counter-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      border: 3px solid var(--line);
+      border-radius: 0;
+      background: #ffffff;
+      font-size: 1.05rem;
+      font-weight: 800;
+      text-align: left;
+    }
+
+    #questionCount {
+      min-width: 2.2em;
+      padding: 0 12px;
+      background: var(--orange);
+      color: var(--on-orange);
+      font-size: 2rem;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    .progress-outer {
+      border-radius: 0;
+      border-width: 3px;
+    }
+
+    .status-list li {
+      border-width: 0 0 0 8px;
+      font-weight: 700;
+    }
+
+    .status-list .ok {
+      border-color: var(--gruen);
+    }
+
+    .status-list .warn {
+      border-color: var(--gelb);
+    }
+
+    .status-list .error {
+      border-color: var(--error);
+    }
+
+    .last-card-preview img {
+      border: 3px solid var(--line-soft);
+    }
+
+    #startQuizButton {
+      min-height: 72px;
+      border: 4px solid var(--line);
+      background: var(--gelb);
+      color: var(--on-gelb);
+      font-size: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+    }
+
+    #startQuizButton:disabled {
+      background: var(--bg);
+      color: var(--muted);
+      border-color: var(--line-soft);
+      opacity: 1;
+    }
+
+    .question-list-item {
+      border: 3px solid var(--line);
+      border-top: 8px solid var(--blau);
+    }
+
+    .question-list-item strong {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 1px 12px;
+      background: var(--blau);
+      color: var(--on-blau);
+      font-weight: 800;
+    }
+
+    .question-list-item img,
+    .question-actions button {
+      border-radius: 0;
+    }
+
+    /*
+     * Reihenfolge im Aufnahme-Block: Foto, Zähler, Quiz starten,
+     * erst danach Meldungen und die zuletzt erkannte Karte. So
+     * bleibt der Startknopf oben im Bild.
+     */
+    main > .card:nth-child(1) {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    main > .card:nth-child(1) > * {
+      margin: 0;
+    }
+
+    .photo-button { order: 1; }
+    .progress-outer { order: 2; }
+    .question-counter-box { order: 3; }
+    .controls { order: 4; }
+    .status-list { order: 5; }
+    .last-card-preview { order: 6; }
+
+    @media (min-width: 900px) {
+      main {
+        max-width: 1240px;
+        display: grid;
+        grid-template-columns: minmax(320px, 380px) 1fr;
+        grid-template-rows: auto 1fr;
+        gap: 24px;
+        align-items: start;
+      }
+
+      main > .card {
+        margin-bottom: 0;
+      }
+
+      main > .card:nth-child(1) {
+        grid-column: 1;
+        grid-row: 1;
+      }
+
+      main > .card:nth-child(2) {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+      }
+
+      main > .card:nth-child(3) {
+        grid-column: 1;
+        grid-row: 2;
+      }
+    }
   </style>
 </head>
 
@@ -1398,7 +1613,8 @@
     <main>
       <section class="card">
         <label for="imageInput" class="photo-button">
-          📷 Foto aufnehmen
+          <span class="photo-icon" aria-hidden="true"></span>
+          Foto aufnehmen
         </label>
 
         <input
