@@ -1310,8 +1310,8 @@
     }
 
     /*
-     * Editor-Ansicht im Olympia-Stil: links Foto und Start, rechts
-     * die Fragensammlung; auf schmalen Bildschirmen untereinander.
+     * Editor-Ansicht im Olympia-Stil: eine breite Spalte mit
+     * Aufnahme, Meldungen und darunter der Fragensammlung.
      */
     header {
       display: flex;
@@ -1472,57 +1472,6 @@
       border-radius: 0;
     }
 
-    /*
-     * Reihenfolge im Aufnahme-Block: Foto, Zähler, Quiz starten,
-     * erst danach Meldungen und die zuletzt erkannte Karte. So
-     * bleibt der Startknopf oben im Bild.
-     */
-    main > .card:nth-child(1) {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    main > .card:nth-child(1) > * {
-      margin: 0;
-    }
-
-    .photo-button { order: 1; }
-    .progress-outer { order: 2; }
-    .question-counter-box { order: 3; }
-    .controls { order: 4; }
-    .status-list { order: 5; }
-    .last-card-preview { order: 6; }
-
-    @media (min-width: 900px) {
-      main {
-        max-width: 1240px;
-        display: grid;
-        grid-template-columns: minmax(320px, 380px) 1fr;
-        grid-template-rows: auto 1fr;
-        gap: 24px;
-        align-items: start;
-      }
-
-      main > .card {
-        margin-bottom: 0;
-      }
-
-      main > .card:nth-child(1) {
-        grid-column: 1;
-        grid-row: 1;
-      }
-
-      main > .card:nth-child(2) {
-        grid-column: 2;
-        grid-row: 1 / span 2;
-      }
-
-      main > .card:nth-child(3) {
-        grid-column: 1;
-        grid-row: 2;
-      }
-    }
   </style>
 </head>
 
