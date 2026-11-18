@@ -4340,7 +4340,22 @@
       nextQuestionButton.textContent =
         isLast ? "Quiz beenden" : "Nächste Frage";
       nextQuestionButton.classList.toggle("success", isLast);
-      nextQuestionButton.classList.toggle("secondary", !isLast);
+      setControlEmphasis(false);
+    }
+
+    /*
+     * Welcher Knopf unten blau hervorgehoben ist: vor der Auflösung
+     * "3-2-1", danach "Nächste Frage" (auf der letzten Frage bleibt
+     * "Quiz beenden" grün).
+     */
+    function setControlEmphasis(answerShown) {
+      const isLast = currentQuizIndex === quizItems.length - 1;
+
+      countdownButton.classList.toggle("secondary", answerShown);
+      nextQuestionButton.classList.toggle(
+        "secondary",
+        !answerShown && !isLast
+      );
     }
 
     function shuffleArray(array, random = Math.random) {
@@ -4727,6 +4742,7 @@
         .getElementById("answerBox" + correctLetter)
         .classList.add("correct");
       quizAnswers.classList.add("revealed");
+      setControlEmphasis(true);
     }
 
     function removeCorrectHighlight() {
