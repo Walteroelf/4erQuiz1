@@ -8,7 +8,8 @@ schreibt in diesen Ordner:
 - quiz-vorlage-a5.svg  A4 hochkant mit zwei Karten im A5-Format,
                        oben Marken 0 bis 3, unten Marken 4 bis 7
 - abcd-karten.svg      A4 hochkant mit vier großen Antwortkarten A bis D
-                       zum Ausschneiden und Laminieren
+                       zum Ausschneiden und Laminieren (schwarz-weiß)
+- abcd-karten-farbig.svg  dasselbe in den Farben der iPad-Antwortkarte
 
 Die Maße der Karte müssen zu LAYOUTS.aruco in index.html passen.
 
@@ -156,8 +157,21 @@ def a5_sheet_svg():
 ABCD_COLORS = {"A": "#000", "B": "#000", "C": "#000", "D": "#000"}
 
 
-def abcd_sheet_svg():
+# Farbige Karten wie die Antwortkarte auf dem iPad (Olympia-Stil):
+# Farbe der Fläche und Farbe des Buchstabens.
+ABCD_FARBIG = {
+    "A": ("#0075bf", "#ffffff"),
+    "B": ("#f39200", "#0b2a4a"),
+    "C": ("#7ab51d", "#0b2a4a"),
+    "D": ("#56b9e8", "#0b2a4a"),
+}
+
+
+def abcd_sheet_svg(farbig=False):
     """A4 hochkant (Einheit 0,1 mm), vier große Antwortkarten A bis D.
+
+    farbig=True: ausgefüllte Farbflächen mit Buchstaben, wie auf dem
+    iPad. Sonst weißer Grund, schwarzer Rahmen.
 
     Die Karten liegen im Raster 2 x 2, jede mit 8 mm weißem Rand.
     Weißer Grund mit schwarzem Rahmen und Buchstaben spart Tinte.
@@ -171,20 +185,30 @@ def abcd_sheet_svg():
 
     parts = [f'<rect width="{page_w}" height="{page_h}" fill="#fff"/>']
 
-    for index, (letter, color) in enumerate(ABCD_COLORS.items()):
+    for index, letter in enumerate("ABCD"):
         col, row = index % 2, index // 2
         x, y = col * cell_w + pad, row * cell_h + pad
         w, h = cell_w - 2 * pad, cell_h - 2 * pad
-        stroke = 36
-        parts.append(
-            f'<rect x="{x + stroke / 2}" y="{y + stroke / 2}" '
-            f'width="{w - stroke}" height="{h - stroke}" rx="50" '
-            f'fill="#fff" stroke="{color}" stroke-width="{stroke}"/>'
-        )
+
+        if farbig:
+            fill, ink = ABCD_FARBIG[letter]
+            parts.append(
+                f'<rect x="{x}" y="{y}" width="{w}" height="{h}" '
+                f'fill="{fill}"/>'
+            )
+        else:
+            ink = ABCD_COLORS[letter]
+            stroke = 36
+            parts.append(
+                f'<rect x="{x + stroke / 2}" y="{y + stroke / 2}" '
+                f'width="{w - stroke}" height="{h - stroke}" rx="50" '
+                f'fill="#fff" stroke="{ink}" stroke-width="{stroke}"/>'
+            )
+
         parts.append(
             f'<text x="{x + w / 2}" y="{y + h / 2 + font_size * 0.358}" '
             f'font-size="{font_size}" font-weight="700" '
-            f'text-anchor="middle" fill="{color}">{letter}</text>'
+            f'text-anchor="middle" fill="{ink}">{letter}</text>'
         )
 
     parts.append(
@@ -209,6 +233,10 @@ if __name__ == "__main__":
     with open(os.path.join(here, "abcd-karten.svg"), "w",
               encoding="utf-8") as f:
         f.write(abcd_sheet_svg())
+
+    with open(os.path.join(here, "abcd-karten-farbig.svg"), "w",
+              encoding="utf-8") as f:
+        f.write(abcd_sheet_svg(farbig=True))
 
     with open(os.path.join(here, "quiz-vorlage.svg"), "w",
               encoding="utf-8") as f:
