@@ -4428,10 +4428,10 @@
      */
     const COUNTDOWN_SOUNDS = ["Drei", "Zwei", "Eins"];
     const ANSWER_SOUNDS = {
-      A: "Antwort-A",
-      B: "Antwort-B",
-      C: "Antwort-C",
-      D: "Antwort-D"
+      A: "Richtig-A",
+      B: "Richtig-B",
+      C: "Richtig-C",
+      D: "Richtig-D"
     };
     const ANSWER_SPOKEN = { A: "A", B: "Be", C: "Ze", D: "De" };
     let countdownAudio = null;
@@ -4497,7 +4497,7 @@
     }
 
     /*
-     * "Richtige Antwort: B" nach dem Countdown. Fehlen die Töne,
+     * "B ist richtig" nach dem Countdown. Fehlen die Töne,
      * spricht die Stimme des Geräts.
      */
     function announceCorrectAnswer(letter) {
@@ -4513,7 +4513,7 @@
         return;
       }
 
-      speak(`Richtige Antwort: ${ANSWER_SPOKEN[letter]}`);
+      speak(`${ANSWER_SPOKEN[letter]} ist richtig`);
     }
 
     function stopCountdownSounds() {
