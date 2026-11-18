@@ -1283,6 +1283,10 @@
       font-size: 1.4rem;
     }
 
+    .quiz-fullscreen-button.is-unavailable {
+      opacity: .55;
+    }
+
     .quiz-question {
       border-width: 4px;
     }
@@ -1843,19 +1847,19 @@
           </button>
 
           <button
-            id="fullscreenButton"
-            class="quiz-fullscreen-button"
-            title="Vollbild einschalten"
-          >
-            ↗
-          </button>
-
-          <button
             id="quizQrButton"
             class="secondary"
             title="QR-Code für die Antwortkarte zeigen"
           >
             QR
+          </button>
+
+          <button
+            id="fullscreenButton"
+            class="quiz-fullscreen-button"
+            title="Vollbild einschalten"
+          >
+            ↗
           </button>
         </div>
       </div>
@@ -2546,9 +2550,11 @@
     );
 
     /*
-     * Als App vom Home-Bildschirm gestartet ist die Ansicht schon
-     * randlos; ohne Vollbild-Unterstützung (z. B. iPhone) wird der
-     * Knopf ausgeblendet.
+     * Der Knopf steht immer oben rechts. Als App vom Home-Bildschirm
+     * gestartet ist die Ansicht schon randlos, und manche Browser
+     * (z. B. auf dem iPhone oder in der Vorschau anderer Apps) können
+     * kein Vollbild. Dann ist er blasser, und ein Tipp erklärt, warum
+     * es nicht geht, statt dass er einfach verschwindet.
      */
     const isStandalone =
       window.navigator.standalone === true ||
@@ -2557,7 +2563,7 @@
       !!(quizView.requestFullscreen || quizView.webkitRequestFullscreen);
 
     if (isStandalone || !canFullscreen) {
-      fullscreenButton.style.display = "none";
+      fullscreenButton.classList.add("is-unavailable");
     }
 
     updateQuestionCollectionView();
@@ -4826,6 +4832,23 @@
     }
 
     function toggleFullscreen() {
+      if (isStandalone) {
+        alert(
+          "Die App läuft schon ohne Browserleisten, " +
+          "weil sie vom Home-Bildschirm gestartet wurde."
+        );
+        return;
+      }
+
+      if (!canFullscreen) {
+        alert(
+          "Dieser Browser kann kein Vollbild. Öffne die App in Safari " +
+          "und tippe auf Teilen, dann Zum Home-Bildschirm. Von dort " +
+          "gestartet läuft sie ohne Leisten."
+        );
+        return;
+      }
+
       if (getFullscreenElement()) {
         exitFullscreen();
         return;
