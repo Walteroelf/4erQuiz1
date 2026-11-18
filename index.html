@@ -822,8 +822,9 @@
 
     .quiz-controls {
       display: grid;
-      grid-template-columns: repeat(4, auto);
-      justify-content: center;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      width: min(100%, 940px);
+      margin: 0 auto;
       gap: 12px;
     }
 
@@ -1898,16 +1899,16 @@
           Vorherige Frage
         </button>
 
-        <button id="nextQuestionButton" class="secondary">
-          Nächste Frage
-        </button>
-
-        <button id="revealButton">
+        <button id="revealButton" class="secondary">
           Richtige Antwort zeigen
         </button>
 
         <button id="countdownButton">
           ⏱ 3-2-1
+        </button>
+
+        <button id="nextQuestionButton" class="secondary">
+          Nächste Frage
         </button>
       </div>
     </div>
