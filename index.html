@@ -60,11 +60,11 @@
       --on-gelb: #0b2a4a;
 
       /*
-       * Antwortfarben A bis D: A ist rot (nicht blau, damit es nicht
-       * mit den blauen Knöpfen verwechselt wird), die Buchstaben
-       * stehen immer in Schwarz.
+       * Antwortfarben A bis D: A gelb, B orange, C grün, D hellblau
+       * (Spielefarben von München 72). Die Buchstaben stehen immer
+       * in Schwarz, die richtige Antwort wird mit schwarzem Rahmen
+       * markiert.
        */
-      --rot: #ef5b4f;
       --buchstabe: #000000;
 
       --correct: #2f6d12;
@@ -1293,7 +1293,7 @@
     #answerBoxA,
     #answerZoom[data-letter="A"],
     .answer-card-page:nth-child(1) {
-      --c: var(--rot);
+      --c: var(--gelb);
       --on: var(--buchstabe);
     }
 
@@ -1343,13 +1343,13 @@
     }
 
     /*
-     * Auflösung: Die richtige Antwort bekommt einen gelben Rahmen
+     * Auflösung: Die richtige Antwort bekommt einen schwarzen Rahmen
      * und das Schild "Richtig"; die anderen werden blasser.
      */
     .quiz-answer.correct {
       border: 4px solid var(--c);
       background: #ffffff;
-      box-shadow: 0 0 0 5px var(--gelb);
+      box-shadow: 0 0 0 5px #000000;
     }
 
     .quiz-answer.correct .big-letter {
@@ -1366,10 +1366,10 @@
       top: -5px;
       right: -5px;
       padding: 2px 10px;
-      border: 3px solid var(--on-gelb);
+      border: 3px solid #000000;
       border-radius: 0;
-      background: var(--gelb);
-      color: var(--on-gelb);
+      background: #000000;
+      color: #ffffff;
       font-size: clamp(.75rem, 2vh, 1rem);
       font-weight: 800;
       letter-spacing: .04em;
@@ -1378,7 +1378,7 @@
 
     /*
      * Großansicht einer Antwort: Buchstabe und Bild in der Farbe
-     * des Buchstabens, bei der richtigen mit gelbem Rahmen.
+     * des Buchstabens, bei der richtigen mit schwarzem Rahmen.
      */
     .answer-zoom.is-answer {
       gap: 16px;
@@ -1410,7 +1410,7 @@
     .answer-zoom.correct.is-answer .answer-zoom-label,
     .answer-zoom.correct.is-answer img {
       border-width: 4px;
-      box-shadow: 0 0 0 6px var(--gelb);
+      box-shadow: 0 0 0 6px #000000;
     }
 
     .answer-zoom.correct .answer-zoom-label {
