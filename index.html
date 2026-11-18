@@ -59,6 +59,14 @@
       --gelb: #ffd200;
       --on-gelb: #0b2a4a;
 
+      /*
+       * Antwortfarben A bis D: A ist rot (nicht blau, damit es nicht
+       * mit den blauen Knöpfen verwechselt wird), die Buchstaben
+       * stehen immer in Schwarz.
+       */
+      --rot: #ef5b4f;
+      --buchstabe: #000000;
+
       --correct: #2f6d12;
       --correct-soft: #eaf5d8;
 
@@ -1285,29 +1293,29 @@
     #answerBoxA,
     #answerZoom[data-letter="A"],
     .answer-card-page:nth-child(1) {
-      --c: var(--blau);
-      --on: var(--on-blau);
+      --c: var(--rot);
+      --on: var(--buchstabe);
     }
 
     #answerBoxB,
     #answerZoom[data-letter="B"],
     .answer-card-page:nth-child(2) {
       --c: var(--orange);
-      --on: var(--on-orange);
+      --on: var(--buchstabe);
     }
 
     #answerBoxC,
     #answerZoom[data-letter="C"],
     .answer-card-page:nth-child(3) {
       --c: var(--gruen);
-      --on: var(--on-gruen);
+      --on: var(--buchstabe);
     }
 
     #answerBoxD,
     #answerZoom[data-letter="D"],
     .answer-card-page:nth-child(4) {
       --c: var(--hellblau);
-      --on: var(--on-hellblau);
+      --on: var(--buchstabe);
     }
 
     .quiz-answer {
