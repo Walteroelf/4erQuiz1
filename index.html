@@ -1609,6 +1609,19 @@
       border-radius: 0;
     }
 
+    /*
+     * Zuletzt verschobene Frage: gelber Rahmen, bis sie ein weiteres
+     * Mal verschoben wird.
+     */
+    .question-list-item.is-moved {
+      box-shadow: 0 0 0 6px var(--gelb);
+    }
+
+    .question-list-item.is-moved strong {
+      background: var(--gelb);
+      color: var(--on-gelb);
+    }
+
   </style>
 </head>
 
@@ -4015,6 +4028,10 @@
         const box = document.createElement("div");
         box.className = "question-list-item";
 
+        if (item.id === movedQuestionId) {
+          box.classList.add("is-moved");
+        }
+
         const title = document.createElement("strong");
         title.textContent = `Frage ${index + 1}`;
 
@@ -4044,12 +4061,24 @@
         down.disabled = index === questions.length - 1;
         down.onclick = () => moveQuestion(index, 1);
 
+        const toTop = document.createElement("button");
+        toTop.className = "secondary";
+        toTop.textContent = "↑↑ Anfang";
+        toTop.disabled = index === 0;
+        toTop.onclick = () => moveQuestionTo(index, 0);
+
+        const toEnd = document.createElement("button");
+        toEnd.className = "secondary";
+        toEnd.textContent = "↓↓ Ende";
+        toEnd.disabled = index === questions.length - 1;
+        toEnd.onclick = () => moveQuestionTo(index, questions.length - 1);
+
         const remove = document.createElement("button");
         remove.className = "danger delete-question-button";
         remove.textContent = "Löschen";
         remove.onclick = () => deleteQuestion(index);
 
-        actions.append(view, up, down, remove);
+        actions.append(view, up, down, toTop, toEnd, remove);
         box.append(title, image, actions);
         questionList.appendChild(box);
       });
@@ -4073,20 +4102,41 @@
       detailModal.hidden = true;
     }
 
-    function moveQuestion(index, direction) {
-      const newIndex = index + direction;
+    /*
+     * Die zuletzt verschobene Frage bleibt gelb markiert und wird
+     * ins Bild gescrollt, damit man sie gleich weiter verschieben
+     * kann. Die Markierung bleibt bis zur nächsten Verschiebung.
+     */
+    let movedQuestionId = null;
 
+    function moveQuestion(index, direction) {
+      moveQuestionTo(index, index + direction);
+    }
+
+    function moveQuestionTo(index, newIndex) {
       if (
         newIndex < 0 ||
-        newIndex >= questions.length
+        newIndex >= questions.length ||
+        newIndex === index
       ) {
         return;
       }
 
       const item = questions.splice(index, 1)[0];
       questions.splice(newIndex, 0, item);
+      movedQuestionId = item.id;
       saveQuestionOrder();
       updateQuestionCollectionView();
+
+      const moved = questionList.querySelector(".is-moved");
+
+      if (moved) {
+        moved.scrollIntoView({
+          block: "center",
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)")
+            .matches ? "auto" : "smooth"
+        });
+      }
     }
 
     function deleteQuestion(index) {
@@ -4099,6 +4149,10 @@
       const [removed] = questions.splice(index, 1);
       deleteSavedQuestion(removed.id);
       saveQuestionOrder();
+
+      if (movedQuestionId === removed.id) {
+        movedQuestionId = null;
+      }
 
       currentQuizIndex = Math.min(
         currentQuizIndex,
