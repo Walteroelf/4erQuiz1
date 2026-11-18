@@ -2008,6 +2008,8 @@
         <span>
           <strong>Antworten bei jedem Quiz neu mischen</strong>
           <small>
+            An: Die richtige Antwort steht gleichmäßig verteilt auf
+            A bis D, nie dreimal hintereinander am selben Platz.
             Aus: Jede Frage hat immer dieselbe Antwortreihenfolge,
             auch in späteren Durchgängen.
           </small>
@@ -4237,6 +4239,33 @@
     document.getElementById("startQrButton")
       .addEventListener("click", showQrView);
 
+    /*
+     * Reihenfolge der Antworten für ein ganzes Quiz. Die richtige
+     * Antwort verteilt sich gleichmäßig auf A bis D: Es wird in
+     * Runden gelost, in jeder Runde steht sie auf jedem Platz genau
+     * einmal, aber in zufälliger Reihenfolge. So gibt es nie drei
+     * gleiche Buchstaben hintereinander und kein Buchstabe fehlt
+     * lange, und die nächste Lösung bleibt trotzdem nicht
+     * vorhersehbar. Die drei falschen Antworten werden zufällig auf
+     * die übrigen Plätze verteilt.
+     */
+    function balancedAnswerOrders(count) {
+      const positions = [];
+
+      while (positions.length < count) {
+        positions.push(...shuffleArray([0, 1, 2, 3]));
+      }
+
+      return positions.slice(0, count).map(correctPosition => {
+        const wrong = shuffleArray(["wrong1", "wrong2", "wrong3"]);
+        let next = 0;
+
+        return [0, 1, 2, 3].map(position =>
+          position === correctPosition ? "correct" : wrong[next++]
+        );
+      });
+    }
+
     function beginQuiz() {
       if (questions.length === 0) {
         return;
@@ -4254,11 +4283,11 @@
         : [...questions];
 
       const answerKeys = ["correct", "wrong1", "wrong2", "wrong3"];
-      quizAnswerOrders = quizItems.map(item =>
-        settings.shuffleAnswers
-          ? shuffleArray(answerKeys)
-          : shuffleArray(answerKeys, seededRandom(item.id))
-      );
+      quizAnswerOrders = settings.shuffleAnswers
+        ? balancedAnswerOrders(quizItems.length)
+        : quizItems.map(item =>
+          shuffleArray(answerKeys, seededRandom(item.id))
+        );
       quizRevealed = quizItems.map(() =>
         ANSWER_LETTERS.map(() => !settings.stepReveal)
       );
