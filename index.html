@@ -1870,12 +1870,12 @@
           Richtige Antwort zeigen
         </button>
 
-        <button id="countdownButton" class="secondary">
-          ⏱ 3-2-1
+        <button id="nextQuestionButton" class="secondary">
+          Nächste Frage
         </button>
 
-        <button id="nextQuestionButton">
-          Nächste Frage
+        <button id="countdownButton">
+          ⏱ 3-2-1
         </button>
       </div>
     </div>
@@ -4273,6 +4273,7 @@
       nextQuestionButton.textContent =
         isLast ? "Quiz beenden" : "Nächste Frage";
       nextQuestionButton.classList.toggle("success", isLast);
+      nextQuestionButton.classList.toggle("secondary", !isLast);
     }
 
     function shuffleArray(array, random = Math.random) {
