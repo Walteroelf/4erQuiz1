@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2100 2970" width="210mm" height="297mm" font-family="Arial, Helvetica, sans-serif">
   <rect width="2100" height="2970" fill="#fff"/>
-  <rect x="80.0" y="80.0" width="890.0" height="1325.0" fill="#ffd200"/>
-  <text x="525.0" y="1064.7" font-size="900" font-weight="700" text-anchor="middle" fill="#000000">A</text>
-  <rect x="1130.0" y="80.0" width="890.0" height="1325.0" fill="#f39200"/>
-  <text x="1575.0" y="1064.7" font-size="900" font-weight="700" text-anchor="middle" fill="#000000">B</text>
-  <rect x="80.0" y="1565.0" width="890.0" height="1325.0" fill="#7ab51d"/>
-  <text x="525.0" y="2549.7" font-size="900" font-weight="700" text-anchor="middle" fill="#000000">C</text>
-  <rect x="1130.0" y="1565.0" width="890.0" height="1325.0" fill="#56b9e8"/>
-  <text x="1575.0" y="2549.7" font-size="900" font-weight="700" text-anchor="middle" fill="#000000">D</text>
+  <rect x="80.0" y="80.0" width="890.0" height="1325.0" fill="#FFD100"/>
+  <text x="525.0" y="1064.7" font-size="900" font-weight="700" text-anchor="middle" fill="#0D2B4E">A</text>
+  <rect x="1130.0" y="80.0" width="890.0" height="1325.0" fill="#F39200"/>
+  <text x="1575.0" y="1064.7" font-size="900" font-weight="700" text-anchor="middle" fill="#0D2B4E">B</text>
+  <rect x="80.0" y="1565.0" width="890.0" height="1325.0" fill="#46A84A"/>
+  <text x="525.0" y="2549.7" font-size="900" font-weight="700" text-anchor="middle" fill="#0D2B4E">C</text>
+  <rect x="1130.0" y="1565.0" width="890.0" height="1325.0" fill="#4DB2E6"/>
+  <text x="1575.0" y="2549.7" font-size="900" font-weight="700" text-anchor="middle" fill="#0D2B4E">D</text>
   <line x1="1050.0" y1="0" x2="1050.0" y2="2970" stroke="#999" stroke-width="3" stroke-dasharray="25 20"/>
   <line x1="0" y1="1485.0" x2="2100" y2="1485.0" stroke="#999" stroke-width="3" stroke-dasharray="25 20"/>
 </svg>

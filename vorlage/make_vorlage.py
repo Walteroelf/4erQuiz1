@@ -160,10 +160,10 @@ ABCD_COLORS = {"A": "#000", "B": "#000", "C": "#000", "D": "#000"}
 # Farbige Karten wie die Antwortkarte auf dem iPad (Olympia-Stil):
 # Farbe der Fläche und Farbe des Buchstabens.
 ABCD_FARBIG = {
-    "A": ("#ffd200", "#000000"),
-    "B": ("#f39200", "#000000"),
-    "C": ("#7ab51d", "#000000"),
-    "D": ("#56b9e8", "#000000"),
+    "A": ("#FFD100", "#0D2B4E"),
+    "B": ("#F39200", "#0D2B4E"),
+    "C": ("#46A84A", "#0D2B4E"),
+    "D": ("#4DB2E6", "#0D2B4E"),
 }
 
 

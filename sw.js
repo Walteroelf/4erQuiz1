@@ -15,7 +15,7 @@
  * enthält deshalb den Ordner der App, und beim Aufräumen werden nur
  * die eigenen alten Fassungen gelöscht.
  */
-const CACHE_VERSION = "v33";
+const CACHE_VERSION = "v34";
 const CACHE_PREFIX =
   "4er-quiz:" + new URL(self.registration.scope).pathname + ":";
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
@@ -29,9 +29,10 @@ const CORE_FILES = [
   "./",
   "./index.html",
   "./design.css?v=3",
+  "./style.css?v=1",
   "./opencv.js",
-  "./schriften/atkinson-400.woff2",
-  "./schriften/atkinson-700.woff2",
+  "./schriften/andika-400.woff2",
+  "./schriften/andika-700.woff2",
   "./vorlage/quiz-vorlage.pdf",
   "./vorlage/quiz-vorlage.svg",
   "./vorlage/quiz-vorlage-a5.pdf",

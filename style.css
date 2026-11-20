@@ -1,0 +1,1686 @@
+/* App-eigenes Design des 4er-Quiz. Grundlage: design.css (nicht ändern). */
+
+/* Schrift: Andika (SIL Open Font License), lokal eingebunden */
+@font-face {
+  font-family: "Andika";
+  src: url("schriften/andika-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Andika";
+  src: url("schriften/andika-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/*
+ * Gemeinsames Design der Unterrichts-Apps (design.css, DESIGN.md):
+ * Olympia-72-Farben, dunkelblaue Schrift, Andika, flache Flächen.
+ * Hier steht nur, was zu dieser App gehört.
+ * Für die digitale Tafel und für Schülerinnen und Schüler, die
+ * schnell reizüberflutet sind, bleibt es klar:
+ * - Farbe nur dort, wo sie etwas bedeutet (Buchstaben A bis D)
+ * - klare Kontraste, keine Muster, Verläufe, Schatten oder
+ *   Bewegungen
+ * - "richtig" wird nicht nur farbig, sondern auch mit Rahmen,
+ *   Zeichen und Text angezeigt
+ */
+:root {
+  /* Rollen kommen aus design.css (Hell und Dunkel) */
+  --bg: var(--hg);
+  --surface: var(--karte);
+  --muted: var(--leise);
+  --line: var(--text);
+  --line-soft: var(--rand);
+
+  --accent: var(--hellblau);
+  --accent-soft: var(--auswahl);
+
+  --on-gelb: var(--dunkelblau);
+  --on-orange: var(--dunkelblau);
+  --on-gruen: var(--dunkelblau);
+  --on-hellblau: var(--dunkelblau);
+
+  /*
+   * Antwortfarben A bis D: A gelb, B orange, C grün, D hellblau
+   * (Spielefarben von München 72). Die Buchstaben stehen immer
+   * in Dunkelblau, die richtige Antwort wird mit Rahmen und
+   * Häkchen markiert.
+   */
+  --buchstabe: var(--dunkelblau);
+
+  --correct: var(--gruen);
+  --correct-soft: color-mix(in srgb, var(--gruen) 18%, var(--karte));
+
+  --warn-text: var(--text);
+  --warn-soft: color-mix(in srgb, var(--gelb) 20%, var(--karte));
+
+  /* kein Rot: Fehler und Warnungen in Orange */
+  --error: var(--orange);
+  --error-soft: color-mix(in srgb, var(--orange) 18%, var(--karte));
+
+  --radius: var(--rundung);
+  --haken: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230D2B4E' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 12.5 10 18 19.5 6.5'/%3E%3C/svg%3E");
+  --font: var(--schrift);
+}
+
+/* Farbband wie in den anderen Apps */
+.band { display: flex; height: 12px; flex: none; }
+.band i { flex: 1; }
+.band i:nth-child(1) { background: var(--hellblau); }
+.band i:nth-child(2) { background: var(--blau); }
+.band i:nth-child(3) { background: var(--gruen); }
+.band i:nth-child(4) { background: var(--hellgruen); }
+.band i:nth-child(5) { background: var(--gelb); }
+.band i:nth-child(6) { background: var(--orange); }
+.band i:nth-child(7) { background: var(--silber); }
+
+svg.symbol { display: inline-block; }
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font);
+  font-size: 1.1rem;
+  line-height: 1.45;
+  color: var(--text);
+  background: var(--bg);
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+header {
+  padding: max(18px, env(safe-area-inset-top)) 18px 18px;
+  text-align: center;
+  background: var(--surface);
+  border-bottom: 3px solid var(--line);
+}
+
+header {
+  position: relative;
+}
+
+/*
+ * Einstellungen oben rechts in der Kopfzeile; auf schmalen
+ * Bildschirmen nur das Zahnrad.
+ */
+.settings-button {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+}
+
+.settings-button .symbol {
+  width: 1.4em;
+  height: 1.4em;
+}
+
+.answer-zoom-label .symbol {
+  width: .8em;
+  height: .8em;
+  stroke-width: 3;
+  margin-right: .1em;
+}
+
+@media (max-width: 600px) {
+  .settings-button-text {
+    display: none;
+  }
+
+  .settings-button {
+    padding: 8px 12px;
+  }
+}
+
+header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 700;
+}
+
+main {
+  max-width: 940px;
+  margin: 28px auto;
+  padding: 0 16px 44px;
+}
+
+.card,
+.modal,
+.quiz-question,
+.quiz-answer,
+.question-list-item {
+  background: var(--surface);
+  border: 3px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.card {
+  margin-bottom: 24px;
+  padding: 24px;
+}
+
+h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+}
+
+.photo-button {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  border: 3px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--dunkelblau);
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+button {
+  min-height: 48px;
+  border: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--dunkelblau);
+  background: var(--accent);
+}
+
+button:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+button:focus-visible,
+.photo-button:focus-within {
+  outline: 4px solid var(--gelb);
+  outline-offset: 0;
+  box-shadow: 0 0 0 7px var(--dunkelblau);
+}
+
+button.secondary {
+  color: var(--text);
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+button.success {
+  background: var(--correct);
+  border-color: var(--correct);
+}
+
+button.danger {
+  color: var(--text);
+  background: var(--surface);
+  border-color: var(--error);
+}
+
+.controls {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.question-counter-box {
+  margin-top: 16px;
+  padding: 14px;
+  text-align: center;
+  font-size: 1.3rem;
+  font-weight: 700;
+  background: var(--bg);
+  border: 2px solid var(--line-soft);
+  border-radius: var(--radius);
+}
+
+.progress-outer {
+  display: none;
+  height: 16px;
+  margin-top: 16px;
+  overflow: hidden;
+  background: var(--accent-soft);
+  border: 2px solid var(--accent);
+  border-radius: 999px;
+}
+
+.progress-inner {
+  width: 0;
+  height: 100%;
+  background: var(--accent);
+}
+
+.status-list {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.status-list li {
+  margin-top: 6px;
+  padding: 10px 14px;
+  border: 2px solid;
+  border-radius: var(--radius);
+}
+
+.status-list .ok {
+  color: var(--text);
+  background: var(--correct-soft);
+}
+
+.status-list .warn {
+  color: var(--text);
+  background: var(--warn-soft);
+}
+
+.status-list .error {
+  color: var(--text);
+  background: var(--error-soft);
+}
+
+.last-card-preview {
+  display: none;
+  margin: 16px 0 0;
+}
+
+.last-card-preview figcaption {
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.last-card-preview img {
+  display: block;
+  width: 100%;
+  background: var(--karte);
+  border: 2px solid var(--line-soft);
+  border-radius: var(--radius);
+}
+
+.question-list-section,
+.bottom-delete-section {
+  display: none;
+}
+
+.question-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.question-list-item {
+  padding: 12px;
+  border-width: 2px;
+  border-color: var(--line-soft);
+}
+
+.question-list-item strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.question-list-item img {
+  width: 100%;
+  height: 80px;
+  object-fit: contain;
+  background: var(--weiss);
+  border: 2px solid var(--line-soft);
+  border-radius: 8px;
+}
+
+.question-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.question-actions button {
+  min-height: 40px;
+  padding: 6px;
+  font-size: .9rem;
+}
+
+.question-actions .delete-question-button,
+.question-actions .view-question-button {
+  grid-column: 1 / -1;
+}
+
+.question-thumb {
+  cursor: pointer;
+}
+
+.modal-backdrop[hidden],
+.quiz-end[hidden],
+.answer-zoom[hidden] {
+  display: none;
+}
+
+.setting {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 12px 4px;
+  border-bottom: 2px solid var(--line-soft);
+  cursor: pointer;
+}
+
+.setting input {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  margin: 2px 0 0;
+  accent-color: var(--akzent-text);
+}
+
+.setting strong {
+  display: block;
+}
+
+.setting small {
+  display: block;
+  margin-top: 2px;
+  font-size: .95rem;
+  color: var(--muted);
+}
+
+.settings-modal {
+  width: min(640px, 100%);
+}
+
+.settings-modal h3 {
+  margin: 22px 0 4px;
+  font-size: 1.15rem;
+}
+
+.settings-links {
+  margin: 8px 0 14px;
+  padding-left: 22px;
+}
+
+.settings-links li {
+  margin: 6px 0;
+}
+
+.settings-links a {
+  color: var(--akzent-text);
+  font-weight: 700;
+}
+
+#showHelpButton {
+  width: 100%;
+}
+
+/*
+ * Großansicht einer Frage: alle fünf Felder untereinander bzw.
+ * die Antworten im 2x2-Raster, die richtige grün markiert.
+ */
+.detail-modal {
+  width: min(1100px, 100%);
+  max-width: none;
+}
+
+.detail-field {
+  margin: 0 0 14px;
+  padding: 10px;
+  border: 2px solid var(--line-soft);
+  border-radius: var(--radius);
+}
+
+.detail-field figcaption {
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.detail-field img {
+  display: block;
+  width: 100%;
+  background: var(--karte);
+}
+
+.detail-answers {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.detail-answers .detail-field {
+  margin: 0;
+}
+
+.detail-correct {
+  border: 4px solid var(--correct);
+  background: var(--correct-soft);
+}
+
+.detail-correct figcaption {
+  color: var(--text);
+}
+
+@media (max-width: 700px) {
+  .detail-answers {
+    grid-template-columns: 1fr;
+  }
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: color-mix(in srgb, var(--dunkelblau) 60%, transparent);
+}
+
+.modal {
+  max-width: 760px;
+  max-height: 100%;
+  overflow: auto;
+  padding: 28px;
+}
+
+.modal a {
+  color: var(--akzent-text);
+  font-weight: 700;
+}
+
+/*
+ * Der Knopf unten im Dialog bleibt immer im Bild, auch wenn der
+ * Inhalt länger ist als der Bildschirm: Man muss nicht mehr
+ * nach unten scrollen, um zu bestätigen.
+ */
+.modal-ok {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  margin-top: 16px;
+}
+
+/*
+ * Downloads mit kleiner Vorschau: drei Kacheln nebeneinander,
+ * auf schmalen Bildschirmen untereinander.
+ */
+.downloads {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.modal a.download {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--karte);
+  text-align: center;
+  text-decoration: none;
+  font-size: .95rem;
+}
+
+.downloads-small {
+  grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
+  gap: 10px;
+}
+
+.downloads-small a.download {
+  padding: 8px;
+  font-size: .72rem;
+}
+
+.downloads-small img {
+  height: 80px;
+}
+
+.download img {
+  width: 100%;
+  height: 130px;
+  object-fit: contain;
+  border: 1px solid var(--line-soft);
+  background: var(--karte);
+}
+
+/*
+ * Die Quiz-Ansicht füllt genau den sichtbaren Bereich, mit
+ * und ohne Vollbild. "position: fixed" mit "inset: 0" richtet
+ * sich in Safari nach dem tatsächlich sichtbaren Teil (ohne
+ * Adress- und Werkzeugleiste), anders als 100vh. So bleiben
+ * die Knöpfe unten immer im Bild.
+ */
+.quiz-screen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 5;
+  overflow: hidden;
+  padding:
+    max(10px, env(safe-area-inset-top))
+    max(12px, env(safe-area-inset-right))
+    max(10px, env(safe-area-inset-bottom))
+    max(12px, env(safe-area-inset-left));
+  background: var(--bg);
+}
+
+.quiz-inner {
+  max-width: 1400px;
+  height: 100%;
+  margin: 0 auto;
+  display: grid;
+  grid-template-rows:
+    auto
+    minmax(0, 1fr)
+    minmax(0, 2fr)
+    auto;
+  gap: clamp(8px, 1.6vh, 16px);
+}
+
+.quiz-topbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.quiz-title {
+  margin: 0;
+  font-size: clamp(1.3rem, 4.5vh, 2rem);
+  font-weight: 700;
+}
+
+.quiz-progress {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 12px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  font-size: .8em;
+  vertical-align: middle;
+}
+
+.quiz-top-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.quiz-fullscreen-button {
+  width: 52px;
+  padding: 0;
+  font-size: 1.5rem;
+}
+
+.quiz-question {
+  min-height: 0;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quiz-question img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.quiz-answers {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: clamp(8px, 1.6vh, 16px);
+}
+
+.quiz-answer {
+  position: relative;
+  min-height: 0;
+  padding: 8px;
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.big-letter {
+  width: clamp(44px, 9vh, 72px);
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--text);
+  color: var(--hg);
+  font-size: clamp(1.6rem, 5.5vh, 2.6rem);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.answer-image-wrap {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--karte);
+}
+
+/*
+ * "contain" statt "fill": Die Handschrift wird nicht verzerrt.
+ */
+.answer-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.quiz-answer,
+.quiz-question img {
+  cursor: zoom-in;
+}
+
+/*
+ * Noch verdeckte Antwort: nur der Buchstabe, das Antwortfeld
+ * bleibt als ruhige graue Fläche stehen, damit sich die
+ * Anordnung beim Aufdecken nicht verschiebt.
+ */
+.quiz-answer.is-hidden {
+  cursor: pointer;
+}
+
+.quiz-answer.is-hidden .answer-image-wrap {
+  background: var(--bg);
+}
+
+.quiz-answer.is-hidden .answer-image-wrap img {
+  visibility: hidden;
+}
+
+/*
+ * Großansicht einer Antwort oder der Frage im Quiz.
+ */
+.answer-zoom {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding:
+    max(12px, env(safe-area-inset-top))
+    max(16px, env(safe-area-inset-right))
+    max(12px, env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left));
+  background: var(--bg);
+  cursor: zoom-out;
+}
+
+.answer-zoom-label {
+  margin: 0;
+  font-size: clamp(1.4rem, 5vh, 2.4rem);
+  font-weight: 700;
+}
+
+/*
+ * Bei Antworten stehen Buchstabe und Bild untereinander und sind
+ * gleich groß (Maße setzt sizeAnswerZoom), damit man den
+ * Buchstaben auch von hinten im Raum lesen kann.
+ */
+.answer-zoom.is-answer {
+  align-items: center;
+  justify-content: center;
+}
+
+.answer-zoom.is-answer .answer-zoom-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--zoom-w);
+  height: var(--zoom-h);
+  font-size: calc(var(--zoom-h) * .8);
+  line-height: 1;
+  background: var(--karte);
+  border: 3px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.answer-zoom.is-answer img {
+  flex: none;
+  width: var(--zoom-w);
+  height: var(--zoom-h);
+}
+
+.answer-zoom.correct .answer-zoom-label {
+  color: var(--text);
+}
+
+.answer-zoom.correct.is-answer .answer-zoom-label {
+  border: 6px solid var(--correct);
+}
+
+.answer-zoom img {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  object-fit: contain;
+  background: var(--weiss);
+  border: 3px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.answer-zoom.correct img {
+  border: 6px solid var(--correct);
+}
+
+.answer-zoom-hint {
+  margin: 0;
+  text-align: center;
+  color: var(--muted);
+}
+
+/*
+ * Auflösung: Die richtige Antwort bekommt einen dicken grünen
+ * Rahmen, ein Häkchen statt des Buchstabens und das Wort
+ * "Richtig". Die anderen Antworten treten zurück.
+ */
+.quiz-answers.revealed .quiz-answer:not(.correct) {
+  opacity: .35;
+}
+
+.quiz-answer.correct {
+  border: 6px solid var(--correct);
+  background: var(--correct-soft);
+}
+
+.quiz-answer.correct .big-letter {
+  background: var(--correct);
+  font-size: 0;
+}
+
+.quiz-answer.correct .big-letter::after {
+  content: "";
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background: var(--dunkelblau);
+  -webkit-mask: var(--haken) center / contain no-repeat;
+  mask: var(--haken) center / contain no-repeat;
+  font-size: clamp(1.8rem, 6vh, 3rem);
+}
+
+.quiz-answer.correct::after {
+  content: "Richtig";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 2px 12px;
+  border-radius: 999px;
+  background: var(--correct);
+  color: var(--dunkelblau);
+  font-size: clamp(.9rem, 2.4vh, 1.2rem);
+  font-weight: 700;
+}
+
+.quiz-controls {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: min(100%, 940px);
+  margin: 0 auto;
+  gap: 12px;
+}
+
+.quiz-controls button,
+.quiz-top-actions button {
+  padding: clamp(6px, 1.4vh, 12px) clamp(14px, 2vw, 24px);
+  font-size: clamp(1rem, 2.4vh, 1.25rem);
+}
+
+.quiz-top-actions .quiz-fullscreen-button {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.hidden-work-area {
+  display: none;
+}
+
+.settings-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: .95rem;
+}
+
+/*
+ * Antwortkarte für Schüler ohne gedruckte Karten: wie die
+ * gedruckten Karten rein schwarz-weiß, weißer Grund, schwarzer
+ * Rahmen und Buchstabe. Vier Seiten A bis D zum Durchwischen;
+ * die sichtbare Seite ist die Antwort, gut von hinten zu lesen.
+ */
+.answer-card-view {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: var(--karte);
+  color: var(--text);
+}
+
+.answer-card-view[hidden] {
+  display: none;
+}
+
+.answer-card-track {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.answer-card-track::-webkit-scrollbar {
+  display: none;
+}
+
+.answer-card-page {
+  flex: 0 0 100%;
+  box-sizing: border-box;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  padding:
+    max(16px, env(safe-area-inset-top))
+    max(16px, env(safe-area-inset-right))
+    max(56px, calc(env(safe-area-inset-bottom) + 44px))
+    max(16px, env(safe-area-inset-left));
+}
+
+.answer-card-frame {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: min(3vmin, 28px) solid var(--text);
+  border-radius: min(7vmin, 60px);
+  font-size: min(70vh, 70vw);
+  font-weight: 700;
+  line-height: 1;
+}
+
+.answer-card-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.answer-card-dots {
+  display: flex;
+  gap: 14px;
+}
+
+.answer-card-dots span {
+  width: 14px;
+  height: 14px;
+  border: 3px solid var(--text);
+  border-radius: 50%;
+}
+
+.answer-card-dots span.is-current {
+  background: var(--text);
+}
+
+/*
+ * QR-Code für die Tafel: schwarz auf weiß, so groß wie möglich.
+ */
+.qr-view {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2vh;
+  padding: 2vh 4vw;
+  background: var(--weiss);
+  color: var(--dunkelblau);
+  text-align: center;
+  cursor: pointer;
+}
+
+.qr-view[hidden] {
+  display: none;
+}
+
+.qr-title {
+  margin: 0;
+  font-size: clamp(2rem, 7vh, 4rem);
+}
+
+.qr-image {
+  width: min(62vh, 80vw);
+  height: min(62vh, 80vw);
+  border: 4px solid var(--dunkelblau);
+  border-radius: 20px;
+  padding: 12px;
+  background: var(--weiss);
+}
+
+.qr-text {
+  margin: 0;
+  font-size: clamp(1.1rem, 3.4vh, 2rem);
+  max-width: 40ch;
+}
+
+.qr-hint {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--leise);
+}
+
+/*
+ * Countdown vor der Auflösung: nur eine große Zahl auf ruhigem
+ * Grund. Ein Tipp bricht ab.
+ */
+.countdown {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  color: var(--akzent-text);
+  font-size: 45vh;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.countdown[hidden] {
+  display: none;
+}
+
+/*
+ * Abschluss nach der letzten Frage: schlicht und mittig, nur
+ * zwei klare Möglichkeiten.
+ */
+.quiz-end {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+  background: var(--bg);
+}
+
+.quiz-end-title {
+  margin: 0;
+  font-size: clamp(2.4rem, 10vh, 4.5rem);
+}
+
+.quiz-end-text {
+  margin: 0 0 16px;
+  font-size: clamp(1.3rem, 4vh, 2rem);
+}
+
+.quiz-end-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+}
+
+.quiz-end-actions button {
+  min-width: 260px;
+  padding: 14px 28px;
+  font-size: clamp(1.1rem, 3vh, 1.5rem);
+}
+
+/*
+ * Hochkant (iPad hochkant, Handy): Antworten untereinander,
+ * so sind sie breit wie die Antwortfelder der Karte.
+ */
+@media (orientation: portrait) {
+  .quiz-inner {
+    grid-template-rows:
+      auto
+      minmax(0, 1fr)
+      minmax(0, 3fr)
+      auto;
+  }
+
+  .quiz-answers {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/*
+ * Startseite vor dem Quiz: Zeit, die Tafel zu verbinden, bevor
+ * die erste Frage erscheint.
+ */
+.start-view {
+  position: fixed;
+  inset: 0;
+  z-index: 6;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  padding:
+    max(24px, env(safe-area-inset-top))
+    max(24px, env(safe-area-inset-right))
+    max(24px, env(safe-area-inset-bottom))
+    max(24px, env(safe-area-inset-left));
+  background: var(--bg);
+}
+
+.start-view[hidden] {
+  display: none;
+}
+
+.start-inner {
+  width: 100%;
+  max-width: 880px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 3vh, 28px);
+}
+
+.start-title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: .35em;
+  font-size: clamp(3rem, 12vh, 6rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.start-title::before {
+  content: "";
+  flex: none;
+  width: .7em;
+  height: .7em;
+  border-radius: 50%;
+  background: var(--akzent-text);
+}
+
+.start-count {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: clamp(1.4rem, 4vh, 2rem);
+  font-weight: 700;
+}
+
+#startCount {
+  min-width: 2.2em;
+  padding: 0 14px;
+  background: var(--orange);
+  color: var(--on-orange);
+  font-size: 1.6em;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.start-steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: schritt;
+  display: grid;
+  gap: 12px;
+}
+
+.start-steps li {
+  counter-increment: schritt;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 16px;
+  padding: 14px 16px;
+  border: 4px solid var(--line);
+  background: var(--karte);
+}
+
+.start-steps li::before {
+  content: counter(schritt);
+  grid-row: span 2;
+  align-self: center;
+  width: 2.2em;
+  height: 2.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--hellblau);
+  color: var(--dunkelblau);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.start-steps strong {
+  font-size: 1.25rem;
+}
+
+.start-steps span {
+  color: var(--muted);
+}
+
+.start-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+#startBeginButton {
+  grid-column: 1 / -1;
+  min-height: 84px;
+  border: 4px solid var(--line);
+  background: var(--gelb);
+  color: var(--on-gelb);
+  font-size: clamp(1.6rem, 5vh, 2.2rem);
+  letter-spacing: .03em;
+}
+
+@media (max-width: 700px) {
+  .start-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .quiz-topbar {
+    grid-template-columns: 1fr;
+  }
+
+  .quiz-top-actions {
+    justify-content: center;
+  }
+
+  .quiz-controls {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+
+  .quiz-controls button {
+    padding: 6px;
+    font-size: .9rem;
+  }
+}
+
+/*
+ * Olympia-Stil: Feinschliff der einzelnen Bausteine.
+ */
+h1,
+h2,
+h3,
+button {
+  font-weight: 700;
+}
+
+header {
+  border-bottom: 4px solid var(--line);
+}
+
+header h1 {
+  letter-spacing: -0.02em;
+}
+
+button {
+  border-width: 3px;
+}
+
+button:focus-visible,
+.photo-button:focus-within {
+  outline-color: var(--orange);
+}
+
+.quiz-title {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.quiz-title::before {
+  content: "";
+  flex: none;
+  width: .8em;
+  height: .8em;
+  border-radius: 50%;
+  background: var(--akzent-text);
+}
+
+.quiz-progress {
+  margin-left: 0;
+  border-width: 3px;
+  font-weight: 700;
+}
+
+.quiz-controls button,
+.quiz-top-actions button {
+  letter-spacing: .03em;
+  font-size: clamp(.8rem, 2.1vh, 1.05rem);
+}
+
+.quiz-top-actions .quiz-fullscreen-button {
+  font-size: 1.4rem;
+}
+
+.quiz-fullscreen-button.is-unavailable {
+  opacity: .55;
+}
+
+.quiz-question {
+  border-width: 4px;
+}
+
+/*
+ * Antworten: Streifen in der Farbe des Buchstabens, daneben
+ * die Handschrift auf Weiß.
+ */
+#answerBoxA,
+#answerZoom[data-letter="A"],
+.answer-card-page:nth-child(1) {
+  --c: var(--gelb);
+  --on: var(--buchstabe);
+}
+
+#answerBoxB,
+#answerZoom[data-letter="B"],
+.answer-card-page:nth-child(2) {
+  --c: var(--orange);
+  --on: var(--buchstabe);
+}
+
+#answerBoxC,
+#answerZoom[data-letter="C"],
+.answer-card-page:nth-child(3) {
+  --c: var(--gruen);
+  --on: var(--buchstabe);
+}
+
+#answerBoxD,
+#answerZoom[data-letter="D"],
+.answer-card-page:nth-child(4) {
+  --c: var(--hellblau);
+  --on: var(--buchstabe);
+}
+
+.quiz-answer {
+  padding: 0;
+  gap: 0;
+  overflow: visible;
+  border: 4px solid var(--c);
+}
+
+.big-letter {
+  width: clamp(56px, 12vh, 104px);
+  border-radius: var(--rundung);
+  background: var(--c);
+  color: var(--on);
+  font-size: clamp(2rem, 7vh, 3.6rem);
+  font-weight: 700;
+}
+
+.answer-image-wrap {
+  background: var(--karte);
+}
+
+.quiz-answer.is-hidden .answer-image-wrap {
+  background: var(--bg);
+}
+
+/*
+ * Auflösung: Die richtige Antwort bekommt einen schwarzen Rahmen
+ * und das Schild "Richtig"; die anderen werden blasser.
+ */
+.quiz-answer.correct {
+  border: 4px solid var(--c);
+  background: var(--karte);
+  outline: 5px solid var(--text);
+  outline-offset: 0;
+}
+
+.quiz-answer.correct .big-letter {
+  background: var(--c);
+  font-size: 0;
+}
+
+.quiz-answer.correct .big-letter::after {
+  content: "";
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background: var(--dunkelblau);
+  -webkit-mask: var(--haken) center / contain no-repeat;
+  mask: var(--haken) center / contain no-repeat;
+  font-size: clamp(2rem, 7vh, 3.6rem);
+}
+
+.quiz-answer.correct::after {
+  top: -5px;
+  right: -5px;
+  padding: 2px 10px;
+  border: 3px solid var(--text);
+  border-radius: var(--rundung);
+  background: var(--text);
+  color: var(--hg);
+  font-size: clamp(.75rem, 2vh, 1rem);
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+/*
+ * Großansicht einer Antwort: Buchstabe und Bild in der Farbe
+ * des Buchstabens, bei der richtigen mit schwarzem Rahmen.
+ */
+.answer-zoom.is-answer {
+  gap: 16px;
+}
+
+.answer-zoom.is-answer .answer-zoom-label {
+  background: var(--c);
+  color: var(--on);
+  border: 4px solid var(--c);
+  font-weight: 700;
+  white-space: nowrap;
+
+  /*
+   * Nach Höhe und Breite begrenzt: "✓ A" ist breiter als hoch.
+   * Bei fast quadratischen Bildern (zugeschnittene kurze Wörter)
+   * würde die Schrift sonst umbrechen und das Häkchen über dem
+   * Buchstaben stehen.
+   */
+  font-size: min(
+    calc(var(--zoom-h) * .8),
+    calc(var(--zoom-w) * .3)
+  );
+}
+
+.answer-zoom.is-answer img {
+  border: 4px solid var(--c);
+}
+
+.answer-zoom.correct.is-answer .answer-zoom-label,
+.answer-zoom.correct.is-answer img {
+  border-width: 4px;
+  outline: 6px solid var(--text);
+  outline-offset: 0;
+}
+
+.answer-zoom.correct .answer-zoom-label {
+  color: var(--on);
+}
+
+/*
+ * Antwortkarte der Schüler: vier Farbflächen mit dem Buchstaben,
+ * zum Durchwischen.
+ */
+.answer-card-view {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.answer-card-page {
+  padding: 0;
+  background: var(--c);
+  color: var(--on);
+}
+
+.answer-card-frame {
+  border: 0;
+  border-radius: var(--rundung);
+  font-weight: 700;
+  font-size: min(72vh, 72vw);
+}
+
+.answer-card-dots span {
+  width: 16px;
+  height: 16px;
+  border: 3px solid var(--text);
+  background: var(--karte);
+  opacity: .45;
+}
+
+.answer-card-dots span.is-current {
+  background: var(--karte);
+  opacity: 1;
+}
+
+.qr-view {
+  color: var(--text);
+  background: var(--bg);
+}
+
+.qr-image {
+  border: 4px solid var(--text);
+  border-radius: var(--rundung);
+}
+
+.qr-hint {
+  color: var(--muted);
+}
+
+/*
+ * Editor-Ansicht im Olympia-Stil: eine breite Spalte mit
+ * Aufnahme, Meldungen und darunter der Fragensammlung.
+ */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  text-align: left;
+  padding-left: max(24px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+
+header h1 {
+  display: flex;
+  align-items: center;
+  gap: .45em;
+}
+
+header h1::before {
+  content: "";
+  flex: none;
+  width: .75em;
+  height: .75em;
+  border-radius: 50%;
+  background: var(--akzent-text);
+}
+
+.settings-button {
+  position: static;
+  transform: none;
+}
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card h2 {
+  display: flex;
+  align-items: center;
+  gap: .5em;
+  letter-spacing: -0.01em;
+}
+
+.card h2::before {
+  content: "";
+  flex: none;
+  width: .8em;
+  height: .8em;
+  border-radius: 50%;
+  background: var(--orange);
+}
+
+.photo-button {
+  min-height: 150px;
+  border-width: 4px;
+  border-color: var(--line);
+  font-size: clamp(1.5rem, 4.5vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: .03em;
+}
+
+.photo-icon {
+  flex: none;
+  width: 1.3em;
+  height: 1.3em;
+  border: .22em solid var(--dunkelblau);
+  border-radius: 50%;
+  position: relative;
+}
+
+.photo-icon::after {
+  content: "";
+  position: absolute;
+  inset: .2em;
+  border-radius: 50%;
+  background: var(--gelb);
+}
+
+.question-counter-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 3px solid var(--line);
+  border-radius: var(--rundung);
+  background: var(--karte);
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+#questionCount {
+  min-width: 2.2em;
+  padding: 0 12px;
+  background: var(--orange);
+  color: var(--on-orange);
+  font-size: 2rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.progress-outer {
+  border-radius: var(--rundung);
+  border-width: 3px;
+}
+
+.status-list li {
+  border-width: 0 0 0 8px;
+  font-weight: 700;
+}
+
+.status-list .ok {
+  border-color: var(--gruen);
+}
+
+.status-list .warn {
+  border-color: var(--gelb);
+}
+
+.status-list .error {
+  border-color: var(--error);
+}
+
+.last-card-preview img {
+  border: 3px solid var(--line-soft);
+}
+
+#startQuizButton {
+  min-height: 72px;
+  border: 4px solid var(--line);
+  background: var(--gelb);
+  color: var(--on-gelb);
+  font-size: 1.5rem;
+  letter-spacing: .03em;
+}
+
+#startQuizButton:disabled {
+  background: var(--bg);
+  color: var(--muted);
+  border-color: var(--line-soft);
+  opacity: 1;
+}
+
+.question-list-item {
+  border: 3px solid var(--line);
+  border-top: 8px solid var(--hellblau);
+}
+
+.question-list-item strong {
+  display: inline-block;
+  margin-bottom: 10px;
+  padding: 1px 12px;
+  background: var(--hellblau);
+  color: var(--dunkelblau);
+  font-weight: 700;
+}
+
+.question-list-item img,
+.question-actions button {
+  border-radius: var(--rundung);
+}
+
+/*
+ * Zuletzt verschobene Frage: gelber Rahmen, bis sie ein weiteres
+ * Mal verschoben wird.
+ */
+.question-list-item.is-moved {
+  outline: 6px solid var(--gelb);
+  outline-offset: 0;
+}
+
+.question-list-item.is-moved strong {
+  background: var(--gelb);
+  color: var(--on-gelb);
+}
+

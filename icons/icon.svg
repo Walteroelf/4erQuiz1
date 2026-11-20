@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
-  <rect width="1024" height="1024" fill="#0b2a4a"/>
+  <rect width="1024" height="1024" fill="#FFFFFF"/>
   <!-- vier Antwortfelder in den Farben von München 72 -->
-  <rect x="150" y="150" width="340" height="340" fill="#ffd200"/>
+  <rect x="150" y="150" width="340" height="340" fill="#FFD100"/>
   <rect x="534" y="150" width="340" height="340" fill="#f39200"/>
-  <rect x="150" y="534" width="340" height="340" fill="#7ab51d"/>
-  <rect x="534" y="534" width="340" height="340" fill="#56b9e8"/>
-  <g font-weight="700" font-size="270" text-anchor="middle" fill="#000">
+  <rect x="150" y="534" width="340" height="340" fill="#46A84A"/>
+  <rect x="534" y="534" width="340" height="340" fill="#4DB2E6"/>
+  <g font-weight="700" font-size="270" text-anchor="middle" fill="#0D2B4E">
     <text x="320" y="420">A</text>
     <text x="704" y="420">B</text>
     <text x="320" y="804">C</text>
