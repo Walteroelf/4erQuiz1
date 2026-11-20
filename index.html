@@ -1505,6 +1505,12 @@
       transform: none;
     }
 
+    .header-buttons {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     .card h2 {
       display: flex;
       align-items: center;
@@ -1736,14 +1742,24 @@
   <div id="editorView">
     <header>
       <h1>4er-Quiz</h1>
-      <button
-        id="openSettingsButton"
-        class="secondary settings-button"
-        aria-label="Einstellungen"
-      >
-        <span aria-hidden="true">⚙️</span>
-        <span class="settings-button-text">Einstellungen</span>
-      </button>
+      <div class="header-buttons">
+        <button
+          id="openTemplatesButton"
+          class="secondary settings-button"
+          aria-label="Druckvorlagen"
+        >
+          <span aria-hidden="true">🖨️</span>
+          <span class="settings-button-text">Druckvorlagen</span>
+        </button>
+        <button
+          id="openSettingsButton"
+          class="secondary settings-button"
+          aria-label="Einstellungen"
+        >
+          <span aria-hidden="true">⚙️</span>
+          <span class="settings-button-text">Einstellungen</span>
+        </button>
+      </div>
     </header>
 
     <main>
@@ -1953,6 +1969,47 @@
     </div>
   </div>
 
+  <div id="templatesModal" class="modal-backdrop" hidden>
+    <div
+      class="modal settings-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="templatesTitle"
+    >
+      <h2 id="templatesTitle">Druckvorlagen</h2>
+
+      <ul class="settings-links">
+        <li>
+          <a href="vorlage/quiz-vorlage.pdf" target="_blank">
+            Vorlage, eine Karte pro Blatt (PDF)
+          </a>
+        </li>
+        <li>
+          <a href="vorlage/quiz-vorlage-a5.pdf" target="_blank">
+            Vorlage, zwei Karten pro Blatt, A5 (PDF)
+          </a>
+        </li>
+        <li>
+          <a href="vorlage/abcd-karten.pdf" target="_blank">
+            Antwortkarten A bis D für die Schüler, schwarz-weiß (PDF)
+          </a>
+        </li>
+        <li>
+          <a href="vorlage/abcd-karten-farbig.pdf" target="_blank">
+            Antwortkarten A bis D, in Farbe wie auf dem iPad (PDF)
+          </a>
+        </li>
+        <li>
+          <a href="vorlage/antwortkarte-qr.pdf" target="_blank">
+            QR-Code zur digitalen Antwortkarte (PDF)
+          </a>
+        </li>
+      </ul>
+
+      <button id="closeTemplatesButton" class="modal-ok">Fertig</button>
+    </div>
+  </div>
+
   <div id="settingsModal" class="modal-backdrop" hidden>
     <div
       class="modal settings-modal"
@@ -2034,35 +2091,7 @@
         </span>
       </label>
 
-      <h3>Vorlagen und Hilfe</h3>
-
-      <ul class="settings-links">
-        <li>
-          <a href="vorlage/quiz-vorlage.pdf" target="_blank">
-            Vorlage, eine Karte pro Blatt (PDF)
-          </a>
-        </li>
-        <li>
-          <a href="vorlage/quiz-vorlage-a5.pdf" target="_blank">
-            Vorlage, zwei Karten pro Blatt, A5 (PDF)
-          </a>
-        </li>
-        <li>
-          <a href="vorlage/abcd-karten.pdf" target="_blank">
-            Antwortkarten A bis D für die Schüler, schwarz-weiß (PDF)
-          </a>
-        </li>
-        <li>
-          <a href="vorlage/abcd-karten-farbig.pdf" target="_blank">
-            Antwortkarten A bis D, in Farbe wie auf dem iPad (PDF)
-          </a>
-        </li>
-        <li>
-          <a href="vorlage/antwortkarte-qr.pdf" target="_blank">
-            QR-Code zur digitalen Antwortkarte (PDF)
-          </a>
-        </li>
-      </ul>
+      <h3>Hilfe</h3>
 
       <button id="openAnswerCardButton" class="secondary">
         Antwortkarte für Schüler öffnen
@@ -2239,6 +2268,7 @@
     const openSettingsButton =
       document.getElementById("openSettingsButton");
     const settingsModal = document.getElementById("settingsModal");
+    const templatesModal = document.getElementById("templatesModal");
     const closeSettingsButton =
       document.getElementById("closeSettingsButton");
     const showHelpButton = document.getElementById("showHelpButton");
@@ -2504,6 +2534,11 @@
 
       if (event.key === "Escape" && !answerZoom.hidden) {
         closeZoom();
+        return;
+      }
+
+      if (event.key === "Escape" && !templatesModal.hidden) {
+        templatesModal.hidden = true;
         return;
       }
 
@@ -2914,6 +2949,20 @@
     function closeSettings() {
       settingsModal.hidden = true;
     }
+
+    document.getElementById("openTemplatesButton")
+      .addEventListener("click", () => {
+        templatesModal.hidden = false;
+      });
+    document.getElementById("closeTemplatesButton")
+      .addEventListener("click", () => {
+        templatesModal.hidden = true;
+      });
+    templatesModal.addEventListener("click", event => {
+      if (event.target === templatesModal) {
+        templatesModal.hidden = true;
+      }
+    });
 
     openSettingsButton.addEventListener("click", openSettings);
     closeSettingsButton.addEventListener("click", closeSettings);
