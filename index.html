@@ -17,12 +17,13 @@
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
   <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#0075bf">
+  <meta name="theme-color" content="#4DB2E6">
   <meta
     name="apple-mobile-web-app-status-bar-style"
     content="black-translucent"
   >
   <title>4er-Quiz automatisch</title>
+  <link rel="stylesheet" href="design.css?v=3">
 
   <style>
     /*
@@ -38,48 +39,56 @@
      *   Zeichen und Text angezeigt
      */
     :root {
-      --bg: #f1f9fe;
-      --surface: #ffffff;
-      --text: #0b2a4a;
-      --muted: #3d5873;
-      --line: #0b2a4a;
-      --line-soft: #b4d2e6;
+      /* Rollen kommen aus design.css (Hell und Dunkel) */
+      --bg: var(--hg);
+      --surface: var(--karte);
+      --muted: var(--leise);
+      --line: var(--text);
+      --line-soft: var(--rand);
 
-      --accent: #0075bf;
-      --accent-soft: #dcedf8;
+      --accent: var(--hellblau);
+      --accent-soft: var(--auswahl);
 
-      --blau: #0075bf;
-      --on-blau: #ffffff;
-      --orange: #f39200;
-      --on-orange: #0b2a4a;
-      --gruen: #7ab51d;
-      --on-gruen: #0b2a4a;
-      --hellblau: #56b9e8;
-      --on-hellblau: #0b2a4a;
-      --gelb: #ffd200;
-      --on-gelb: #0b2a4a;
+      --on-gelb: var(--dunkelblau);
+      --on-orange: var(--dunkelblau);
+      --on-gruen: var(--dunkelblau);
+      --on-hellblau: var(--dunkelblau);
 
       /*
        * Antwortfarben A bis D: A gelb, B orange, C grün, D hellblau
        * (Spielefarben von München 72). Die Buchstaben stehen immer
-       * in Schwarz, die richtige Antwort wird mit schwarzem Rahmen
-       * markiert.
+       * in Dunkelblau, die richtige Antwort wird mit Rahmen und
+       * Häkchen markiert.
        */
-      --buchstabe: #000000;
+      --buchstabe: var(--dunkelblau);
 
-      --correct: #2f6d12;
-      --correct-soft: #eaf5d8;
+      --correct: var(--gruen);
+      --correct-soft: color-mix(in srgb, var(--gruen) 18%, var(--karte));
 
-      --warn-text: #5a4300;
-      --warn-soft: #fff3b3;
+      --warn-text: var(--text);
+      --warn-soft: color-mix(in srgb, var(--gelb) 20%, var(--karte));
 
-      --error: #9b1c1c;
-      --error-soft: #f8e3e3;
+      /* kein Rot: Fehler und Warnungen in Orange */
+      --error: var(--orange);
+      --error-soft: color-mix(in srgb, var(--orange) 18%, var(--karte));
 
-      --radius: 0;
-      --font: "Helvetica Neue", Helvetica, Arial, system-ui,
-        sans-serif;
+      --radius: var(--rundung);
+      --haken: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4.5 12.5 10 18 19.5 6.5'/%3E%3C/svg%3E");
+      --font: var(--schrift);
     }
+
+    /* Farbband wie in den anderen Apps */
+    .band { display: flex; height: 12px; flex: none; }
+    .band i { flex: 1; }
+    .band i:nth-child(1) { background: var(--hellblau); }
+    .band i:nth-child(2) { background: var(--blau); }
+    .band i:nth-child(3) { background: var(--gruen); }
+    .band i:nth-child(4) { background: var(--hellgruen); }
+    .band i:nth-child(5) { background: var(--gelb); }
+    .band i:nth-child(6) { background: var(--orange); }
+    .band i:nth-child(7) { background: var(--silber); }
+
+    svg.symbol { display: inline-block; }
 
     * {
       box-sizing: border-box;
@@ -126,9 +135,16 @@
       font-size: 1rem;
     }
 
-    .settings-button span[aria-hidden] {
-      font-size: 1.4rem;
-      line-height: 1;
+    .settings-button .symbol {
+      width: 1.4em;
+      height: 1.4em;
+    }
+
+    .answer-zoom-label .symbol {
+      width: .8em;
+      height: .8em;
+      stroke-width: 3;
+      margin-right: .1em;
     }
 
     @media (max-width: 600px) {
@@ -182,7 +198,7 @@
       border: 3px solid var(--accent);
       border-radius: var(--radius);
       background: var(--accent);
-      color: #ffffff;
+      color: var(--dunkelblau);
       font-size: clamp(1.6rem, 5vw, 2.4rem);
       font-weight: 700;
       text-align: center;
@@ -201,7 +217,7 @@
       font-size: 1.1rem;
       font-weight: 700;
       cursor: pointer;
-      color: #ffffff;
+      color: var(--dunkelblau);
       background: var(--accent);
     }
 
@@ -212,8 +228,9 @@
 
     button:focus-visible,
     .photo-button:focus-within {
-      outline: 4px solid var(--text);
-      outline-offset: 3px;
+      outline: 4px solid var(--gelb);
+      outline-offset: 0;
+      box-shadow: 0 0 0 7px var(--dunkelblau);
     }
 
     button.secondary {
@@ -228,7 +245,7 @@
     }
 
     button.danger {
-      color: var(--error);
+      color: var(--text);
       background: var(--surface);
       border-color: var(--error);
     }
@@ -280,17 +297,17 @@
     }
 
     .status-list .ok {
-      color: var(--correct);
+      color: var(--text);
       background: var(--correct-soft);
     }
 
     .status-list .warn {
-      color: var(--warn-text);
+      color: var(--text);
       background: var(--warn-soft);
     }
 
     .status-list .error {
-      color: var(--error);
+      color: var(--text);
       background: var(--error-soft);
     }
 
@@ -307,7 +324,7 @@
     .last-card-preview img {
       display: block;
       width: 100%;
-      background: #ffffff;
+      background: var(--karte);
       border: 2px solid var(--line-soft);
       border-radius: var(--radius);
     }
@@ -385,7 +402,7 @@
       width: 30px;
       height: 30px;
       margin: 2px 0 0;
-      accent-color: var(--accent);
+      accent-color: var(--akzent-text);
     }
 
     .setting strong {
@@ -418,7 +435,7 @@
     }
 
     .settings-links a {
-      color: var(--accent);
+      color: var(--akzent-text);
       font-weight: 700;
     }
 
@@ -450,7 +467,7 @@
     .detail-field img {
       display: block;
       width: 100%;
-      background: #ffffff;
+      background: var(--karte);
     }
 
     .detail-answers {
@@ -469,7 +486,7 @@
     }
 
     .detail-correct figcaption {
-      color: var(--correct);
+      color: var(--text);
     }
 
     @media (max-width: 700px) {
@@ -497,7 +514,7 @@
     }
 
     .modal a {
-      color: var(--accent);
+      color: var(--akzent-text);
       font-weight: 700;
     }
 
@@ -511,7 +528,6 @@
       bottom: 0;
       width: 100%;
       margin-top: 16px;
-      box-shadow: 0 -16px 0 var(--surface);
     }
 
     /*
@@ -532,7 +548,7 @@
       padding: 10px;
       border: 2px solid var(--line);
       border-radius: var(--radius);
-      background: #ffffff;
+      background: var(--karte);
       text-align: center;
       text-decoration: none;
       font-size: .95rem;
@@ -543,7 +559,7 @@
       height: 130px;
       object-fit: contain;
       border: 1px solid var(--line-soft);
-      background: #ffffff;
+      background: var(--karte);
     }
 
     /*
@@ -654,7 +670,7 @@
       justify-content: center;
       border-radius: 8px;
       background: var(--text);
-      color: #ffffff;
+      color: var(--hg);
       font-size: clamp(1.6rem, 5.5vh, 2.6rem);
       font-weight: 700;
       line-height: 1;
@@ -667,7 +683,7 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
-      background: #ffffff;
+      background: var(--karte);
     }
 
     /*
@@ -744,7 +760,7 @@
       height: var(--zoom-h);
       font-size: calc(var(--zoom-h) * .8);
       line-height: 1;
-      background: #ffffff;
+      background: var(--karte);
       border: 3px solid var(--line);
       border-radius: var(--radius);
     }
@@ -756,7 +772,7 @@
     }
 
     .answer-zoom.correct .answer-zoom-label {
-      color: var(--correct);
+      color: var(--text);
     }
 
     .answer-zoom.correct.is-answer .answer-zoom-label {
@@ -803,7 +819,13 @@
     }
 
     .quiz-answer.correct .big-letter::after {
-      content: "✓";
+      content: "";
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      background: var(--dunkelblau);
+      -webkit-mask: var(--haken) center / contain no-repeat;
+      mask: var(--haken) center / contain no-repeat;
       font-size: clamp(1.8rem, 6vh, 3rem);
     }
 
@@ -815,7 +837,7 @@
       padding: 2px 12px;
       border-radius: 999px;
       background: var(--correct);
-      color: #ffffff;
+      color: var(--dunkelblau);
       font-size: clamp(.9rem, 2.4vh, 1.2rem);
       font-weight: 700;
     }
@@ -859,8 +881,8 @@
       position: fixed;
       inset: 0;
       z-index: 50;
-      background: #ffffff;
-      color: #000000;
+      background: var(--karte);
+      color: var(--text);
     }
 
     .answer-card-view[hidden] {
@@ -900,7 +922,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      border: min(3vmin, 28px) solid #000000;
+      border: min(3vmin, 28px) solid var(--text);
       border-radius: min(7vmin, 60px);
       font-size: min(70vh, 70vw);
       font-weight: 700;
@@ -926,12 +948,12 @@
     .answer-card-dots span {
       width: 14px;
       height: 14px;
-      border: 3px solid #000000;
+      border: 3px solid var(--text);
       border-radius: 50%;
     }
 
     .answer-card-dots span.is-current {
-      background: #000000;
+      background: var(--text);
     }
 
     /*
@@ -948,7 +970,7 @@
       gap: 2vh;
       padding: 2vh 4vw;
       background: #ffffff;
-      color: #000000;
+      color: var(--dunkelblau);
       text-align: center;
       cursor: pointer;
     }
@@ -965,7 +987,7 @@
     .qr-image {
       width: min(62vh, 80vw);
       height: min(62vh, 80vw);
-      border: 4px solid #000000;
+      border: 4px solid var(--dunkelblau);
       border-radius: 20px;
       padding: 12px;
       background: #ffffff;
@@ -995,7 +1017,7 @@
       align-items: center;
       justify-content: center;
       background: var(--bg);
-      color: var(--accent);
+      color: var(--akzent-text);
       font-size: 45vh;
       font-weight: 700;
       line-height: 1;
@@ -1114,7 +1136,7 @@
       width: .7em;
       height: .7em;
       border-radius: 50%;
-      background: var(--blau);
+      background: var(--akzent-text);
     }
 
     .start-count {
@@ -1152,7 +1174,7 @@
       column-gap: 16px;
       padding: 14px 16px;
       border: 4px solid var(--line);
-      background: #ffffff;
+      background: var(--karte);
     }
 
     .start-steps li::before {
@@ -1165,8 +1187,8 @@
       align-items: center;
       justify-content: center;
       border-radius: 50%;
-      background: var(--blau);
-      color: var(--on-blau);
+      background: var(--hellblau);
+      color: var(--dunkelblau);
       font-size: 1.3rem;
       font-weight: 800;
     }
@@ -1263,7 +1285,7 @@
       width: .8em;
       height: .8em;
       border-radius: 50%;
-      background: var(--blau);
+      background: var(--akzent-text);
     }
 
     .quiz-progress {
@@ -1340,7 +1362,7 @@
     }
 
     .answer-image-wrap {
-      background: #ffffff;
+      background: var(--karte);
     }
 
     .quiz-answer.is-hidden .answer-image-wrap {
@@ -1353,8 +1375,9 @@
      */
     .quiz-answer.correct {
       border: 4px solid var(--c);
-      background: #ffffff;
-      box-shadow: 0 0 0 5px #000000;
+      background: var(--karte);
+      outline: 5px solid var(--text);
+      outline-offset: 0;
     }
 
     .quiz-answer.correct .big-letter {
@@ -1363,7 +1386,13 @@
     }
 
     .quiz-answer.correct .big-letter::after {
-      content: "\2713";
+      content: "";
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      background: var(--dunkelblau);
+      -webkit-mask: var(--haken) center / contain no-repeat;
+      mask: var(--haken) center / contain no-repeat;
       font-size: clamp(2rem, 7vh, 3.6rem);
     }
 
@@ -1371,10 +1400,10 @@
       top: -5px;
       right: -5px;
       padding: 2px 10px;
-      border: 3px solid #000000;
+      border: 3px solid var(--text);
       border-radius: 0;
-      background: #000000;
-      color: #ffffff;
+      background: var(--text);
+      color: var(--hg);
       font-size: clamp(.75rem, 2vh, 1rem);
       font-weight: 800;
       letter-spacing: .04em;
@@ -1415,7 +1444,8 @@
     .answer-zoom.correct.is-answer .answer-zoom-label,
     .answer-zoom.correct.is-answer img {
       border-width: 4px;
-      box-shadow: 0 0 0 6px #000000;
+      outline: 6px solid var(--text);
+      outline-offset: 0;
     }
 
     .answer-zoom.correct .answer-zoom-label {
@@ -1448,12 +1478,12 @@
       width: 16px;
       height: 16px;
       border: 3px solid var(--text);
-      background: #ffffff;
+      background: var(--karte);
       opacity: .45;
     }
 
     .answer-card-dots span.is-current {
-      background: #ffffff;
+      background: var(--karte);
       opacity: 1;
     }
 
@@ -1497,7 +1527,7 @@
       width: .75em;
       height: .75em;
       border-radius: 50%;
-      background: var(--blau);
+      background: var(--akzent-text);
     }
 
     .settings-button {
@@ -1535,7 +1565,7 @@
       flex: none;
       width: 1.3em;
       height: 1.3em;
-      border: .22em solid #ffffff;
+      border: .22em solid var(--dunkelblau);
       border-radius: 50%;
       position: relative;
     }
@@ -1556,7 +1586,7 @@
       padding: 10px 14px;
       border: 3px solid var(--line);
       border-radius: 0;
-      background: #ffffff;
+      background: var(--karte);
       font-size: 1.05rem;
       font-weight: 800;
       text-align: left;
@@ -1617,15 +1647,15 @@
 
     .question-list-item {
       border: 3px solid var(--line);
-      border-top: 8px solid var(--blau);
+      border-top: 8px solid var(--hellblau);
     }
 
     .question-list-item strong {
       display: inline-block;
       margin-bottom: 10px;
       padding: 1px 12px;
-      background: var(--blau);
-      color: var(--on-blau);
+      background: var(--hellblau);
+      color: var(--dunkelblau);
       font-weight: 800;
     }
 
@@ -1639,7 +1669,8 @@
      * Mal verschoben wird.
      */
     .question-list-item.is-moved {
-      box-shadow: 0 0 0 6px var(--gelb);
+      outline: 6px solid var(--gelb);
+      outline-offset: 0;
     }
 
     .question-list-item.is-moved strong {
@@ -1651,6 +1682,20 @@
 </head>
 
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-haken" viewBox="0 0 24 24"><path d="M4.5 12.5 10 18 19.5 6.5"/></symbol>
+  <symbol id="i-kreuz" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-warnung" viewBox="0 0 24 24"><path d="M12 4 2.8 19.5h18.4zM12 10v4.5M12 17v.2"/></symbol>
+  <symbol id="i-zahnrad" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v3M12 18.2v3M2.8 12h3M18.2 12h3M5.5 5.5l2.1 2.1M16.4 16.4l2.1 2.1M18.5 5.5l-2.1 2.1M7.6 16.4l-2.1 2.1"/></symbol>
+  <symbol id="i-vollbild" viewBox="0 0 24 24"><path d="M4 9.5V4h5.5M14.5 4H20v5.5M20 14.5V20h-5.5M9.5 20H4v-5.5"/></symbol>
+  <symbol id="i-vollbild-aus" viewBox="0 0 24 24"><path d="M9.5 4v5.5H4M20 9.5h-5.5V4M14.5 20v-5.5H20M4 14.5h5.5V20"/></symbol>
+  <symbol id="i-uhr" viewBox="0 0 24 24"><circle cx="12" cy="13" r="7.5"/><path d="M12 9v4.5l2.5 1.5M9.5 2.8h5"/></symbol>
+  <symbol id="i-hoch" viewBox="0 0 24 24"><path d="M12 19.5v-15M5.5 11 12 4.5 18.5 11"/></symbol>
+  <symbol id="i-runter" viewBox="0 0 24 24"><path d="M12 4.5v15M5.5 13 12 19.5 18.5 13"/></symbol>
+  <symbol id="i-ganz-hoch" viewBox="0 0 24 24"><path d="M5 4.5h14M12 20v-12M6 13.5 12 7.5l6 6"/></symbol>
+  <symbol id="i-ganz-runter" viewBox="0 0 24 24"><path d="M5 19.5h14M12 4v12M6 10.5l6 6 6-6"/></symbol>
+</svg>
+<div class="band" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 
   <div id="introModal" class="modal-backdrop">
     <div class="modal">
@@ -1741,7 +1786,7 @@
         class="secondary settings-button"
         aria-label="Einstellungen"
       >
-        <span aria-hidden="true">⚙️</span>
+        <svg class="symbol" aria-hidden="true"><use href="#i-zahnrad"/></svg>
         <span class="settings-button-text">Einstellungen</span>
       </button>
     </header>
@@ -1859,7 +1904,7 @@
             class="quiz-fullscreen-button"
             title="Vollbild einschalten"
           >
-            ↗
+            <svg class="symbol" aria-hidden="true"><use href="#i-vollbild"/></svg>
           </button>
         </div>
       </div>
@@ -1908,7 +1953,7 @@
         </button>
 
         <button id="countdownButton">
-          ⏱ 3-2-1
+          <svg class="symbol" aria-hidden="true"><use href="#i-uhr"/></svg> 3-2-1
         </button>
 
         <button id="nextQuestionButton" class="secondary">
@@ -2129,7 +2174,7 @@
 
       <div class="detail-answers">
         <figure class="detail-field detail-correct">
-          <figcaption>✓ Richtige Antwort</figcaption>
+          <figcaption><svg class="symbol" aria-hidden="true"><use href="#i-haken"/></svg> Richtige Antwort</figcaption>
           <img id="detailCorrect" alt="Richtige Antwort">
         </figure>
         <figure class="detail-field">
@@ -2182,6 +2227,9 @@
   <script async src="opencv.js"></script>
 
   <script>
+    const SYM = id =>
+      `<svg class="symbol" aria-hidden="true"><use href="#i-${id}"/></svg>`;
+
     const introModal = document.getElementById("introModal");
     const introOkButton = document.getElementById("introOkButton");
     const imageInput = document.getElementById("imageInput");
@@ -2631,7 +2679,7 @@
         storageWarningShown = true;
         addStatus(
           "warn",
-          "⚠ Die Fragen konnten nicht im Browser gespeichert " +
+          "Die Fragen konnten nicht im Browser gespeichert " +
           "werden. Sie gehen beim Neuladen verloren."
         );
       }
@@ -2720,7 +2768,7 @@
         updateQuestionCollectionView();
         addStatus(
           "ok",
-          `✓ ${saved.length} gespeicherte ` +
+          `${saved.length} gespeicherte ` +
           `${saved.length === 1 ? "Frage" : "Fragen"} geladen.`
         );
       } catch (error) {
@@ -3004,7 +3052,7 @@
           const detection = autoDetectMarkers();
 
           if (!detection.ok) {
-            addStatus("error", `✗ ${label}: ${detection.reason}`);
+            addStatus("error", `${label}: ${detection.reason}`);
           } else {
             detection.cards.forEach((card, cardIndex) => {
               const cardLabel = detection.cards.length > 1
@@ -3019,7 +3067,7 @@
             if (detection.partial > 0) {
               addStatus(
                 "warn",
-                `⚠ ${label}: Eine weitere Karte war nur teilweise ` +
+                `${label}: Eine weitere Karte war nur teilweise ` +
                 "im Bild und wurde übersprungen."
               );
             }
@@ -3028,7 +3076,7 @@
           console.error(error);
           addStatus(
             "error",
-            `✗ ${label}: Das Bild konnte nicht verarbeitet werden.`
+            `${label}: Das Bild konnte nicht verarbeitet werden.`
           );
         } finally {
           releaseCanvas(hiResCanvas);
@@ -3070,14 +3118,14 @@
       if (edgeWidth > MAX_EDGE_WIDTH) {
         addStatus(
           "warn",
-          `⚠ ${label}: als Frage ${number} übernommen, ` +
+          `${label}: als Frage ${number} übernommen, ` +
           "aber das Foto ist unscharf. Prüfe die Vorschau " +
           "und fotografiere die Karte sonst neu."
         );
       } else {
         addStatus(
           "ok",
-          `✓ ${label}: als Frage ${number} übernommen.`
+          `${label}: als Frage ${number} übernommen.`
         );
       }
     }
@@ -3924,7 +3972,9 @@
     function addStatus(type, text) {
       const item = document.createElement("li");
       item.className = type;
-      item.textContent = text;
+      const icon = { ok: "haken", warn: "warnung", error: "kreuz" }[type];
+      if (icon) item.insertAdjacentHTML("afterbegin", SYM(icon) + " ");
+      item.append(text);
       statusList.appendChild(item);
     }
 
@@ -4097,25 +4147,25 @@
 
         const up = document.createElement("button");
         up.className = "secondary";
-        up.textContent = "↑ Hoch";
+        up.innerHTML = SYM("hoch") + " Hoch";
         up.disabled = index === 0;
         up.onclick = () => moveQuestion(index, -1);
 
         const down = document.createElement("button");
         down.className = "secondary";
-        down.textContent = "↓ Runter";
+        down.innerHTML = SYM("runter") + " Runter";
         down.disabled = index === questions.length - 1;
         down.onclick = () => moveQuestion(index, 1);
 
         const toTop = document.createElement("button");
         toTop.className = "secondary";
-        toTop.textContent = "↑↑ Anfang";
+        toTop.innerHTML = SYM("ganz-hoch") + " Anfang";
         toTop.disabled = index === 0;
         toTop.onclick = () => moveQuestionTo(index, 0);
 
         const toEnd = document.createElement("button");
         toEnd.className = "secondary";
-        toEnd.textContent = "↓↓ Ende";
+        toEnd.innerHTML = SYM("ganz-runter") + " Ende";
         toEnd.disabled = index === questions.length - 1;
         toEnd.onclick = () => moveQuestionTo(index, questions.length - 1);
 
@@ -4665,10 +4715,10 @@
       const isCorrect = box.classList.contains("correct");
 
       openZoom(
-        isCorrect ? `Antwort ${letter} · ✓ Richtig` : `Antwort ${letter}`,
+        isCorrect ? `Antwort ${letter} · Richtig` : `Antwort ${letter}`,
         box.querySelector("img").src,
         isCorrect,
-        isCorrect ? `✓ ${letter}` : letter
+        letter
       );
     }
 
@@ -4677,7 +4727,9 @@
      * irgendwohin (oder Esc) schließt die Ansicht wieder.
      */
     function openZoom(label, src, isCorrect = false, letter = null) {
-      answerZoomLabel.textContent = letter || label;
+      answerZoomLabel.innerHTML = "";
+      if (isCorrect && letter) answerZoomLabel.insertAdjacentHTML("afterbegin", SYM("haken"));
+      answerZoomLabel.append(letter || label);
       answerZoom.dataset.letter = (letter || "").replace(/[^A-D]/g, "");
       answerZoom.classList.toggle("is-answer", letter !== null);
       answerZoomImage.src = src;
@@ -4865,8 +4917,8 @@
     }
 
     function updateFullscreenButton() {
-      fullscreenButton.textContent =
-        getFullscreenElement() ? "↙" : "↗";
+      fullscreenButton.innerHTML =
+        SYM(getFullscreenElement() ? "vollbild-aus" : "vollbild");
     }
 
     function clearEverything() {
