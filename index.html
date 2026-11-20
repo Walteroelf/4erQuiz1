@@ -353,7 +353,7 @@
 
     .question-list-item img {
       width: 100%;
-      height: 90px;
+      height: 80px;
       object-fit: contain;
       background: #ffffff;
       border: 2px solid var(--line-soft);
@@ -552,6 +552,20 @@
       text-align: center;
       text-decoration: none;
       font-size: .95rem;
+    }
+
+    .downloads-small {
+      grid-template-columns: repeat(auto-fit, minmax(88px, 1fr));
+      gap: 10px;
+    }
+
+    .downloads-small a.download {
+      padding: 8px;
+      font-size: .72rem;
+    }
+
+    .downloads-small img {
+      height: 80px;
     }
 
     .download img {
@@ -2024,33 +2038,28 @@
     >
       <h2 id="templatesTitle">Druckvorlagen</h2>
 
-      <ul class="settings-links">
-        <li>
-          <a href="vorlage/quiz-vorlage.pdf" target="_blank">
-            Vorlage, eine Karte pro Blatt (PDF)
-          </a>
-        </li>
-        <li>
-          <a href="vorlage/quiz-vorlage-a5.pdf" target="_blank">
-            Vorlage, zwei Karten pro Blatt, A5 (PDF)
-          </a>
-        </li>
-        <li>
-          <a href="vorlage/abcd-karten.pdf" target="_blank">
-            Antwortkarten A bis D für die Schüler, schwarz-weiß (PDF)
-          </a>
-        </li>
-        <li>
-          <a href="vorlage/abcd-karten-farbig.pdf" target="_blank">
-            Antwortkarten A bis D, in Farbe wie auf dem iPad (PDF)
-          </a>
-        </li>
-        <li>
-          <a href="vorlage/antwortkarte-qr.pdf" target="_blank">
-            QR-Code zur digitalen Antwortkarte (PDF)
-          </a>
-        </li>
-      </ul>
+      <div class="downloads downloads-small">
+        <a class="download" href="vorlage/quiz-vorlage.pdf" target="_blank">
+          <img src="vorlage/vorschau-quiz-vorlage.jpg" alt="Vorschau: Quiz-Vorlage, eine Karte pro Blatt">
+          <span>Quiz-Vorlage, eine Karte pro Blatt (PDF)</span>
+        </a>
+        <a class="download" href="vorlage/quiz-vorlage-a5.pdf" target="_blank">
+          <img src="vorlage/vorschau-quiz-vorlage-a5.jpg" alt="Vorschau: Quiz-Vorlage, zwei Karten pro Blatt, A5">
+          <span>Quiz-Vorlage, zwei Karten pro Blatt, A5 (PDF)</span>
+        </a>
+        <a class="download" href="vorlage/abcd-karten.pdf" target="_blank">
+          <img src="vorlage/vorschau-abcd-karten.jpg" alt="Vorschau: Antwortkarten A bis D, schwarz-weiß">
+          <span>Antwortkarten A bis D, schwarz-weiß (PDF)</span>
+        </a>
+        <a class="download" href="vorlage/abcd-karten-farbig.pdf" target="_blank">
+          <img src="vorlage/vorschau-abcd-karten-farbig.jpg" alt="Vorschau: Antwortkarten A bis D, in Farbe">
+          <span>Antwortkarten A bis D, in Farbe (PDF)</span>
+        </a>
+        <a class="download" href="vorlage/antwortkarte-qr.pdf" target="_blank">
+          <img src="vorlage/vorschau-antwortkarte-qr.jpg" alt="Vorschau: QR-Code zur digitalen Antwortkarte">
+          <span>QR-Code zur digitalen Antwortkarte (PDF)</span>
+        </a>
+      </div>
 
       <button id="closeTemplatesButton" class="modal-ok">Fertig</button>
     </div>
